@@ -33,8 +33,8 @@ public class HistoryFragment extends Fragment {
     private TextView txt_view, txt_name_artist;
     private RelativeLayout relative_header;
     private LinearLayout linear_da_nghe, linear_nghe_nhieu, linear_no_data;
-    private ArrayList<Items> songListLichSuBaiHat = new ArrayList<>();
-    private final ArrayList<Items> songListLichSuBaiHatNgheNhieu = new ArrayList<>();
+    private ArrayList<Items> songListLichSuBaiHat ;
+    private  ArrayList<Items> songListLichSuBaiHatNgheNhieu ;
     private HistoryAdapter lichSuBaiHatNgheNhieuAdapter, lichSuBaiHatAdapter;
     private SharedPreferencesManager sharedPreferencesManager;
     @Override
@@ -114,6 +114,10 @@ public class HistoryFragment extends Fragment {
     }
     @SuppressLint("NotifyDataSetChanged")
     private void getSongHistory() {
+
+        songListLichSuBaiHat = new ArrayList<>();
+        songListLichSuBaiHatNgheNhieu = new ArrayList<>();
+
         // Khởi tạo danh sách bài hát lịch sử
         songListLichSuBaiHat = sharedPreferencesManager.restoreSongArrayListHistory();
 

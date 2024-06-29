@@ -3,6 +3,7 @@ package com.tandev.musichub.adapter.album;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.bottomsheet.BottomSheetOptionSong;
+import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Album;
 import com.tandev.musichub.model.chart.chart_home.Items;
@@ -57,16 +60,17 @@ public class AlbumNewReleaseAdapter extends RecyclerView.Adapter<AlbumNewRelease
         Glide.with(context)
                 .load(album.getThumbnail())
                 .into(holder.thumbImageView);
-        holder.txt_time_release_date.setText(Helper.convertLongToTime(album.getReleasedAt()));
+        holder.txt_time_release_date.setText(Helper.convertLongToTime(String.valueOf(album.getReleasedAt())));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(context, ViewPlaylistActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("playlist", album);
-//                intent.putExtras(bundle);
-//
-//                context.startActivity(intent);
+                AlbumFragment albumFragment = new AlbumFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("album_endCodeId", album.getEncodeId());
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(albumFragment, bundle);
+                }
             }
         });
     }

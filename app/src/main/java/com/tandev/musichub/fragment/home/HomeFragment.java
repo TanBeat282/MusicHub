@@ -97,7 +97,7 @@ public class HomeFragment extends Fragment {
 
     //view
     private ViewPager2 view_pager_banner;
-    private final Handler bannerHandler = new Handler();
+    private Handler bannerHandler;
 
     private NestedScrollView nested_scroll;
     private RelativeLayout relative_loading;
@@ -113,36 +113,36 @@ public class HomeFragment extends Fragment {
     private HomeDataItemNewRelease homeDataItemNewRelease;
     private RecyclerView rv_new_release_song;
     private SongMoreAdapter new_release_songAdapter;
-    private ArrayList<Items> new_release_songArrayList = new ArrayList<>();
+    private ArrayList<Items> new_release_songArrayList;
 
 
     // bxh_new_release_song
     private RecyclerView rv_bxh_new_release_song;
     private SongMoreAdapter bxh_new_release_songAdapter;
-    private ArrayList<Items> bxh_new_release_songArrayList = new ArrayList<>();
+    private ArrayList<Items> bxh_new_release_songArrayList;
 
 
     // bxh nhac
     private LinearLayout linear_chart_home;
     private RecyclerView rv_bang_xep_hang;
     private SongMoreAdapter bang_xep_hangAdapter;
-    private ArrayList<Items> bang_xep_hangArrayList = new ArrayList<>();
+    private ArrayList<Items> bang_xep_hangArrayList;
 
     // playlist
     private RecyclerView rv_playlist;
-    private final ArrayList<HomeDataItem> homeDataItems = new ArrayList<>();
+    private ArrayList<HomeDataItem> homeDataItems;
     private HomePlaylistAdapter homePlaylistAdapter;
 
     // week chart
     private ViewPager2 view_pager_week_chart;
-    private final ArrayList<HomeDataItemWeekChartItem> homeDataItemWeekChartItems = new ArrayList<>();
+    private ArrayList<HomeDataItemWeekChartItem> homeDataItemWeekChartItems;
 
     //hub_home
     private LinearLayout linear_hub_home;
     private TextView txt_hub_home;
     private RecyclerView rv_hub_home;
-    private final ArrayList<HubHomeFeaturedItems> hubHomeFeaturedItemsArrayList = new ArrayList<>();
-    private final ArrayList<HubHomeNations> hubHomeNationsArrayList = new ArrayList<>();
+    private ArrayList<HubHomeFeaturedItems> hubHomeFeaturedItemsArrayList;
+    private ArrayList<HubHomeNations> hubHomeNationsArrayList;
     private HubHomeAdapter hubHomeAdapter;
 
     //top100
@@ -150,16 +150,16 @@ public class HomeFragment extends Fragment {
     private RecyclerView rv_top100;
     private TextView txt_title_top100;
     private PlaylistMoreAdapter playlistMoreAdapter;
-    private final ArrayList<DataPlaylist> dataPlaylistArrayListTop100 = new ArrayList<>();
+    private ArrayList<DataPlaylist> dataPlaylistArrayListTop100;
 
     private TextView txt_title_album;
     private RecyclerView rv_album;
-    private final ArrayList<DataAlbum> dataAlbumArrayList = new ArrayList<>();
+    private ArrayList<DataAlbum> dataAlbumArrayList;
     private AlbumMoreAdapter albumMoreAdapter;
 
     private TextView txt_title_radio;
     private RecyclerView rv_radio;
-    private final ArrayList<HomeDataItemRadioItem> homeDataItemRadioItemArrayList = new ArrayList<>();
+    private ArrayList<HomeDataItemRadioItem> homeDataItemRadioItemArrayList;
     private RadioMoreAdapter radioMoreAdapter;
 
     @Override
@@ -188,8 +188,6 @@ public class HomeFragment extends Fragment {
         //get data
         getHome();
         getHubHome();
-
-        mHandler = new Handler();
     }
 
     private void initData() {
@@ -197,6 +195,18 @@ public class HomeFragment extends Fragment {
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
 
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+        new_release_songArrayList = new ArrayList<>();
+        bxh_new_release_songArrayList = new ArrayList<>();
+        bang_xep_hangArrayList = new ArrayList<>();
+        homeDataItems = new ArrayList<>();
+        dataPlaylistArrayListTop100 = new ArrayList<>();
+        dataAlbumArrayList = new ArrayList<>();
+        homeDataItemRadioItemArrayList = new ArrayList<>();
+        hubHomeFeaturedItemsArrayList = new ArrayList<>();
+        hubHomeNationsArrayList = new ArrayList<>();
+        homeDataItemWeekChartItems = new ArrayList<>();
+        mHandler = new Handler();
+        bannerHandler = new Handler();
     }
 
     private void initViews(View view) {

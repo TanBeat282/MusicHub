@@ -1,6 +1,7 @@
 package com.tandev.musichub.model.artist;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class DataArtist implements Serializable {
     private String id;
@@ -21,6 +22,11 @@ public class DataArtist implements Serializable {
     private int follow;
     private String oalink;
     private int oaid;
+    private ArrayList<SectionArtist> sections;
+    private String sectionId;
+    private boolean isOABrand;
+    private ArrayList<Integer> tabs;
+    private boolean hasOA;
 
     public String getId() {
         return id;
@@ -164,5 +170,45 @@ public class DataArtist implements Serializable {
 
     public void setOaid(int oaid) {
         this.oaid = oaid;
+    }
+
+    public ArrayList<SectionArtist> getSections() {
+        return sections;
+    }
+
+    public void setSections(ArrayList<SectionArtist> sections) {
+        this.sections = sections;
+    }
+
+    public String getSectionId() {
+        return sectionId;
+    }
+
+    public void setSectionId(String sectionId) {
+        this.sectionId = sectionId;
+    }
+
+    public boolean isOABrand() {
+        return isOABrand;
+    }
+
+    public void setOABrand(boolean OABrand) {
+        isOABrand = OABrand;
+    }
+
+    public ArrayList<Integer> getTabs() {
+        return tabs;
+    }
+
+    public void setTabs(ArrayList<Integer> tabs) {
+        this.tabs = tabs;
+    }
+
+    public boolean isHasOA() {
+        return hasOA;
+    }
+
+    public void setHasOA(boolean hasOA) {
+        this.hasOA = hasOA;
     }
 }

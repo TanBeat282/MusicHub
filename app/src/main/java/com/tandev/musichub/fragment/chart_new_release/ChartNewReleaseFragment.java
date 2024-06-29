@@ -50,7 +50,7 @@ public class ChartNewReleaseFragment extends Fragment {
     private TextView txt_new_release;
     private RecyclerView rv_new_release_song;
     private BXHSongAdapter newReleaseChartAdapter;
-    private final ArrayList<Items> itemsArrayList = new ArrayList<>();
+    private  ArrayList<Items> itemsArrayList ;
     private NewRelease newRelease;
     private SharedPreferencesManager sharedPreferencesManager;
 
@@ -100,6 +100,7 @@ public class ChartNewReleaseFragment extends Fragment {
     }
 
     private void initAdapter() {
+        itemsArrayList = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_new_release_song.setLayoutManager(layoutManager);
 

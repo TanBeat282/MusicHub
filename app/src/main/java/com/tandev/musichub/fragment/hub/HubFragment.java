@@ -58,10 +58,10 @@ public class HubFragment extends Fragment {
     private ImageView img_playlist;
     private ProgressBar progress_image;
 
-    private final ArrayList<SectionHubSong> sectionHubSongArrayList = new ArrayList<>();
-    private final ArrayList<SectionHubPlaylist> sectionHubPlaylists = new ArrayList<>();
-    private final ArrayList<SectionHubVideo> sectionHubVideoArrayList = new ArrayList<>();
-    private final ArrayList<SectionHubArtist> sectionHubArtistArrayList = new ArrayList<>();
+    private  ArrayList<SectionHubSong> sectionHubSongArrayList;
+    private  ArrayList<SectionHubPlaylist> sectionHubPlaylists ;
+    private  ArrayList<SectionHubVideo> sectionHubVideoArrayList ;
+    private  ArrayList<SectionHubArtist> sectionHubArtistArrayList;
     private HubVerticalAdapter hubVerticalAdapter;
 
     @Override
@@ -111,6 +111,11 @@ public class HubFragment extends Fragment {
     }
 
     private void initAdapter() {
+        sectionHubSongArrayList = new ArrayList<>();
+        sectionHubPlaylists = new ArrayList<>();
+        sectionHubVideoArrayList = new ArrayList<>();
+        sectionHubArtistArrayList = new ArrayList<>();
+
         LinearLayoutManager layoutManagerPlaylist1 = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_playlist_vertical.setLayoutManager(layoutManagerPlaylist1);
         hubVerticalAdapter = new HubVerticalAdapter(requireContext(), requireActivity(), sectionHubSongArrayList, sectionHubPlaylists, sectionHubVideoArrayList, sectionHubArtistArrayList);

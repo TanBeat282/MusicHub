@@ -58,7 +58,7 @@ public class AlbumFragment extends Fragment {
     private TextView txt_user_name;
     private TextView txt_song_and_time;
 
-    private ArrayList<Items> itemsArrayList = new ArrayList<>();
+    private ArrayList<Items> itemsArrayList;
     private SongAllAdapter songAllAdapter;
     private RecyclerView rv_album;
 
@@ -66,7 +66,7 @@ public class AlbumFragment extends Fragment {
 
     private RecyclerView rv_artist;
     private SelectArtistAdapter selectArtistAdapter;
-    private ArrayList<Artists> artistsArrayList = new ArrayList<>();
+    private ArrayList<Artists> artistsArrayList ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -153,6 +153,9 @@ public class AlbumFragment extends Fragment {
     }
 
     private void initAdapter() {
+        itemsArrayList = new ArrayList<>();
+        artistsArrayList = new ArrayList<>();
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_album.setLayoutManager(layoutManager);
         songAllAdapter = new SongAllAdapter(itemsArrayList, requireActivity(),requireContext());

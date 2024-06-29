@@ -1,4 +1,4 @@
-package com.tandev.musichub.adapter.hub;
+package com.tandev.musichub.adapter.artist;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -15,54 +15,55 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tandev.musichub.R;
-import com.tandev.musichub.adapter.artist.ArtistsAllAdapter;
 import com.tandev.musichub.adapter.playlist.PlaylistAdapter;
+import com.tandev.musichub.adapter.single.SingleAdapter;
 import com.tandev.musichub.adapter.song.SongAllAdapter;
 import com.tandev.musichub.adapter.video.VideoMoreAdapter;
-import com.tandev.musichub.model.hub.SectionHubArtist;
-import com.tandev.musichub.model.hub.SectionHubPlaylist;
-import com.tandev.musichub.model.hub.SectionHubSong;
-import com.tandev.musichub.model.hub.SectionHubVideo;
+import com.tandev.musichub.model.artist.artist.SectionArtistArtist;
+import com.tandev.musichub.model.artist.playlist.SectionArtistPlaylist;
+import com.tandev.musichub.model.artist.song.SectionArtistSong;
+import com.tandev.musichub.model.artist.video.SectionArtistVideo;
 
 import java.util.ArrayList;
 
-public class HubVerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_SONG = 0;
     private static final int VIEW_TYPE_PLAYLIST = 1;
     private static final int VIEW_TYPE_VIDEO = 2;
     private static final int VIEW_TYPE_ARTIST = 3;
 
-    private ArrayList<SectionHubPlaylist> sectionHubPlaylists = new ArrayList<>();
-    private ArrayList<SectionHubSong> sectionHubSongs = new ArrayList<>();
-    private ArrayList<SectionHubVideo> sectionHubVideos = new ArrayList<>();
-    private ArrayList<SectionHubArtist> sectionHubArtists = new ArrayList<>();
+
+    private ArrayList<SectionArtistSong> sectionArtistSongs;
+    private ArrayList<SectionArtistPlaylist> sectionArtistPlaylists;
+    private ArrayList<SectionArtistVideo> sectionArtistVideos;
+    private ArrayList<SectionArtistArtist> sectionArtistArtists;
     private final Context context;
     private final Activity activity;
 
-    public HubVerticalAdapter(Context context, Activity activity, ArrayList<SectionHubSong> sectionHubSongs, ArrayList<SectionHubPlaylist> sectionHubPlaylists, ArrayList<SectionHubVideo> sectionHubVideos, ArrayList<SectionHubArtist> sectionHubArtists) {
+    public ArtistAdapter(Context context, Activity activity, ArrayList<SectionArtistSong> sectionArtistSongs, ArrayList<SectionArtistPlaylist> sectionArtistPlaylists, ArrayList<SectionArtistVideo> sectionArtistVideos, ArrayList<SectionArtistArtist> sectionArtistArtists) {
         this.context = context;
         this.activity = activity;
-        this.sectionHubSongs = sectionHubSongs != null ? sectionHubSongs : new ArrayList<>();
-        this.sectionHubPlaylists = sectionHubPlaylists != null ? sectionHubPlaylists : new ArrayList<>();
-        this.sectionHubVideos = sectionHubVideos != null ? sectionHubVideos : new ArrayList<>();
-        this.sectionHubArtists = sectionHubArtists != null ? sectionHubArtists : new ArrayList<>();
+        this.sectionArtistSongs = sectionArtistSongs != null ? sectionArtistSongs : new ArrayList<>();
+        this.sectionArtistPlaylists = sectionArtistPlaylists != null ? sectionArtistPlaylists : new ArrayList<>();
+        this.sectionArtistVideos = sectionArtistVideos != null ? sectionArtistVideos : new ArrayList<>();
+        this.sectionArtistArtists = sectionArtistArtists != null ? sectionArtistArtists : new ArrayList<>();
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setFilterList(ArrayList<SectionHubSong> sectionHubSongs, ArrayList<SectionHubPlaylist> sectionHubPlaylists, ArrayList<SectionHubVideo> sectionHubVideos, ArrayList<SectionHubArtist> sectionHubArtists) {
-        this.sectionHubSongs = sectionHubSongs != null ? sectionHubSongs : new ArrayList<>();
-        this.sectionHubPlaylists = sectionHubPlaylists != null ? sectionHubPlaylists : new ArrayList<>();
-        this.sectionHubVideos = sectionHubVideos != null ? sectionHubVideos : new ArrayList<>();
-        this.sectionHubArtists = sectionHubArtists != null ? sectionHubArtists : new ArrayList<>();
+    public void setFilterList(ArrayList<SectionArtistSong> sectionArtistSongs, ArrayList<SectionArtistPlaylist> sectionArtistPlaylists, ArrayList<SectionArtistVideo> sectionArtistVideos, ArrayList<SectionArtistArtist> sectionArtistArtists) {
+        this.sectionArtistSongs = sectionArtistSongs != null ? sectionArtistSongs : new ArrayList<>();
+        this.sectionArtistPlaylists = sectionArtistPlaylists != null ? sectionArtistPlaylists : new ArrayList<>();
+        this.sectionArtistVideos = sectionArtistVideos != null ? sectionArtistVideos : new ArrayList<>();
+        this.sectionArtistArtists = sectionArtistArtists != null ? sectionArtistArtists : new ArrayList<>();
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
-        int totalSongs = sectionHubSongs.size();
-        int totalPlaylists = sectionHubPlaylists.size();
-        int totalVideos = sectionHubVideos.size();
-        int totalArtists = sectionHubArtists.size();
+        int totalSongs = sectionArtistSongs.size();
+        int totalPlaylists = sectionArtistPlaylists.size();
+        int totalVideos = sectionArtistVideos.size();
+        int totalArtists = sectionArtistArtists.size();
 
         if (position < totalSongs) {
             return VIEW_TYPE_SONG;
@@ -97,71 +98,72 @@ public class HubVerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        int totalSongs = sectionHubSongs.size();
-        int totalPlaylists = sectionHubPlaylists.size();
-        int totalVideos = sectionHubVideos.size();
+        int totalSongs = sectionArtistSongs.size();
+        int totalPlaylists = sectionArtistPlaylists.size();
+        int totalVideos = sectionArtistVideos.size();
 
         if (holder.getItemViewType() == VIEW_TYPE_SONG) {
             SongViewHolder songViewHolder = (SongViewHolder) holder;
-            SectionHubSong sectionHubSong = sectionHubSongs.get(position);
+            SectionArtistSong sectionArtistSong = sectionArtistSongs.get(position);
 
-            songViewHolder.txt_title_song.setText(sectionHubSong.getTitle());
+            songViewHolder.txt_title_song.setText(sectionArtistSong.getTitle());
 
             GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 4, RecyclerView.HORIZONTAL, false);
             songViewHolder.rv_song_horizontal.setLayoutManager(gridLayoutManager);
-            SongAllAdapter songAllAdapter = new SongAllAdapter(sectionHubSong.getItems(), activity, context);
+            SongAllAdapter songAllAdapter = new SongAllAdapter(sectionArtistSong.getItems(), activity, context);
             songViewHolder.rv_song_horizontal.setAdapter(songAllAdapter);
 
-            songViewHolder.linear_more.setVisibility(sectionHubSong.getLink().isEmpty() || sectionHubSong.equals("") ? View.GONE : View.VISIBLE);
+            songViewHolder.linear_more.setVisibility(sectionArtistSong.getLink().isEmpty() || sectionArtistSong.equals("") ? View.GONE : View.VISIBLE);
 
             songViewHolder.linear_song.setOnClickListener(view -> {
                 // Xử lý sự kiện click
             });
         } else if (holder.getItemViewType() == VIEW_TYPE_PLAYLIST) {
-            int playlistPosition = position - sectionHubSongs.size();
+            int playlistPosition = position - sectionArtistSongs.size();
             PlaylistViewHolder playlistViewHolder = (PlaylistViewHolder) holder;
-            SectionHubPlaylist sectionHubPlaylist = sectionHubPlaylists.get(playlistPosition);
+            SectionArtistPlaylist sectionArtistPlaylist = sectionArtistPlaylists.get(playlistPosition);
 
-            playlistViewHolder.txt_title_playlist.setText(sectionHubPlaylist.getTitle());
+            playlistViewHolder.txt_title_playlist.setText(sectionArtistPlaylist.getTitle());
+            playlistViewHolder.linear_more.setVisibility(sectionArtistPlaylist.getLink().isEmpty() || sectionArtistPlaylist.equals("") ? View.GONE : View.VISIBLE);
 
-            playlistViewHolder.rv_playlist_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            PlaylistAdapter playlistAdapter = new PlaylistAdapter(sectionHubPlaylist.getItems(), activity, context);
-            playlistViewHolder.rv_playlist_horizontal.setAdapter(playlistAdapter);
-
-            playlistViewHolder.linear_more.setVisibility(sectionHubPlaylist.getLink().isEmpty() || sectionHubPlaylist.equals("") ? View.GONE : View.VISIBLE);
-
-            playlistViewHolder.linear_playlist.setOnClickListener(view -> {
-                // Xử lý sự kiện click
-            });
+            if (sectionArtistPlaylist.getSectionId().equals("aSingle") || sectionArtistPlaylist.getSectionId().equals("aAlbum")) {
+                playlistViewHolder.rv_playlist_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+                SingleAdapter singleAdapter = new SingleAdapter(sectionArtistPlaylist.getItems(), activity, context);
+                playlistViewHolder.rv_playlist_horizontal.setAdapter(singleAdapter);
+            } else {
+                playlistViewHolder.rv_playlist_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+                PlaylistAdapter playlistAdapter = new PlaylistAdapter(sectionArtistPlaylist.getItems(), activity, context);
+                playlistViewHolder.rv_playlist_horizontal.setAdapter(playlistAdapter);
+            }
         } else if (holder.getItemViewType() == VIEW_TYPE_VIDEO) {
-            int videoPosition = position - sectionHubSongs.size() - sectionHubPlaylists.size();
+            int videoPosition = position - sectionArtistSongs.size() - sectionArtistPlaylists.size();
             VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
-            SectionHubVideo sectionHubVideo = sectionHubVideos.get(videoPosition);
+            SectionArtistVideo sectionArtistVideo = sectionArtistVideos.get(videoPosition);
 
-            videoViewHolder.txt_title_video.setText(sectionHubVideo.getTitle());
+            videoViewHolder.txt_title_video.setText(sectionArtistVideo.getTitle());
 
             videoViewHolder.rv_video_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            VideoMoreAdapter videoMoreAdapter = new VideoMoreAdapter(sectionHubVideo.getItems(), activity, context);
+            VideoMoreAdapter videoMoreAdapter = new VideoMoreAdapter(sectionArtistVideo.getItems(), activity, context);
             videoViewHolder.rv_video_horizontal.setAdapter(videoMoreAdapter);
 
-            videoViewHolder.linear_more.setVisibility(sectionHubVideo.getLink().isEmpty() || sectionHubVideo.equals("") ? View.GONE : View.VISIBLE);
+            videoViewHolder.linear_more.setVisibility(sectionArtistVideo.getLink().isEmpty() || sectionArtistVideo.equals("") ? View.GONE : View.VISIBLE);
 
 
             videoViewHolder.linear_video.setOnClickListener(view -> {
                 // Xử lý sự kiện click
             });
         } else if (holder.getItemViewType() == VIEW_TYPE_ARTIST) {
-            int artistPosition = position - sectionHubSongs.size() - sectionHubPlaylists.size() - sectionHubVideos.size();
+            int artistPosition = position - sectionArtistSongs.size() - sectionArtistPlaylists.size() - sectionArtistVideos.size();
             ArtistViewHolder artistViewHolder = (ArtistViewHolder) holder;
-            SectionHubArtist sectionHubArtist = sectionHubArtists.get(artistPosition);
+            SectionArtistArtist sectionArtistArtist = sectionArtistArtists.get(artistPosition);
 
-            artistViewHolder.txt_title_artist.setText(sectionHubArtist.getTitle());
+            artistViewHolder.txt_title_artist.setText(sectionArtistArtist.getTitle());
 
             artistViewHolder.rv_artist_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            ArtistsAllAdapter artistsAllAdapter = new ArtistsAllAdapter(sectionHubArtist.getItems(), activity, context);
+            ArtistsAllAdapter artistsAllAdapter = new ArtistsAllAdapter(sectionArtistArtist.getItems(), activity, context);
             artistViewHolder.rv_artist_horizontal.setAdapter(artistsAllAdapter);
 
-            artistViewHolder.linear_more.setVisibility(sectionHubArtist.getLink().isEmpty() || sectionHubArtist.equals("") ? View.GONE : View.VISIBLE);
+            artistViewHolder.linear_more.setVisibility(sectionArtistArtist.getLink().isEmpty() || sectionArtistArtist.equals("") ? View.GONE : View.VISIBLE);
 
             artistViewHolder.linear_artist.setOnClickListener(view -> {
                 // Xử lý sự kiện click
@@ -171,10 +173,10 @@ public class HubVerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        int totalSongs = sectionHubSongs.size();
-        int totalPlaylists = sectionHubPlaylists.size();
-        int totalVideos = sectionHubVideos.size();
-        int totalArtists = sectionHubArtists.size();
+        int totalSongs = sectionArtistSongs.size();
+        int totalPlaylists = sectionArtistPlaylists.size();
+        int totalVideos = sectionArtistVideos.size();
+        int totalArtists = sectionArtistArtists.size();
 
         return (totalSongs > 0 ? totalSongs : 0) +
                 (totalPlaylists > 0 ? totalPlaylists : 0) +

@@ -34,7 +34,7 @@ public class AllAlbumFragment extends Fragment {
     private NestedScrollView nested_scroll;
     private TextView txt_playlist;
     private RecyclerView rv_playlist;
-    private ArrayList<DataAlbum> dataAlbumArrayList = new ArrayList<>();
+    private ArrayList<DataAlbum> dataAlbumArrayList;
     private AlbumMoreAdapter albumMoreAdapter;
 
     @Override
@@ -58,12 +58,14 @@ public class AllAlbumFragment extends Fragment {
         initAdapter();
         getBundle();
     }
+
     private void getBundle() {
         if (getArguments() != null) {
             dataAlbumArrayList = (ArrayList<DataAlbum>) getArguments().getSerializable("data_album_arraylist");
             albumMoreAdapter.setFilterList(dataAlbumArrayList);
         }
     }
+
     private void initViews(View view) {
         relative_header = view.findViewById(R.id.relative_header);
         img_back = view.findViewById(R.id.img_back);
@@ -107,7 +109,7 @@ public class AllAlbumFragment extends Fragment {
     private void initAdapter() {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 2); // 2 columns
         rv_playlist.setLayoutManager(gridLayoutManager);
-        albumMoreAdapter = new AlbumMoreAdapter(dataAlbumArrayList, requireActivity(),requireContext());
+        albumMoreAdapter = new AlbumMoreAdapter(dataAlbumArrayList, requireActivity(), requireContext());
         rv_playlist.setAdapter(albumMoreAdapter);
     }
 }

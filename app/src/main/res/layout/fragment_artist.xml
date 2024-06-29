@@ -11,9 +11,9 @@
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested_scroll"
-        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -34,13 +34,6 @@
                     android:layout_marginTop="-80dp"
                     android:layout_marginRight="-50dp"
                     android:scaleType="fitXY"
-                    android:visibility="gone" />
-
-                <ProgressBar
-                    android:id="@+id/progress_image"
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
-                    android:layout_marginTop="-50dp"
                     android:visibility="visible" />
             </LinearLayout>
 
@@ -174,7 +167,7 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/txtTile"
+                            android:id="@+id/txtTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:ellipsize="marquee"
@@ -207,253 +200,19 @@
 
             </RelativeLayout>
 
-
-            <RelativeLayout
-                android:id="@+id/relative_noibat"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_artist_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/relative_new_song"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="30dp"
-                android:visibility="visible">
-
-                <LinearLayout
-                    android:id="@+id/linear_noibat"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_bold"
-                        android:text="Bài hát nổi bật"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="10dp"
-                        android:rotation="-180"
-                        android:src="@drawable/ic_back" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_noibat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/linear_noibat"
-                    android:layout_marginTop="20dp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/relative_single"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/relative_noibat"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="30dp"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:id="@+id/linear_single"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_bold"
-                        android:text="Single"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="10dp"
-                        android:rotation="-180"
-                        android:src="@drawable/ic_back" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_single"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/linear_single"
-                    android:layout_marginTop="20dp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/relative_album"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/relative_single"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="30dp"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:id="@+id/linear_album"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_bold"
-                        android:text="Album"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_album"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/linear_album"
-                    android:layout_marginTop="20dp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/relative_mv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/relative_album"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="30dp"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:id="@+id/linear_mv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:fontFamily="@font/roboto_bold"
-                        android:text="MV"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_mv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/linear_mv"
-                    android:layout_marginTop="20dp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/relative_playlist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/relative_mv"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="30dp"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:id="@+id/linear_playlist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_bold"
-                        android:text="Playlist"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_playlist"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/linear_playlist"
-                    android:layout_marginTop="20dp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/relative_xuathientrong"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/relative_playlist"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="30dp"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:id="@+id/linear_xuathientrong"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_bold"
-                        android:text="Xuất hiện trong"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_xuathientrong"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/linear_xuathientrong"
-                    android:layout_marginTop="20dp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/relative_other_single"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/relative_xuathientrong"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="30dp"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:id="@+id/linear_other_single"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_bold"
-                        android:text="Nghệ sĩ có thể bạn sẽ thích"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_other_single"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/linear_other_single"
-                    android:layout_marginTop="20dp" />
-
-            </RelativeLayout>
+                android:layout_marginTop="20dp" />
 
             <RelativeLayout
                 android:id="@+id/relative_info_single"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/relative_other_single"
+                android:layout_below="@+id/rv_artist_vertical"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="30dp">
 

@@ -3,7 +3,6 @@ package com.tandev.musichub.adapter.artist;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +23,7 @@ import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.ArrayList;
 
-public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ViewHolder> {
+public class ArtistsAllAdapter extends RecyclerView.Adapter<ArtistsAllAdapter.ViewHolder> {
     private ArrayList<Artists> artistsArrayList;
     private final Context context;
     private final Activity activity;
@@ -35,7 +34,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ViewHold
         notifyDataSetChanged();
     }
 
-    public ArtistsAdapter(ArrayList<Artists> artistsArrayList, Activity activity, Context context) {
+    public ArtistsAllAdapter(ArrayList<Artists> artistsArrayList, Activity activity, Context context) {
         this.artistsArrayList = artistsArrayList;
         this.activity = activity;
         this.context = context;

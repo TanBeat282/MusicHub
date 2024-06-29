@@ -1,18 +1,20 @@
-package com.tandev.musichub.model.artist;
+package com.tandev.musichub.model.artist.playlist;
 
-import com.tandev.musichub.model.chart.chart_home.Items;
+import com.tandev.musichub.model.artist.SectionArtist;
+import com.tandev.musichub.model.playlist.DataPlaylist;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class SectionArtistSong implements Serializable {
+public class SectionArtistPlaylist implements SectionArtist, Serializable {
+    private static final long serialVersionUID = 1L;
     private String sectionType;
     private String viewType;
     private String title;
     private String link;
     private String sectionId;
-    private ArrayList<Items> items;
-    private Items topAlbum;
+    private ArrayList<DataPlaylist> items;
+    private String itemType;
 
     public String getSectionType() {
         return sectionType;
@@ -54,19 +56,19 @@ public class SectionArtistSong implements Serializable {
         this.sectionId = sectionId;
     }
 
-    public ArrayList<Items> getItems() {
+    public ArrayList<DataPlaylist> getItems() {
         return items;
     }
 
-    public void setItems(ArrayList<Items> items) {
+    public void setItems(ArrayList<DataPlaylist> items) {
         this.items = items;
     }
 
-    public Items getTopAlbum() {
-        return topAlbum;
+    public String getItemType() {
+        return itemType;
     }
 
-    public void setTopAlbum(Items topAlbum) {
-        this.topAlbum = topAlbum;
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
     }
 }

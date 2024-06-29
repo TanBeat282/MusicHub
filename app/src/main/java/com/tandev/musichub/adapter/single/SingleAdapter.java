@@ -14,7 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
+import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.makeramen.roundedimageview.RoundedImageView;
 
@@ -55,12 +57,13 @@ public class SingleAdapter extends RecyclerView.Adapter<SingleAdapter.ViewHolder
                 .into(holder.img_avatar);
 
         holder.itemView.setOnClickListener(v -> {
-//            Intent intent = new Intent(context, ViewAlbumActivity.class);
-//            Bundle bundle = new Bundle();
-//            bundle.putSerializable("album_endCodeId", dataPlaylist.getEncodeId());
-//            intent.putExtras(bundle);
-//
-//            context.startActivity(intent);
+            AlbumFragment albumFragment = new AlbumFragment();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("album_endCodeId", dataPlaylist.getEncodeId());
+
+            if (context instanceof MainActivity) {
+                ((MainActivity) context).replaceFragmentWithBundle(albumFragment, bundle);
+            }
         });
     }
 

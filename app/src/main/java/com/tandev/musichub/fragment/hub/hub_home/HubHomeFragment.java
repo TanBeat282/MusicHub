@@ -23,7 +23,6 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -103,6 +102,9 @@ public class HubHomeFragment extends Fragment {
         initViews(view);
         initAdapter();
         conFigViews();
+        onClick();
+
+
         getHubHome();
     }
 
@@ -172,6 +174,14 @@ public class HubHomeFragment extends Fragment {
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
                     Helper.changeStatusBarColor(requireActivity(), R.color.gray);
                 }
+            }
+        });
+    }
+
+    private void onClick() {
+        img_back.setOnClickListener(view -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().popBackStack();
             }
         });
     }

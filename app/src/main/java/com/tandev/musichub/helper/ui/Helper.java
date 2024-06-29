@@ -79,8 +79,9 @@ public class Helper {
         }
     }
 
-    public static String convertLongToTime(long timeInMillis) {
-        Date date = new Date(timeInMillis);
+    public static String convertLongToTime(String timeInMillis) {
+        long time = Long.parseLong(timeInMillis);
+        Date date = new Date(time);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
