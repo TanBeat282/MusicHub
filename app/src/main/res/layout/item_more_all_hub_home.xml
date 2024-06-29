@@ -1,0 +1,36 @@
+<!-- item_song.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linear_more"
+    android:layout_width="@dimen/_140sdp"
+    android:layout_height="@dimen/_80sdp"
+    android:layout_marginEnd="@dimen/_10sdp"
+    android:background="@android:color/transparent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/thumbImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/background_button_play"
+        android:padding="@dimen/_5sdp"
+        android:rotation="-180"
+        android:src="@drawable/ic_arrow_back"
+        app:riv_corner_radius="@dimen/_15sdp" />
+
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:fontFamily="@font/roboto_bold"
+        android:text="Xem tất cả"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_12ssp" />
+
+</LinearLayout>

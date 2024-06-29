@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_info"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_bottomsheet_option_song"
+    android:paddingBottom="@dimen/_10sdp">
+
+    <LinearLayout
+        android:id="@+id/layoutPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginHorizontal="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="Phân loại"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14ssp" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp">
+
+            <RadioButton
+                android:id="@+id/radio_new_release"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:paddingStart="@dimen/_10sdp"
+                android:text="Mới nhất"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12ssp" />
+
+            <RadioButton
+                android:id="@+id/radio_popular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:paddingStart="@dimen/_10sdp"
+                android:text="Nghe nhiều"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12ssp" />
+        </RadioGroup>
+
+    </LinearLayout>
+</RelativeLayout>

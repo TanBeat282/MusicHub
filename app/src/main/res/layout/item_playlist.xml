@@ -1,0 +1,26 @@
+<!-- item_song.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/_10sdp"
+    android:orientation="vertical">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/thumbImageView"
+        android:layout_width="@dimen/_120sdp"
+        android:layout_height="@dimen/_130sdp"
+        app:riv_corner_radius="5dp" />
+
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_2sdp"
+        android:ellipsize="end"
+        android:fontFamily="@font/roboto_bold"
+        android:lines="2"
+        android:maxLines="2"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp" />
+</LinearLayout>

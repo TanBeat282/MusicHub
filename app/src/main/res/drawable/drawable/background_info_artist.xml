@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- ARGB color value: #80FFFFFF
+         A - Alpha (80 in hex = 128 in decimal, which is 50% transparent)
+         R - Red (FF in hex = 255 in decimal, which is full intensity)
+         G - Green (FF in hex = 255 in decimal, which is full intensity)
+         B - Blue (FF in hex = 255 in decimal, which is full intensity) -->
+    <solid android:color="#2AFFFFFF" />
+    <corners android:radius="@dimen/_5sdp" />
+
+</shape>

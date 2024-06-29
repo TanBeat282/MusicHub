@@ -1,0 +1,90 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+android {
+    namespace 'com.tandev.musichub'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.tandev.musichub"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.activity
+    implementation libs.constraintlayout
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
+    //notification
+    implementation(libs.media)
+
+    // ảnh tròn
+    implementation libs.roundedimageview
+
+    //animation
+    implementation libs.lottie
+
+    //anh từ link
+    implementation libs.glide
+    annotationProcessor libs.compiler
+    implementation libs.glide.transformations
+    implementation libs.gpuimage
+
+
+    //api
+    implementation libs.okhttp
+    implementation(libs.okhttp.urlconnection)
+    implementation libs.jsoup
+
+    implementation libs.retrofit
+
+    //cover song
+    implementation libs.gson
+    implementation libs.converter.gson
+
+
+    // If you want to use the GPU Filters
+    implementation libs.gpuimage
+    implementation libs.palette
+
+    //video
+    implementation libs.exoplayer
+    implementation libs.exoplayer.core
+    implementation libs.exoplayer.dash
+    implementation libs.exoplayer.ui
+
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.exoplayer.dash)
+
+    implementation libs.recyclerview
+    implementation libs.recyclerview.selection
+
+    implementation libs.room.runtime
+    annotationProcessor libs.room.compiler
+
+    implementation libs.ssp.android
+    implementation libs.sdp.android
+}
