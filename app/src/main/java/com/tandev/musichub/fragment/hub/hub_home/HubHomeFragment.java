@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +40,7 @@ import com.tandev.musichub.model.hub.hub_home.featured.HubHomeFeaturedItems;
 import com.tandev.musichub.model.hub.hub_home.genre.HubHomeGenre;
 import com.tandev.musichub.model.hub.hub_home.nations.HubHomeNations;
 import com.tandev.musichub.model.hub.hub_home.topic.HubHomeTopic;
+import com.tandev.musichub.view_model.home.HubHomeViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -48,6 +50,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HubHomeFragment extends Fragment {
+    private HubHomeViewModel hubHomeViewModel;
     private RelativeLayout relative_header;
     private ImageView img_back;
     private TextView txt_name_artist;
@@ -86,6 +89,8 @@ public class HubHomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        hubHomeViewModel = new ViewModelProvider(this).get(HubHomeViewModel.class);
     }
 
     @Override
@@ -103,9 +108,21 @@ public class HubHomeFragment extends Fragment {
         initAdapter();
         conFigViews();
         onClick();
+        initViewModel();
+    }
 
+    private void initViewModel() {
+        hubHomeViewModel.getHubHomeMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUI(artistDetail);
+            } else {
+                getHubHome();
+            }
+        });
 
-        getHubHome();
+        if (hubHomeViewModel.getHubHomeMutableLiveData().getValue() == null) {
+            getHubHome();
+        }
     }
 
     private void initViews(View view) {
@@ -203,29 +220,7 @@ public class HubHomeFragment extends Fragment {
                             if (response.isSuccessful()) {
                                 HubHome hubHome = response.body();
                                 if (hubHome != null) {
-                                    requireActivity().runOnUiThread(() -> {
-                                        setUpViewPageBanner(hubHome.getData().getBanners());
-
-                                        txt_title_noi_bat.setText(hubHome.getData().getFeatured().getTitle());
-                                        hubHomeFeaturedItems = hubHome.getData().getFeatured().getItems();
-
-                                        txt_title_nation.setText("Quốc gia");
-                                        hubHomeNations = hubHome.getData().getNations();
-
-                                        txt_title_topic.setText("Hot");
-                                        hubHomeTopics = hubHome.getData().getTopic();
-
-                                        txt_title_genre.setText("Thể loại");
-                                        hubHomeGenres = hubHome.getData().getGenre();
-
-                                        hubHomeAllAdapter.setFilterList(hubHomeFeaturedItems);
-                                        hubHomeNationAdapter.setFilterList(hubHomeNations);
-                                        hubHomeTopicAdapter.setFilterList(hubHomeTopics);
-                                        hubHomeGenreAdapter.setFilterList(hubHomeGenres);
-
-                                        relative_loading.setVisibility(View.GONE);
-                                        nested_scroll.setVisibility(View.VISIBLE);
-                                    });
+                                    hubHomeViewModel.setHubHomeMutableLiveData(hubHome);
                                 }
                             }
                         }
@@ -246,6 +241,31 @@ public class HubHomeFragment extends Fragment {
                 Log.e("TAG", "Service creation error: " + e.getMessage(), e);
             }
         });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void updateUI(HubHome hubHome) {
+        setUpViewPageBanner(hubHome.getData().getBanners());
+
+        txt_title_noi_bat.setText(hubHome.getData().getFeatured().getTitle());
+        hubHomeFeaturedItems = hubHome.getData().getFeatured().getItems();
+
+        txt_title_nation.setText("Quốc gia");
+        hubHomeNations = hubHome.getData().getNations();
+
+        txt_title_topic.setText("Hot");
+        hubHomeTopics = hubHome.getData().getTopic();
+
+        txt_title_genre.setText("Thể loại");
+        hubHomeGenres = hubHome.getData().getGenre();
+
+        hubHomeAllAdapter.setFilterList(hubHomeFeaturedItems);
+        hubHomeNationAdapter.setFilterList(hubHomeNations);
+        hubHomeTopicAdapter.setFilterList(hubHomeTopics);
+        hubHomeGenreAdapter.setFilterList(hubHomeGenres);
+
+        relative_loading.setVisibility(View.GONE);
+        nested_scroll.setVisibility(View.VISIBLE);
     }
 
     private void setUpViewPageBanner(ArrayList<HubHomeBanner> hubHomeBannerArrayList) {

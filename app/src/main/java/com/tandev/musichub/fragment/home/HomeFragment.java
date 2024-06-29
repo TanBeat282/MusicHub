@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -76,7 +77,8 @@ import com.tandev.musichub.model.hub.hub_home.nations.HubHomeNations;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.tandev.musichub.model.user_active_radio.DataUserActiveRadio;
 import com.tandev.musichub.model.user_active_radio.UserActiveRadio;
-import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
+import com.tandev.musichub.view_model.home.HomeViewModel;
+import com.tandev.musichub.view_model.home.HubHomeViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -87,10 +89,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
+    private HomeViewModel homeViewModel;
+    private HubHomeViewModel hubHomeViewModel;
+
     private Handler mHandler;
     private static final int INTERVAL = 15000;
-    private Home home;
-    private SharedPreferencesManager sharedPreferencesManager;
 
     private ImageView img_icon_app;
     private TextView txt_name_app;
@@ -165,6 +168,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        hubHomeViewModel = new ViewModelProvider(this).get(HubHomeViewModel.class);
     }
 
     @Override
@@ -184,17 +189,38 @@ public class HomeFragment extends Fragment {
         initRecyclerView();
         initAdapter();
         onClick();
+        initViewModel();
+    }
 
-        //get data
-        getHome();
-        getHubHome();
+    private void initViewModel() {
+        homeViewModel.getHomeMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUIHome(artistDetail);
+            } else {
+                getHome();
+            }
+        });
+
+        if (hubHomeViewModel.getHubHomeMutableLiveData().getValue() == null) {
+            getHome();
+        }
+        hubHomeViewModel.getHubHomeMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUIHubHome(artistDetail);
+            } else {
+                getHubHome();
+            }
+        });
+
+        if (hubHomeViewModel.getHubHomeMutableLiveData().getValue() == null) {
+            getHubHome();
+        }
     }
 
     private void initData() {
         Helper.changeStatusBarColor(requireActivity(), R.color.black);
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
 
-        sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         new_release_songArrayList = new ArrayList<>();
         bxh_new_release_songArrayList = new ArrayList<>();
         bang_xep_hangArrayList = new ArrayList<>();
@@ -308,12 +334,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void onClick() {
-        img_icon_app.setOnClickListener(view -> {
-            nested_scroll.smoothScrollTo(0, 0);
-        });
-        txt_name_app.setOnClickListener(view -> {
-            nested_scroll.smoothScrollTo(0, 0);
-        });
+        img_icon_app.setOnClickListener(view -> nested_scroll.smoothScrollTo(0, 0));
+        txt_name_app.setOnClickListener(view -> nested_scroll.smoothScrollTo(0, 0));
         img_search.setOnClickListener(view -> {
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).replaceFragment(new SearchFragment());
@@ -343,12 +365,9 @@ public class HomeFragment extends Fragment {
                 ((MainActivity) getActivity()).replaceFragment(new ChartHomeFragment());
             }
         });
-        linear_hub_home.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).replaceFragment(new HubHomeFragment());
-                }
+        linear_hub_home.setOnClickListener(view -> {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).replaceFragment(new HubHomeFragment());
             }
         });
         linear_top100.setOnClickListener(view -> {
@@ -384,20 +403,10 @@ public class HomeFragment extends Fragment {
                                     gsonBuilder.registerTypeAdapter(HomeDataItem.class, new HomeDataItemTypeAdapter());
                                     Gson gson = gsonBuilder.create();
 
-                                    home = gson.fromJson(jsonData, Home.class);
+                                    Home home = gson.fromJson(jsonData, Home.class);
 
                                     if (home != null && home.getData() != null && home.getData().getItems() != null) {
-                                        requireActivity().runOnUiThread(() -> {
-                                            getBanner();
-                                            getNewReleaseSong();
-                                            getNewReleaseSongChart();
-                                            getRTChart();
-                                            getWeekChart();
-                                            getPlaylist();
-                                            getRadioLive();
-                                            relative_loading.setVisibility(View.GONE);
-                                            nested_scroll.setVisibility(View.VISIBLE);
-                                        });
+                                        homeViewModel.setHubHomeMutableLiveData(home);
                                     }
 
                                 } catch (Exception e) {
@@ -436,28 +445,18 @@ public class HomeFragment extends Fragment {
                     retrofit2.Call<HubHome> call = service.HUB_HOME_CALL(map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
                     call.enqueue(new Callback<HubHome>() {
                         @Override
-                        public void onResponse(Call<HubHome> call, Response<HubHome> response) {
+                        public void onResponse(@NonNull Call<HubHome> call, @NonNull Response<HubHome> response) {
                             Log.d(">>>>>>>>>>>>>>>>>>", "getHubHome " + call.request().url());
                             if (response.isSuccessful()) {
                                 HubHome hubHome = response.body();
                                 if (hubHome != null) {
-                                    requireActivity().runOnUiThread(() -> {
-                                        if (hubHome.getData() != null) {
-                                            HubHomeFeatured hubHomeFeatured = hubHome.getData().getFeatured();
-                                            for (int i = 0; i < Math.min(2, hubHomeFeatured.getItems().size()); i++) {
-                                                hubHomeFeaturedItemsArrayList.add(hubHomeFeatured.getItems().get(i));
-                                            }
-                                            hubHomeNationsArrayList.addAll(hubHome.getData().getNations());
-
-                                            hubHomeAdapter.setFilterList(hubHomeFeaturedItemsArrayList, hubHomeNationsArrayList);
-                                        }
-                                    });
+                                    hubHomeViewModel.setHubHomeMutableLiveData(hubHome);
                                 }
                             }
                         }
 
                         @Override
-                        public void onFailure(Call<HubHome> call, Throwable throwable) {
+                        public void onFailure(@NonNull Call<HubHome> call, @NonNull Throwable throwable) {
 
                         }
                     });
@@ -474,9 +473,39 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    private void updateUIHome(Home home) {
+        getBanner(home);
+        getNewReleaseSong(home);
+        getNewReleaseSongChart(home);
+        getRTChart(home);
+        getWeekChart(home);
+        getPlaylist(home);
+        getRadioLive(home);
+        relative_loading.setVisibility(View.GONE);
+        nested_scroll.setVisibility(View.VISIBLE);
+
+    }
+
+    private void updateUIHubHome(HubHome hubHome) {
+        if (hubHome.getData() != null) {
+            HubHomeFeatured hubHomeFeatured = hubHome.getData().getFeatured();
+            if (hubHomeFeatured != null && hubHomeFeatured.getItems() != null) {
+                for (int i = 0; i < Math.min(2, hubHomeFeatured.getItems().size()); i++) {
+                    hubHomeFeaturedItemsArrayList.add(hubHomeFeatured.getItems().get(i));
+                }
+            }
+
+            if (hubHome.getData().getNations() != null) {
+                hubHomeNationsArrayList.addAll(hubHome.getData().getNations());
+            }
+
+            hubHomeAdapter.setFilterList(hubHomeFeaturedItemsArrayList, hubHomeNationsArrayList);
+        }
+    }
+
 
     // banner slider
-    private void getBanner() {
+    private void getBanner(Home home) {
         if (home != null && home.getData() != null && home.getData().getItems() != null) {
             ArrayList<HomeDataItem> items = home.getData().getItems();
             for (HomeDataItem item : items) {
@@ -523,7 +552,7 @@ public class HomeFragment extends Fragment {
     }
 
     // new release song
-    private void getNewReleaseSong() {
+    private void getNewReleaseSong(Home home) {
         if (home != null && home.getData() != null && home.getData().getItems() != null) {
             ArrayList<HomeDataItem> items = home.getData().getItems();
             for (HomeDataItem item : items) {
@@ -539,7 +568,7 @@ public class HomeFragment extends Fragment {
     }
 
     // playlist
-    private void getPlaylist() {
+    private void getPlaylist(Home home) {
         if (home != null && home.getData() != null && home.getData().getItems() != null) {
             ArrayList<HomeDataItem> items = home.getData().getItems();
 
@@ -581,7 +610,7 @@ public class HomeFragment extends Fragment {
 
 
     // bxh new release song
-    private void getNewReleaseSongChart() {
+    private void getNewReleaseSongChart(Home home) {
         if (home != null && home.getData() != null && home.getData().getItems() != null) {
             ArrayList<HomeDataItem> items = home.getData().getItems();
             for (HomeDataItem item : items) {
@@ -598,7 +627,7 @@ public class HomeFragment extends Fragment {
 
 
     // rt chart
-    private void getRTChart() {
+    private void getRTChart(Home home) {
         if (home != null && home.getData() != null && home.getData().getItems() != null) {
             ArrayList<HomeDataItem> items = home.getData().getItems();
             for (HomeDataItem item : items) {
@@ -615,7 +644,7 @@ public class HomeFragment extends Fragment {
 
 
     // week chart
-    private void getWeekChart() {
+    private void getWeekChart(Home home) {
         if (home != null && home.getData() != null && home.getData().getItems() != null) {
             ArrayList<HomeDataItem> items = home.getData().getItems();
             for (HomeDataItem item : items) {
@@ -630,7 +659,7 @@ public class HomeFragment extends Fragment {
     }
 
     // new release song
-    private void getRadioLive() {
+    private void getRadioLive(Home home) {
         if (home != null && home.getData() != null && home.getData().getItems() != null) {
             ArrayList<HomeDataItem> items = home.getData().getItems();
             for (HomeDataItem item : items) {

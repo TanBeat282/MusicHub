@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 //import com.tandev.musichub.activity.ViewPlaylistActivity;
 //import com.tandev.musichub.activity.WeekChartActivity;
+import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.model.chart.home.home_new.banner.HomeDataItemBannerItem;
 import com.tandev.musichub.model.chart.home.home_new.week_chart.HomeDataItemWeekChartItem;
@@ -61,13 +63,21 @@ public class BannerSlideAdapter extends RecyclerView.Adapter<BannerSlideAdapter.
                 .load(homeDataItemBannerItem.getBanner())
                 .into(holder.roundedImageView);
 
-        if (position == homeDataItemBannerItems.size() -2){
+        if (position == homeDataItemBannerItems.size() - 2) {
             viewPager2.post(runnable);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        holder.itemView.setOnClickListener(view -> {
+            if (homeDataItemBannerItem.getType() == 1) {
+//                    AlbumFragment albumFragment = new AlbumFragment();
+//                    Bundle bundle = new Bundle();
+//                    bundle.putSerializable("album_endCodeId", homeDataItemBannerItem.getEncodeId());
+//
+//                    if (context instanceof MainActivity) {
+//                        ((MainActivity) context).replaceFragmentWithBundle(albumFragment, bundle);
+//                    }
+                Toast.makeText(context, "Đang phát triển...", Toast.LENGTH_SHORT).show();
+            } else {
                 PlaylistFragment playlistFragment = new PlaylistFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("encodeId", homeDataItemBannerItem.getEncodeId());

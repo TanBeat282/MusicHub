@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -33,38 +32,19 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.artist.ArtistAdapter;
-import com.tandev.musichub.adapter.artist.ArtistsAllAdapter;
-import com.tandev.musichub.adapter.playlist.PlaylistAdapter;
-import com.tandev.musichub.adapter.single.SingleAdapter;
-import com.tandev.musichub.adapter.song.SongMoreAdapter;
 import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.api.type_adapter_Factory.artist.ArtistTypeAdapter;
-import com.tandev.musichub.api.type_adapter_Factory.home.HubSectionTypeAdapter;
-import com.tandev.musichub.constants.Constants;
-import com.tandev.musichub.fragment.song.SongFragment;
+import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.helper.ui.Helper;
-import com.tandev.musichub.helper.uliti.log.LogUtil;
 import com.tandev.musichub.model.artist.ArtistDetail;
 import com.tandev.musichub.model.artist.SectionArtist;
 import com.tandev.musichub.model.artist.artist.SectionArtistArtist;
 import com.tandev.musichub.model.artist.playlist.SectionArtistPlaylist;
 import com.tandev.musichub.model.artist.song.SectionArtistSong;
 import com.tandev.musichub.model.artist.video.SectionArtistVideo;
-import com.tandev.musichub.model.chart.chart_home.Artists;
-import com.tandev.musichub.model.chart.chart_home.Items;
-import com.tandev.musichub.model.hub.Hub;
-import com.tandev.musichub.model.hub.HubSection;
-import com.tandev.musichub.model.hub.SectionHubArtist;
-import com.tandev.musichub.model.hub.SectionHubPlaylist;
-import com.tandev.musichub.model.hub.SectionHubSong;
-import com.tandev.musichub.model.hub.SectionHubVideo;
-import com.tandev.musichub.model.playlist.DataPlaylist;
-import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.tandev.musichub.view_model.artist.ArtistViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -75,12 +55,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ArtistFragment extends Fragment {
+    private ArtistViewModel artistViewModel;
 
     private ArtistAdapter artistAdapter;
-    private final ArrayList<SectionArtistSong> sectionArtistSongs = new ArrayList<>();
-    private final ArrayList<SectionArtistPlaylist> sectionArtistPlaylists = new ArrayList<>();
-    private final ArrayList<SectionArtistVideo> sectionArtistVideos = new ArrayList<>();
-    private final ArrayList<SectionArtistArtist> sectionArtistArtists = new ArrayList<>();
+    private ArrayList<SectionArtistSong> sectionArtistSongs;
+    private ArrayList<SectionArtistPlaylist> sectionArtistPlaylists;
+    private ArrayList<SectionArtistVideo> sectionArtistVideos;
+    private ArrayList<SectionArtistArtist> sectionArtistArtists;
 
     private RelativeLayout relative_header;
     private RelativeLayout relative_loading;
@@ -88,9 +69,7 @@ public class ArtistFragment extends Fragment {
     private TextView txt_name_artist;
     private TextView txt_view;
     private ImageView img_back;
-    private ImageView img_more;
     private ImageView img_artist;
-    private ProgressBar progress_image;
     private TextView txt_artist;
     private TextView txt_follow;
 
@@ -112,6 +91,7 @@ public class ArtistFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
     }
 
     @Override
@@ -124,14 +104,38 @@ public class ArtistFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        requireActivity().getWindow().setStatusBarColor(Color.TRANSPARENT);
 
-        Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
+        initViews(view);
+        conFigViews();
+        initAdapter();
+        onClick();
+        initViewModel();
+    }
 
+    private void initViewModel() {
+        artistViewModel.getArtistDetail().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUI(artistDetail);
+            } else {
+                getDataBundle();
+            }
+        });
 
+        if (artistViewModel.getArtistDetail().getValue() == null) {
+            getDataBundle();
+        }
+    }
+
+    private void getDataBundle() {
+        if (getArguments() != null) {
+            String alias = getArguments().getString("alias");
+            getArtist(alias);
+        }
+    }
+
+    private void initViews(View view) {
         img_back = view.findViewById(R.id.img_back);
-        img_more = view.findViewById(R.id.img_more);
+        ImageView img_more = view.findViewById(R.id.img_more);
 
         relative_header = view.findViewById(R.id.relative_header);
         relative_loading = view.findViewById(R.id.relative_loading);
@@ -140,7 +144,7 @@ public class ArtistFragment extends Fragment {
         txt_view = view.findViewById(R.id.txt_view);
 
         img_artist = view.findViewById(R.id.img_artist);
-        progress_image = view.findViewById(R.id.progress_image);
+        ProgressBar progress_image = view.findViewById(R.id.progress_image);
         txt_artist = view.findViewById(R.id.txt_artist);
         txt_follow = view.findViewById(R.id.txt_follow);
 
@@ -157,22 +161,18 @@ public class ArtistFragment extends Fragment {
         txt_date_birth = view.findViewById(R.id.txt_date_birth);
         txt_country = view.findViewById(R.id.txt_country);
         txt_genre = view.findViewById(R.id.txt_genre);
+    }
 
-        rv_artist_vertical.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
-        artistAdapter = new ArtistAdapter(requireContext(), requireActivity(), sectionArtistSongs, sectionArtistPlaylists, sectionArtistVideos, sectionArtistArtists);
-        rv_artist_vertical.setAdapter(artistAdapter);
+    private void conFigViews() {
+        requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        requireActivity().getWindow().setStatusBarColor(Color.TRANSPARENT);
+        Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
 
-
-        img_back.setOnClickListener(view1 -> {
-            if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
 
         nested_scroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @SuppressLint("ObsoleteSdkInt")
             @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 // Kiểm tra nếu người dùng đã cuộn đến đầu trang
                 if (scrollY <= 600) {
                     // Ẩn TextView khi người dùng cuộn trở lại đầu trang
@@ -195,38 +195,49 @@ public class ArtistFragment extends Fragment {
                 }
             }
         });
-
-
-        relative_new_song.setOnClickListener(view1 -> {
-//            Intent intent = new Intent(ViewArtistActivity.this, ViewAlbumActivity.class);
-//            Bundle bundle = new Bundle();
-//            bundle.putSerializable("album_endCodeId", dataPlaylistNewSong.getEncodeId());
-//            intent.putExtras(bundle);
-//
-//            startActivity(intent);
-        });
-//        linear_noibat.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                SongFragment songFragment = new SongFragment();
-//                Bundle bundle = new Bundle();
-//                bundle.putString("id", id);
-//                bundle.putString("sectionId", sectionArtistSong.getSectionId());
-//
-//                if (requireContext() instanceof MainActivity) {
-//                    ((MainActivity) requireContext()).replaceFragmentWithBundle(songFragment, bundle);
-//                }
-//            }
-//        });
-
-        getDataBundle();
     }
 
-    private void getDataBundle() {
-        if (getArguments() != null) {
-            String alias = getArguments().getString("alias");
-            getArtist(alias);
-        }
+    private void initAdapter() {
+        sectionArtistSongs = new ArrayList<>();
+        sectionArtistPlaylists = new ArrayList<>();
+        sectionArtistVideos = new ArrayList<>();
+        sectionArtistArtists = new ArrayList<>();
+
+        rv_artist_vertical.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        artistAdapter = new ArtistAdapter(requireContext(), requireActivity(), sectionArtistSongs, sectionArtistPlaylists, sectionArtistVideos, sectionArtistArtists);
+        rv_artist_vertical.setAdapter(artistAdapter);
+    }
+
+    private void onClick() {
+        img_back.setOnClickListener(view1 -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+
+        relative_new_song.setOnClickListener(view1 -> {
+            SectionArtistSong sectionArtistSong = null;
+
+            for (SectionArtist item : artistViewModel.getArtistDetail().getValue().getData().getSections()) {
+                if (item instanceof SectionArtistSong) {
+                    sectionArtistSong = (SectionArtistSong) item;
+                    break;
+                }
+            }
+
+            if (sectionArtistSong != null && sectionArtistSong.getTopAlbum() != null) {
+                AlbumFragment albumFragment = new AlbumFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("album_endCodeId", sectionArtistSong.getTopAlbum().getEncodeId());
+
+                if (requireContext() instanceof MainActivity) {
+                    ((MainActivity) requireContext()).replaceFragmentWithBundle(albumFragment, bundle);
+                }
+            } else {
+                Log.e("TAG", "SectionArtistSong or TopAlbum is null");
+            }
+        });
+
     }
 
     private void getArtist(String artistId) {
@@ -241,7 +252,7 @@ public class ArtistFragment extends Fragment {
                     call.enqueue(new Callback<ResponseBody>() {
                         @SuppressLint("SetTextI18n")
                         @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                             Log.d(">>>>>>>>>>>>>>>>>>", "getArtist " + call.request().url());
                             if (response.isSuccessful() && response.body() != null) {
                                 try {
@@ -252,65 +263,8 @@ public class ArtistFragment extends Fragment {
 
                                     ArtistDetail artistDetail = gson.fromJson(jsonData, ArtistDetail.class);
 
-                                    if (artistDetail != null && artistDetail.getData() != null) {
-                                        SectionArtistSong sectionArtistSong = null;
-                                        ArrayList<SectionArtist> items = artistDetail.getData().getSections();
-                                        for (SectionArtist item : items) {
-                                            if (item instanceof SectionArtistPlaylist) {
-                                                SectionArtistPlaylist sectionArtistPlaylist = (SectionArtistPlaylist) item;
-                                                sectionArtistPlaylists.add(sectionArtistPlaylist);
-                                            } else if (item instanceof SectionArtistVideo) {
-                                                SectionArtistVideo sectionArtistVideo = (SectionArtistVideo) item;
-                                                sectionArtistVideos.add(sectionArtistVideo);
-                                            } else if (item instanceof SectionArtistArtist) {
-                                                SectionArtistArtist sectionArtistArtist = (SectionArtistArtist) item;
-                                                sectionArtistArtists.add(sectionArtistArtist);
-                                            } else {
-                                                sectionArtistSong = (SectionArtistSong) item;
-                                                sectionArtistSongs.add(sectionArtistSong);
-                                            }
-                                        }
-
-
-                                        RequestOptions requestOptions = new RequestOptions()
-                                                .placeholder(R.color.gray)
-                                                .error(R.color.red);
-                                        Glide.with(requireContext())
-                                                .load(artistDetail.getData().getThumbnailM())
-                                                .apply(requestOptions)
-                                                .into(img_artist);
-                                        txt_artist.setText(artistDetail.getData().getName());
-                                        txt_follow.setText(Helper.convertToIntString(artistDetail.getData().getTotalFollow()) + " quan tâm");
-
-
-                                        if (sectionArtistSong.getTopAlbum() != null) {
-                                            Glide.with(requireContext())
-                                                    .load(sectionArtistSong.getTopAlbum().getThumbnail())
-                                                    .into(img_song);
-                                            txtTitle.setText(sectionArtistSong.getTopAlbum().getTitle());
-                                            txtArtist.setText(sectionArtistSong.getTopAlbum().getArtistsNames());
-
-                                            relative_new_song.setVisibility(View.VISIBLE);
-                                        } else {
-                                            relative_new_song.setVisibility(View.GONE);
-                                        }
-
-                                        artistAdapter.setFilterList(sectionArtistSongs, sectionArtistPlaylists, sectionArtistVideos, sectionArtistArtists);
-
-
-                                        CharSequence styledText = Html.fromHtml(artistDetail.getData().getBiography());
-                                        txt_info.setText(styledText);
-                                        txt_name_real.setText(artistDetail.getData().getRealname());
-                                        txt_date_birth.setText(artistDetail.getData().getBirthday());
-                                        txt_country.setText(artistDetail.getData().getNational());
-                                        txt_genre.setText(artistDetail.getData().getNational());
-                                        name= artistDetail.getData().getName();
-
-
-                                        nested_scroll.setVisibility(View.VISIBLE);
-                                        relative_loading.setVisibility(View.GONE);
-                                    } else {
-                                        Log.d("TAG", "No data found in JSON");
+                                    if (artistDetail != null) {
+                                        artistViewModel.setArtistDetail(artistDetail);
                                     }
 
                                 } catch (Exception e) {
@@ -320,7 +274,7 @@ public class ArtistFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable throwable) {
                             Log.e("TAG", "API call failed: " + throwable.getMessage(), throwable);
                         }
                     });
@@ -336,5 +290,63 @@ public class ArtistFragment extends Fragment {
             }
         });
     }
+
+    @SuppressLint("SetTextI18n")
+    private void updateUI(ArtistDetail artistDetail) {
+        if (artistDetail != null && artistDetail.getData() != null) {
+            SectionArtistSong sectionArtistSong = null;
+            ArrayList<SectionArtist> items = artistDetail.getData().getSections();
+            for (SectionArtist item : items) {
+                if (item instanceof SectionArtistPlaylist) {
+                    SectionArtistPlaylist sectionArtistPlaylist = (SectionArtistPlaylist) item;
+                    sectionArtistPlaylists.add(sectionArtistPlaylist);
+                } else if (item instanceof SectionArtistVideo) {
+                    SectionArtistVideo sectionArtistVideo = (SectionArtistVideo) item;
+                    sectionArtistVideos.add(sectionArtistVideo);
+                } else if (item instanceof SectionArtistArtist) {
+                    SectionArtistArtist sectionArtistArtist = (SectionArtistArtist) item;
+                    sectionArtistArtists.add(sectionArtistArtist);
+                } else {
+                    sectionArtistSong = (SectionArtistSong) item;
+                    sectionArtistSongs.add(sectionArtistSong);
+                }
+            }
+
+            RequestOptions requestOptions = new RequestOptions()
+                    .placeholder(R.color.gray)
+                    .error(R.color.red);
+            Glide.with(requireContext())
+                    .load(artistDetail.getData().getThumbnailM())
+                    .apply(requestOptions)
+                    .into(img_artist);
+            txt_artist.setText(artistDetail.getData().getName());
+            txt_follow.setText(Helper.convertToIntString(artistDetail.getData().getTotalFollow()) + " quan tâm");
+
+            if (sectionArtistSong != null && sectionArtistSong.getTopAlbum() != null) {
+                Glide.with(requireContext())
+                        .load(sectionArtistSong.getTopAlbum().getThumbnail())
+                        .into(img_song);
+                txtTitle.setText(sectionArtistSong.getTopAlbum().getTitle());
+                txtArtist.setText(sectionArtistSong.getTopAlbum().getArtistsNames());
+                relative_new_song.setVisibility(View.VISIBLE);
+            } else {
+                relative_new_song.setVisibility(View.GONE);
+            }
+
+            artistAdapter.setFilterList(sectionArtistSongs, sectionArtistPlaylists, sectionArtistVideos, sectionArtistArtists);
+
+            CharSequence styledText = Html.fromHtml(artistDetail.getData().getBiography());
+            txt_info.setText(styledText);
+            txt_name_real.setText(artistDetail.getData().getRealname());
+            txt_date_birth.setText(artistDetail.getData().getBirthday());
+            txt_country.setText(artistDetail.getData().getNational());
+            txt_genre.setText(artistDetail.getData().getNational());
+            name = artistDetail.getData().getName();
+
+            nested_scroll.setVisibility(View.VISIBLE);
+            relative_loading.setVisibility(View.GONE);
+        }
+    }
+
 
 }

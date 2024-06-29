@@ -87,20 +87,20 @@ public class HubHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 });
             } else {
                 int adjustedPosition = position - hubHomeFeaturedItemsArrayList.size();
-                HubHomeNations item = hubHomeNationsArrayList.get(adjustedPosition);
-                Glide.with(context).load(item.getThumbnailHasText()).into(playlistViewHolder.thumbImageView);
-                playlistViewHolder.itemView.setOnClickListener(view -> {
-                    HubFragment hubFragment = new HubFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("encodeId", item.getEncodeId());
+                if (adjustedPosition < hubHomeNationsArrayList.size()) {
+                    HubHomeNations item = hubHomeNationsArrayList.get(adjustedPosition);
+                    Glide.with(context).load(item.getThumbnailHasText()).into(playlistViewHolder.thumbImageView);
+                    playlistViewHolder.itemView.setOnClickListener(view -> {
+                        HubFragment hubFragment = new HubFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("encodeId", item.getEncodeId());
 
-
-                    if (context instanceof MainActivity) {
-                        ((MainActivity) context).replaceFragmentWithBundle(hubFragment, bundle);
-                    }
-                });
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).replaceFragmentWithBundle(hubFragment, bundle);
+                        }
+                    });
+                }
             }
-
         } else {
             MoreViewHolder moreViewHolder = (MoreViewHolder) holder;
             moreViewHolder.linear_more.setOnClickListener(v -> {
@@ -109,6 +109,7 @@ public class HubHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             });
         }
+
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.tandev.musichub.adapter.artist;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.playlist.PlaylistAdapter;
 import com.tandev.musichub.adapter.single.SingleAdapter;
 import com.tandev.musichub.adapter.song.SongAllAdapter;
 import com.tandev.musichub.adapter.video.VideoMoreAdapter;
+import com.tandev.musichub.fragment.song.SongFragment;
 import com.tandev.musichub.model.artist.artist.SectionArtistArtist;
 import com.tandev.musichub.model.artist.playlist.SectionArtistPlaylist;
 import com.tandev.musichub.model.artist.song.SectionArtistSong;
@@ -116,7 +119,14 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             songViewHolder.linear_more.setVisibility(sectionArtistSong.getLink().isEmpty() || sectionArtistSong.equals("") ? View.GONE : View.VISIBLE);
 
             songViewHolder.linear_song.setOnClickListener(view -> {
-                // Xử lý sự kiện click
+                SongFragment songFragment = new SongFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("id", sectionArtistSong.getOptions().getArtistId());
+                bundle.putString("sectionId", sectionArtistSong.getSectionId());
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(songFragment, bundle);
+                }
             });
         } else if (holder.getItemViewType() == VIEW_TYPE_PLAYLIST) {
             int playlistPosition = position - sectionArtistSongs.size();

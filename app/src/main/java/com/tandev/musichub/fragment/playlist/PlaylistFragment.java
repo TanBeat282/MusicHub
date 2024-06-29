@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,6 +42,7 @@ import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.tandev.musichub.model.playlist.Playlist;
 import com.tandev.musichub.model.sectionBottom.SectionBottom;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
+import com.tandev.musichub.view_model.playlist.PlaylistViewModel;
 
 import org.json.JSONObject;
 
@@ -53,6 +55,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PlaylistFragment extends Fragment {
+    private PlaylistViewModel playlistViewModel;
+
     private ImageView imageBackground;
     private RoundedImageView img_playlist;
     private ProgressBar progress_image;
@@ -63,10 +67,8 @@ public class PlaylistFragment extends Fragment {
     private TextView txt_name_artist;
     private TextView txt_view;
     private TextView txt_content_playlist;
-    private Playlist playlist;
-    private ArrayList<Items> itemsArrayList = new ArrayList<>();
+    private ArrayList<Items> itemsArrayList;
     private SongAllAdapter songAllAdapter;
-    private SharedPreferencesManager sharedPreferencesManager;
     private NestedScrollView nested_scroll;
     private RelativeLayout relative_loading;
     private ImageView img_back;
@@ -80,11 +82,13 @@ public class PlaylistFragment extends Fragment {
     private RecyclerView rv_single, rv_playlist_like;
     private PlaylistMoreAdapter playlistMoreAdapter;
     private ArtistsMoreAdapter artistsMoreAdapter;
-    private ArrayList<DataPlaylist> dataPlaylistArrayList = new ArrayList<>();
-    private ArrayList<Artists> artistsArrayList = new ArrayList<>();
+    private ArrayList<DataPlaylist> dataPlaylistArrayList;
+    private ArrayList<Artists> artistsArrayList;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        playlistViewModel = new ViewModelProvider(this).get(PlaylistViewModel.class);
     }
 
     @Override
@@ -97,17 +101,29 @@ public class PlaylistFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        requireActivity().getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
-        Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
-        sharedPreferencesManager = new SharedPreferencesManager(requireContext());
 
         initViews(view);
         initConFigViews();
         initAdapter();
         onClick();
-        getDataBundle();
+        initViewModel();
+
     }
+
+    private void initViewModel() {
+        playlistViewModel.getPlaylistMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUI(artistDetail);
+            } else {
+                getDataBundle();
+            }
+        });
+
+        if (playlistViewModel.getPlaylistMutableLiveData().getValue() == null) {
+            getDataBundle();
+        }
+    }
+
     private void getDataBundle() {
         if (getArguments() != null) {
             String endCodeId = getArguments().getString("encodeId");
@@ -151,6 +167,10 @@ public class PlaylistFragment extends Fragment {
     }
 
     private void initConFigViews() {
+        requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        requireActivity().getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
+        Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
+
         nested_scroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @SuppressLint("ObsoleteSdkInt")
             @Override
@@ -171,7 +191,7 @@ public class PlaylistFragment extends Fragment {
                     // Hiển thị TextView khi người dùng cuộn xuống khỏi đầu trang
                     txt_name_artist.setVisibility(View.VISIBLE);
                     txt_view.setVisibility(View.GONE);
-                    txt_name_artist.setText(playlist.getData().getTitle());
+                    txt_name_artist.setText(playlistViewModel.getPlaylistMutableLiveData().getValue().getData().getTitle());
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
                     Helper.changeStatusBarColor(requireActivity(), R.color.gray);
                 }
@@ -224,20 +244,11 @@ public class PlaylistFragment extends Fragment {
                         @Override
                         public void onResponse(@NonNull Call<Playlist> call, @NonNull Response<Playlist> response) {
                             String requestUrl = call.request().url().toString();
-                            Log.d(">>>>>>>>>>>>>>>>>>>", " - " + requestUrl);
+                            Log.d(">>>>>>>>>>>>>>>>>>>", "getPlaylist " + requestUrl);
                             if (response.isSuccessful()) {
-                                playlist = response.body();
+                                Playlist playlist = response.body();
                                 if (playlist != null && playlist.getErr() == 0) {
-                                    ArrayList<Items> arrayList = playlist.getData().getSong().getItems();
-                                    if (!arrayList.isEmpty()) {
-                                        requireActivity().runOnUiThread(() -> {
-                                            itemsArrayList = arrayList;
-                                            songAllAdapter.setFilterList(arrayList);
-                                            viewData(playlist);
-                                        });
-                                    } else {
-                                        Log.d("TAG", "Items list is empty");
-                                    }
+                                    playlistViewModel.setPlaylistMutableLiveData(playlist);
                                 } else {
                                     Log.d("TAG", "Error: ");
                                 }
@@ -263,7 +274,15 @@ public class PlaylistFragment extends Fragment {
         });
     }
 
-    private void viewData(Playlist playlist) {
+    private void updateUI(Playlist playlist) {
+        ArrayList<Items> arrayList = playlist.getData().getSong().getItems();
+        if (!arrayList.isEmpty()) {
+            requireActivity().runOnUiThread(() -> {
+                itemsArrayList = arrayList;
+                songAllAdapter.setFilterList(arrayList);
+            });
+        }
+
         img_playlist.setVisibility(View.VISIBLE);
         progress_image.setVisibility(View.GONE);
 

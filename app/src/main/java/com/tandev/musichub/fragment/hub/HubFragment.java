@@ -1,7 +1,6 @@
 package com.tandev.musichub.fragment.hub;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,13 +32,13 @@ import com.tandev.musichub.api.categories.HubCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.api.type_adapter_Factory.home.HubSectionTypeAdapter;
 import com.tandev.musichub.helper.ui.Helper;
-import com.tandev.musichub.helper.ui.StatusBarUtil;
 import com.tandev.musichub.model.hub.Hub;
 import com.tandev.musichub.model.hub.HubSection;
 import com.tandev.musichub.model.hub.SectionHubArtist;
 import com.tandev.musichub.model.hub.SectionHubPlaylist;
 import com.tandev.musichub.model.hub.SectionHubSong;
 import com.tandev.musichub.model.hub.SectionHubVideo;
+import com.tandev.musichub.view_model.hub.HubViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -49,7 +49,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HubFragment extends Fragment {
-    private Hub hub;
+    private HubViewModel hubViewModel;
     private RelativeLayout relative_header;
     private ImageView img_back;
     private TextView txt_name_playlist, txt_view;
@@ -58,15 +58,16 @@ public class HubFragment extends Fragment {
     private ImageView img_playlist;
     private ProgressBar progress_image;
 
-    private  ArrayList<SectionHubSong> sectionHubSongArrayList;
-    private  ArrayList<SectionHubPlaylist> sectionHubPlaylists ;
-    private  ArrayList<SectionHubVideo> sectionHubVideoArrayList ;
-    private  ArrayList<SectionHubArtist> sectionHubArtistArrayList;
+    private ArrayList<SectionHubSong> sectionHubSongArrayList;
+    private ArrayList<SectionHubPlaylist> sectionHubPlaylists;
+    private ArrayList<SectionHubVideo> sectionHubVideoArrayList;
+    private ArrayList<SectionHubArtist> sectionHubArtistArrayList;
     private HubVerticalAdapter hubVerticalAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hubViewModel = new ViewModelProvider(this).get(HubViewModel.class);
     }
 
     @Override
@@ -79,15 +80,25 @@ public class HubFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Helper.changeStatusBarTransparent(requireActivity());
-
         initViews(view);
         initAdapter();
         conFigViews();
         onClick();
-        getDataBundle();
+        initViewModel();
+    }
 
+    private void initViewModel() {
+        hubViewModel.getHubMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUI(artistDetail);
+            } else {
+                getDataBundle();
+            }
+        });
 
+        if (hubViewModel.getHubMutableLiveData().getValue() == null) {
+            getDataBundle();
+        }
     }
 
     private void getDataBundle() {
@@ -123,10 +134,13 @@ public class HubFragment extends Fragment {
     }
 
     private void conFigViews() {
+        Helper.changeStatusBarTransparent(requireActivity());
+
+
         nested_scroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @SuppressLint("ObsoleteSdkInt")
             @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 // Kiểm tra nếu người dùng đã cuộn đến đầu trang
                 if (scrollY <= 600) {
                     // Ẩn TextView khi người dùng cuộn trở lại đầu trang
@@ -140,7 +154,7 @@ public class HubFragment extends Fragment {
                     // Hiển thị TextView khi người dùng cuộn xuống khỏi đầu trang
                     txt_name_playlist.setVisibility(View.VISIBLE);
                     txt_view.setVisibility(View.GONE);
-                    txt_name_playlist.setText(hub.getData().getTitle());
+                    txt_name_playlist.setText(hubViewModel.getHubMutableLiveData().getValue().getData().getTitle());
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
                     Helper.changeStatusBarColor(requireActivity(), R.color.gray);
                 }
@@ -167,7 +181,7 @@ public class HubFragment extends Fragment {
                     retrofit2.Call<ResponseBody> call = service.HUB_DETAIL_CALL(map.get("id"), map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
                     call.enqueue(new Callback<ResponseBody>() {
                         @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                             Log.d(">>>>>>>>>>>>>>>>>>", "getHub " + call.request().url());
                             if (response.isSuccessful() && response.body() != null) {
                                 try {
@@ -176,37 +190,10 @@ public class HubFragment extends Fragment {
                                     gsonBuilder.registerTypeAdapter(HubSection.class, new HubSectionTypeAdapter());
                                     Gson gson = gsonBuilder.create();
 
-                                    hub = gson.fromJson(jsonData, Hub.class);
+                                    Hub hub = gson.fromJson(jsonData, Hub.class);
 
                                     if (hub != null && hub.getData() != null) {
-                                        ArrayList<HubSection> items = hub.getData().getSections();
-                                        for (HubSection item : items) {
-                                            if (item instanceof SectionHubPlaylist) {
-                                                SectionHubPlaylist sectionHubSong = (SectionHubPlaylist) item;
-                                                sectionHubPlaylists.add(sectionHubSong);
-                                            } else if (item instanceof SectionHubVideo) {
-                                                SectionHubVideo sectionHubVideo = (SectionHubVideo) item;
-                                                sectionHubVideoArrayList.add(sectionHubVideo);
-                                            } else if (item instanceof SectionHubArtist) {
-                                                SectionHubArtist sectionHubArtist = (SectionHubArtist) item;
-                                                sectionHubArtistArrayList.add(sectionHubArtist);
-                                            } else {
-                                                SectionHubSong sectionHubSong = (SectionHubSong) item;
-                                                sectionHubSongArrayList.add(sectionHubSong);
-                                            }
-                                        }
-                                        RequestOptions requestOptions = new RequestOptions()
-                                                .placeholder(R.color.gray)  // Placeholder khi đang tải ảnh
-                                                .error(R.color.red);  // Ảnh lỗi nếu không thể tải ảnh
-
-                                        Glide.with(requireContext())
-                                                .load(hub.getData().getThumbnailHasText())  // Tải ảnh chính từ liên kết
-                                                .apply(requestOptions)  // Áp dụng RequestOptions
-                                                .into(img_playlist);  // Hiển thị ảnh chính lên ImageView
-// Hiển thị ảnh chính lên ImageView
-                                        progress_image.setVisibility(View.GONE);
-                                        img_playlist.setVisibility(View.VISIBLE);
-                                        hubVerticalAdapter.setFilterList(sectionHubSongArrayList, sectionHubPlaylists, sectionHubVideoArrayList, sectionHubArtistArrayList);
+                                        hubViewModel.setHubMutableLiveData(hub);
                                     } else {
                                         Log.d("TAG", "No data found in JSON");
                                     }
@@ -220,7 +207,7 @@ public class HubFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable throwable) {
                             Log.d(">>>>>>>>>>>>>>>>>>", "getHub1111 " + call.request().url());
                         }
                     });
@@ -235,5 +222,36 @@ public class HubFragment extends Fragment {
                 Log.e("TAG", "Service creation error: " + e.getMessage(), e);
             }
         });
+    }
+
+    private void updateUI(Hub hub) {
+        ArrayList<HubSection> items = hub.getData().getSections();
+        for (HubSection item : items) {
+            if (item instanceof SectionHubPlaylist) {
+                SectionHubPlaylist sectionHubSong = (SectionHubPlaylist) item;
+                sectionHubPlaylists.add(sectionHubSong);
+            } else if (item instanceof SectionHubVideo) {
+                SectionHubVideo sectionHubVideo = (SectionHubVideo) item;
+                sectionHubVideoArrayList.add(sectionHubVideo);
+            } else if (item instanceof SectionHubArtist) {
+                SectionHubArtist sectionHubArtist = (SectionHubArtist) item;
+                sectionHubArtistArrayList.add(sectionHubArtist);
+            } else {
+                SectionHubSong sectionHubSong = (SectionHubSong) item;
+                sectionHubSongArrayList.add(sectionHubSong);
+            }
+        }
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.color.gray)  // Placeholder khi đang tải ảnh
+                .error(R.color.red);  // Ảnh lỗi nếu không thể tải ảnh
+
+        Glide.with(requireContext())
+                .load(hub.getData().getThumbnailHasText())  // Tải ảnh chính từ liên kết
+                .apply(requestOptions)  // Áp dụng RequestOptions
+                .into(img_playlist);  // Hiển thị ảnh chính lên ImageView
+// Hiển thị ảnh chính lên ImageView
+        progress_image.setVisibility(View.GONE);
+        img_playlist.setVisibility(View.VISIBLE);
+        hubVerticalAdapter.setFilterList(sectionHubSongArrayList, sectionHubPlaylists, sectionHubVideoArrayList, sectionHubArtistArrayList);
     }
 }

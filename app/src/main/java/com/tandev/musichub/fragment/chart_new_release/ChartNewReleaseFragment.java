@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,11 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.bxh_song.BXHSongAdapter;
 import com.tandev.musichub.api.ApiService;
@@ -30,7 +29,7 @@ import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.chart.new_release.NewRelease;
-import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
+import com.tandev.musichub.view_model.chart_new_release.ChartNewReleaseViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -40,6 +39,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ChartNewReleaseFragment extends Fragment {
+    private ChartNewReleaseViewModel chartNewReleaseViewModel;
+
     private RelativeLayout relative_header;
     private RelativeLayout relative_loading;
     private ImageView img_back;
@@ -50,13 +51,12 @@ public class ChartNewReleaseFragment extends Fragment {
     private TextView txt_new_release;
     private RecyclerView rv_new_release_song;
     private BXHSongAdapter newReleaseChartAdapter;
-    private  ArrayList<Items> itemsArrayList ;
-    private NewRelease newRelease;
-    private SharedPreferencesManager sharedPreferencesManager;
+    private ArrayList<Items> itemsArrayList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        chartNewReleaseViewModel = new ViewModelProvider(this).get(ChartNewReleaseViewModel.class);
     }
 
     @Override
@@ -70,19 +70,25 @@ public class ChartNewReleaseFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initData();
         initViews(view);
         initAdapter();
         conFigViews();
         initOnClick();
-
-
-        getNewReleaseChart();
+        initViewModel();
     }
 
-    private void initData() {
-        Helper.changeStatusBarColor(requireActivity(), R.color.black);
-        sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+    private void initViewModel() {
+        chartNewReleaseViewModel.getNewReleaseMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUI(artistDetail);
+            } else {
+                getNewReleaseChart();
+            }
+        });
+
+        if (chartNewReleaseViewModel.getNewReleaseMutableLiveData().getValue() == null) {
+            getNewReleaseChart();
+        }
     }
 
     private void initViews(View view) {
@@ -110,6 +116,9 @@ public class ChartNewReleaseFragment extends Fragment {
     }
 
     private void conFigViews() {
+        Helper.changeStatusBarColor(requireActivity(), R.color.black);
+
+
         nested_scroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @SuppressLint({"ObsoleteSdkInt", "SetTextI18n"})
             @Override
@@ -126,7 +135,7 @@ public class ChartNewReleaseFragment extends Fragment {
                 } else if (scrollY >= 300) {
                     txt_name_artist.setVisibility(View.VISIBLE);
                     txt_view.setVisibility(View.GONE);
-                    txt_name_artist.setText(newRelease.getData().getTitle());
+                    txt_name_artist.setText(chartNewReleaseViewModel.getNewReleaseMutableLiveData().getValue().getData().getTitle());
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
                     Helper.changeStatusBarColor(requireActivity(), R.color.gray);
                 }
@@ -159,19 +168,9 @@ public class ChartNewReleaseFragment extends Fragment {
                         public void onResponse(@NonNull Call<NewRelease> call, @NonNull Response<NewRelease> response) {
                             if (response.isSuccessful()) {
                                 Log.d(">>>>>>>>>>>>>>>>>>", "getNewReleaseChart " + call.request().url());
-                                newRelease = response.body();
+                                NewRelease newRelease = response.body();
                                 if (newRelease != null && newRelease.getErr() == 0) {
-                                    ArrayList<Items> itemsArrayList = newRelease.getData().getItems();
-                                    if (!itemsArrayList.isEmpty()) {
-                                        requireActivity().runOnUiThread(() -> {
-                                            txt_new_release.setText(newRelease.getData().getTitle());
-                                            newReleaseChartAdapter.setFilterList(itemsArrayList);
-                                            relative_loading.setVisibility(View.GONE);
-                                            nested_scroll.setVisibility(View.VISIBLE);
-                                        });
-                                    } else {
-                                        Log.d("TAG", "Items list is empty");
-                                    }
+                                    chartNewReleaseViewModel.setNewReleaseMutableLiveData(newRelease);
                                 } else {
                                     Log.d("TAG", "Error: ");
                                 }
@@ -195,5 +194,15 @@ public class ChartNewReleaseFragment extends Fragment {
 
             }
         });
+    }
+
+    private void updateUI(NewRelease newRelease) {
+        ArrayList<Items> items = newRelease.getData().getItems();
+        txt_new_release.setText(newRelease.getData().getTitle());
+
+        itemsArrayList = items;
+        newReleaseChartAdapter.setFilterList(itemsArrayList);
+        relative_loading.setVisibility(View.GONE);
+        nested_scroll.setVisibility(View.VISIBLE);
     }
 }

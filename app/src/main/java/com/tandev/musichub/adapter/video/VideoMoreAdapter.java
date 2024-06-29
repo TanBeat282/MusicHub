@@ -111,7 +111,7 @@ public class VideoMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (hubVideos == null || hubVideos.isEmpty()) {
             return 0;
         }
-        return Math.min(hubVideos.size(), 5) + 1; // Showing 5 items + 1 "More" button
+        return hubVideos.size() + 1;
     }
 
     public static class PlaylistViewHolder extends RecyclerView.ViewHolder {
