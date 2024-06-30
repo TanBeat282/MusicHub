@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".fragment.chart_new_release.ChartNewReleaseFragment">
+    tools:context=".fragment.playlist.PlaylistViewAllFragment">
 
 
     <androidx.core.widget.NestedScrollView
@@ -21,7 +21,7 @@
             android:layout_marginHorizontal="@dimen/_20sdp">
 
             <TextView
-                android:id="@+id/txt_new_release"
+                android:id="@+id/txt_playlist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_20sdp"
@@ -30,10 +30,10 @@
                 android:textSize="@dimen/_24ssp" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_new_release_song"
+                android:id="@+id/rv_playlist"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/txt_new_release"
+                android:layout_below="@+id/txt_playlist"
                 android:layout_marginTop="30dp"
                 android:orientation="horizontal" />
 

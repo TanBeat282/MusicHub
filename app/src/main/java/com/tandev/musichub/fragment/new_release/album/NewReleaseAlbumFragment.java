@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,6 +29,7 @@ import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Album;
 import com.tandev.musichub.model.new_release.NewReleaseAlbum;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
+import com.tandev.musichub.view_model.new_release.NewReleaseAlbumViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -37,6 +39,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class NewReleaseAlbumFragment extends Fragment {
+    private NewReleaseAlbumViewModel newReleaseAlbumViewModel;
+
     private NestedScrollView nested_scroll_view_album;
     private RelativeLayout relative_loading;
     private RecyclerView recycler_view_album;
@@ -45,9 +49,11 @@ public class NewReleaseAlbumFragment extends Fragment {
     private static final String VIETNAM_CATEGORY = "IWZ9Z08I";
     private static final String AU_MY_CATEGORY = "IWZ9Z08O";
     private static final String HAN_QUOC_CATEGORY = "IWZ9Z08W";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        newReleaseAlbumViewModel = new ViewModelProvider(this).get(NewReleaseAlbumViewModel.class);
     }
 
     @Override
@@ -60,29 +66,46 @@ public class NewReleaseAlbumFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
 
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+        initViews(view);
+        conFigViews();
+        initAdapter();
+        onClick();
 
-        initializeViews(view);
-        setupRecyclerView();
-        setupButtonListeners();
-        getNewReleaseAlbum();
+        initViewModel();
     }
 
-    private void initializeViews(View view) {
+    private void initViewModel() {
+        newReleaseAlbumViewModel.getNewReleaseAlbumMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUI(artistDetail);
+            } else {
+                getNewReleaseAlbum();
+            }
+        });
+
+        if (newReleaseAlbumViewModel.getNewReleaseAlbumMutableLiveData().getValue() == null) {
+            getNewReleaseAlbum();
+        }
+    }
+
+    private void initViews(View view) {
         recycler_view_album = view.findViewById(R.id.recycler_view_album);
         nested_scroll_view_album = view.findViewById(R.id.nested_scroll_view_album);
         relative_loading = view.findViewById(R.id.relative_loading);
     }
 
-    private void setupRecyclerView() {
+    private void conFigViews() {
+        Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
+    }
+
+    private void initAdapter() {
         recycler_view_album.setLayoutManager(new LinearLayoutManager(requireContext()));
         albumNewReleaseAdapter = new AlbumNewReleaseAdapter(albumArrayList, requireActivity(), requireContext());
         recycler_view_album.setAdapter(albumNewReleaseAdapter);
     }
 
-    private void setupButtonListeners() {
+    private void onClick() {
 
     }
 
@@ -102,17 +125,7 @@ public class NewReleaseAlbumFragment extends Fragment {
                                 Log.d(">>>>>>>>>>>>>>>>>>", "getNewReleaseAlbum " + call.request().url());
                                 NewReleaseAlbum newReleaseAlbum = response.body();
                                 if (newReleaseAlbum != null && newReleaseAlbum.getErr() == 0) {
-                                    ArrayList<Album> arrayList = newReleaseAlbum.getData();
-                                    if (!arrayList.isEmpty()) {
-                                        requireActivity().runOnUiThread(() -> {
-                                            albumArrayList = arrayList;
-                                            albumNewReleaseAdapter.setFilterList(albumArrayList);
-                                            nested_scroll_view_album.setVisibility(View.VISIBLE);
-                                            relative_loading.setVisibility(View.GONE);
-                                        });
-                                    } else {
-                                        Log.d("TAG", "Items list is empty");
-                                    }
+                                    newReleaseAlbumViewModel.setNewReleaseAlbumMutableLiveData(newReleaseAlbum);
                                 } else {
                                     Log.d("TAG", "Error: ");
                                 }
@@ -138,9 +151,15 @@ public class NewReleaseAlbumFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getNewReleaseAlbum();
+    private void updateUI(NewReleaseAlbum newReleaseAlbum) {
+        ArrayList<Album> arrayList = newReleaseAlbum.getData();
+        if (!arrayList.isEmpty()) {
+            albumArrayList = arrayList;
+            albumNewReleaseAdapter.setFilterList(albumArrayList);
+            nested_scroll_view_album.setVisibility(View.VISIBLE);
+            relative_loading.setVisibility(View.GONE);
+        } else {
+            Log.d("TAG", "Items list is empty");
+        }
     }
 }

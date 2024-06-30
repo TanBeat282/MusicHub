@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +34,7 @@ import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.chart.weekchart.WeekChart;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
+import com.tandev.musichub.view_model.week_chart.WeekChartVnViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -42,15 +44,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class UsUkFragment extends Fragment {
+    private WeekChartVnViewModel weekChartVnViewModel;
+
     private NestedScrollView nested_scroll_week_chart;
     private RelativeLayout relative_loading;
     private RecyclerView recycler_week_chart;
-    private ArrayList<Items> itemsArrayList = new ArrayList<>();
+    private ArrayList<Items> itemsArrayList;
     private BXHSongAdapter bxhSongAdapter;
     private String week;
     private String year;
     private static final String USUK_CATEGORY_ID = "IWZ9Z0BW";
-    private SharedPreferencesManager sharedPreferencesManager;
 
     public BroadcastReceiver WeekYearBroadcastReceiver() {
         return new BroadcastReceiver() {
@@ -62,6 +65,9 @@ public class UsUkFragment extends Fragment {
                 }
                 week = bundle.getString("week_chart");
                 year = bundle.getString("year_chart");
+
+                relative_loading.setVisibility(View.VISIBLE);
+                nested_scroll_week_chart.setVisibility(View.GONE);
                 getWeekChart(USUK_CATEGORY_ID, week, year);
             }
         };
@@ -70,6 +76,7 @@ public class UsUkFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        weekChartVnViewModel = new ViewModelProvider(this).get(WeekChartVnViewModel.class);
     }
 
     @Override
@@ -84,11 +91,24 @@ public class UsUkFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
 
-        sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         initViews(view);
         initAdapter();
-        getWeekChart(USUK_CATEGORY_ID, "22", "2024");
+        initViewModel();
 
+    }
+
+    private void initViewModel() {
+        weekChartVnViewModel.getWeekChartMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUI(artistDetail);
+            } else {
+                getWeekChart(USUK_CATEGORY_ID, "25", "2024");
+            }
+        });
+
+        if (weekChartVnViewModel.getWeekChartMutableLiveData().getValue() == null) {
+            getWeekChart(USUK_CATEGORY_ID, "25", "2024");
+        }
     }
 
     private void initViews(View view) {
@@ -98,6 +118,7 @@ public class UsUkFragment extends Fragment {
     }
 
     private void initAdapter() {
+        itemsArrayList = new ArrayList<>();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recycler_week_chart.setLayoutManager(linearLayoutManager);
         bxhSongAdapter = new BXHSongAdapter(itemsArrayList, requireActivity(), requireContext());
@@ -121,17 +142,7 @@ public class UsUkFragment extends Fragment {
                             if (response.isSuccessful()) {
                                 WeekChart weekChart = response.body();
                                 if (weekChart != null && weekChart.getErr() == 0) {
-                                    ArrayList<Items> arrayList = weekChart.getData().getItems();
-                                    if (!arrayList.isEmpty()) {
-                                        requireActivity().runOnUiThread(() -> {
-                                            itemsArrayList = arrayList;
-                                            bxhSongAdapter.setFilterList(arrayList);
-                                            relative_loading.setVisibility(View.GONE);
-                                            nested_scroll_week_chart.setVisibility(View.VISIBLE);
-                                        });
-                                    } else {
-                                        Log.d("TAG", "Items list is empty");
-                                    }
+                                    weekChartVnViewModel.setWeekChartMutableLiveData(weekChart);
                                 } else {
                                     Log.d("TAG", "Error: ");
                                 }
@@ -155,6 +166,18 @@ public class UsUkFragment extends Fragment {
 
             }
         });
+    }
+
+    private void updateUI(WeekChart weekChart) {
+        ArrayList<Items> arrayList = weekChart.getData().getItems();
+        if (!arrayList.isEmpty()) {
+            itemsArrayList = arrayList;
+            bxhSongAdapter.setFilterList(arrayList);
+            relative_loading.setVisibility(View.GONE);
+            nested_scroll_week_chart.setVisibility(View.VISIBLE);
+        } else {
+            Log.d("TAG", "Items list is empty");
+        }
     }
 
     @Override

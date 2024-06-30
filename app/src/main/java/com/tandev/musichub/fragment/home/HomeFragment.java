@@ -29,12 +29,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
+import com.tandev.musichub.adapter.album.AlbumAllAdapter;
 import com.tandev.musichub.adapter.album.AlbumMoreAdapter;
 import com.tandev.musichub.adapter.banner.BannerSlideAdapter;
 import com.tandev.musichub.adapter.home.HomePlaylistAdapter;
 import com.tandev.musichub.adapter.hub.HubHomeAdapter;
 import com.tandev.musichub.adapter.playlist.PlaylistMoreAdapter;
 import com.tandev.musichub.adapter.radio.RadioMoreAdapter;
+import com.tandev.musichub.adapter.song.SongChartAdapter;
 import com.tandev.musichub.adapter.song.SongMoreAdapter;
 import com.tandev.musichub.adapter.week_chart.WeekChartSlideAdapter;
 import com.tandev.musichub.api.ApiService;
@@ -128,7 +130,7 @@ public class HomeFragment extends Fragment {
     // bxh nhac
     private LinearLayout linear_chart_home;
     private RecyclerView rv_bang_xep_hang;
-    private SongMoreAdapter bang_xep_hangAdapter;
+    private SongChartAdapter bang_xep_hangAdapter;
     private ArrayList<Items> bang_xep_hangArrayList;
 
     // playlist
@@ -158,7 +160,7 @@ public class HomeFragment extends Fragment {
     private TextView txt_title_album;
     private RecyclerView rv_album;
     private ArrayList<DataAlbum> dataAlbumArrayList;
-    private AlbumMoreAdapter albumMoreAdapter;
+    private AlbumAllAdapter albumMoreAdapter;
 
     private TextView txt_title_radio;
     private RecyclerView rv_radio;
@@ -283,29 +285,20 @@ public class HomeFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        GridLayoutManager layoutManagerNewReleaseSong = new GridLayoutManager(requireContext(), 4, RecyclerView.HORIZONTAL, false);
-        rv_new_release_song.setLayoutManager(layoutManagerNewReleaseSong);
+        rv_new_release_song.setLayoutManager(new GridLayoutManager(requireContext(), 4, RecyclerView.HORIZONTAL, false));
 
-        GridLayoutManager layoutManagerBXHNewReleaseSong = new GridLayoutManager(requireContext(), 4, RecyclerView.HORIZONTAL, false);
-        rv_bxh_new_release_song.setLayoutManager(layoutManagerBXHNewReleaseSong);
+        rv_bxh_new_release_song.setLayoutManager(new GridLayoutManager(requireContext(), 4, RecyclerView.HORIZONTAL, false));
 
-        GridLayoutManager layoutManagerBangXepHang = new GridLayoutManager(requireContext(), 4, RecyclerView.HORIZONTAL, false);
-        rv_bang_xep_hang.setLayoutManager(layoutManagerBangXepHang);
+        rv_bang_xep_hang.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
 
+        rv_playlist.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
 
-        LinearLayoutManager layoutManagerPlaylist = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
-        rv_playlist.setLayoutManager(layoutManagerPlaylist);
-
-        LinearLayoutManager layoutManagerHubHome = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        rv_hub_home.setLayoutManager(layoutManagerHubHome);
+        rv_hub_home.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
 
-        LinearLayoutManager layoutManagerTop100 = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        rv_top100.setLayoutManager(layoutManagerTop100);
-        LinearLayoutManager layoutManagerAlbum = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        rv_album.setLayoutManager(layoutManagerAlbum);
-        LinearLayoutManager layoutManagerRadio = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        rv_radio.setLayoutManager(layoutManagerRadio);
+        rv_top100.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        rv_album.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        rv_radio.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
     }
 
     private void initAdapter() {
@@ -315,7 +308,7 @@ public class HomeFragment extends Fragment {
         bxh_new_release_songAdapter = new SongMoreAdapter(bxh_new_release_songArrayList, 1, requireActivity(), requireContext());
         rv_bxh_new_release_song.setAdapter(bxh_new_release_songAdapter);
 
-        bang_xep_hangAdapter = new SongMoreAdapter(bang_xep_hangArrayList, 2, requireActivity(), requireContext());
+        bang_xep_hangAdapter = new SongChartAdapter(bang_xep_hangArrayList, 2, requireActivity(), requireContext());
         rv_bang_xep_hang.setAdapter(bang_xep_hangAdapter);
 
         homePlaylistAdapter = new HomePlaylistAdapter(requireContext(), requireActivity(), homeDataItems);
@@ -327,7 +320,7 @@ public class HomeFragment extends Fragment {
         playlistMoreAdapter = new PlaylistMoreAdapter(dataPlaylistArrayListTop100, requireActivity(), requireContext());
         rv_top100.setAdapter(playlistMoreAdapter);
 
-        albumMoreAdapter = new AlbumMoreAdapter(dataAlbumArrayList, requireActivity(), requireContext());
+        albumMoreAdapter = new AlbumAllAdapter(dataAlbumArrayList, requireActivity(), requireContext());
         rv_album.setAdapter(albumMoreAdapter);
         radioMoreAdapter = new RadioMoreAdapter(homeDataItemRadioItemArrayList, requireActivity(), requireContext());
         rv_radio.setAdapter(radioMoreAdapter);

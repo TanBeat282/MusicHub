@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,12 +15,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.new_release_song.NewReleaseSongAdapter;
 import com.tandev.musichub.api.ApiService;
@@ -28,7 +26,7 @@ import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.new_release.NewReleaseSong;
-import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
+import com.tandev.musichub.view_model.new_release.NewReleaseSongViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -38,13 +36,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class NewReleaseSongFragment extends Fragment {
+    private NewReleaseSongViewModel newReleaseSongViewModel;
+
     private RecyclerView recycler_view_song;
     private NestedScrollView nested_scroll_view_song;
     private RelativeLayout relative_loading;
-    private ArrayList<Items> itemsArrayList = new ArrayList<>();
+    private ArrayList<Items> itemsArrayList ;
     private NewReleaseSongAdapter newReleaseSongAdapter;
     private LinearLayout btn_tat_ca, btn_viet_nam, btn_au_my, btn_han_quoc, btn_other;
-    private SharedPreferencesManager sharedPreferencesManager;
     private static final String VIETNAM_CATEGORY = "IWZ9Z08I";
     private static final String AU_MY_CATEGORY = "IWZ9Z08O";
     private static final String HAN_QUOC_CATEGORY = "IWZ9Z08W";
@@ -52,6 +51,7 @@ public class NewReleaseSongFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        newReleaseSongViewModel = new ViewModelProvider(this).get(NewReleaseSongViewModel.class);
     }
 
     @Override
@@ -65,19 +65,30 @@ public class NewReleaseSongFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initViews(view);
+        conFigViews();
+        initAdapter();
+        onClick();
 
-        Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
+        initViewModel();
 
-        sharedPreferencesManager = new SharedPreferencesManager(requireContext());
-
-
-        initializeViews(view);
-        setupRecyclerView();
-        setupButtonListeners();
-        getNewReleaseSong();
     }
 
-    private void initializeViews(View view) {
+    private void initViewModel() {
+        newReleaseSongViewModel.getNewReleaseSongMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUI(artistDetail);
+            } else {
+                getNewReleaseSong();
+            }
+        });
+
+        if (newReleaseSongViewModel.getNewReleaseSongMutableLiveData().getValue() == null) {
+            getNewReleaseSong();
+        }
+    }
+
+    private void initViews(View view) {
         nested_scroll_view_song = view.findViewById(R.id.nested_scroll_view_song);
         relative_loading = view.findViewById(R.id.relative_loading);
         recycler_view_song = view.findViewById(R.id.recycler_view_song);
@@ -88,19 +99,25 @@ public class NewReleaseSongFragment extends Fragment {
         btn_other = view.findViewById(R.id.btn_other);
     }
 
-    private void setupRecyclerView() {
+    private void conFigViews() {
+        Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
+    }
+
+    private void initAdapter() {
+        itemsArrayList = new ArrayList<>();
         recycler_view_song.setLayoutManager(new LinearLayoutManager(requireContext()));
         newReleaseSongAdapter = new NewReleaseSongAdapter(itemsArrayList, requireActivity(), requireContext());
         recycler_view_song.setAdapter(newReleaseSongAdapter);
     }
 
-    private void setupButtonListeners() {
+    private void onClick() {
         btn_tat_ca.setOnClickListener(v -> checkCategoriesNewReleaseSong(0));
         btn_viet_nam.setOnClickListener(v -> checkCategoriesNewReleaseSong(1));
         btn_au_my.setOnClickListener(v -> checkCategoriesNewReleaseSong(2));
         btn_han_quoc.setOnClickListener(v -> checkCategoriesNewReleaseSong(3));
         btn_other.setOnClickListener(v -> checkCategoriesNewReleaseSong(4));
     }
+
     private void getNewReleaseSong() {
         ApiServiceFactory.createServiceAsync(new ApiServiceFactory.ApiServiceCallback() {
             @Override
@@ -112,22 +129,12 @@ public class NewReleaseSongFragment extends Fragment {
                     retrofit2.Call<NewReleaseSong> call = service.NEW_RELEASE_SONG_CALL("song", map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
                     call.enqueue(new Callback<NewReleaseSong>() {
                         @Override
-                        public void onResponse(Call<NewReleaseSong> call, Response<NewReleaseSong> response) {
+                        public void onResponse(@NonNull Call<NewReleaseSong> call, @NonNull Response<NewReleaseSong> response) {
                             if (response.isSuccessful()) {
                                 Log.d(">>>>>>>>>>>>>>>>>>", "getNewReleaseSong " + call.request().url());
                                 NewReleaseSong newReleaseSong = response.body();
                                 if (newReleaseSong != null && newReleaseSong.getErr() == 0) {
-                                    ArrayList<Items> arrayList = newReleaseSong.getData();
-                                    if (!arrayList.isEmpty()) {
-                                        requireActivity().runOnUiThread(() -> {
-                                            itemsArrayList = arrayList;
-                                            newReleaseSongAdapter.setFilterList(itemsArrayList);
-                                            nested_scroll_view_song.setVisibility(View.VISIBLE);
-                                            relative_loading.setVisibility(View.GONE);
-                                        });
-                                    } else {
-                                        Log.d("TAG", "Items list is empty");
-                                    }
+                                    newReleaseSongViewModel.setNewReleaseSongMutableLiveData(newReleaseSong);
                                 } else {
                                     Log.d("TAG", "Error: ");
                                 }
@@ -137,7 +144,7 @@ public class NewReleaseSongFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<NewReleaseSong> call, Throwable throwable) {
+                        public void onFailure(@NonNull Call<NewReleaseSong> call, @NonNull Throwable throwable) {
 
                         }
                     });
@@ -152,6 +159,19 @@ public class NewReleaseSongFragment extends Fragment {
             }
         });
     }
+
+    private void updateUI(NewReleaseSong newReleaseSong) {
+        ArrayList<Items> arrayList = newReleaseSong.getData();
+        if (!arrayList.isEmpty()) {
+            itemsArrayList = arrayList;
+            newReleaseSongAdapter.setFilterList(itemsArrayList);
+            nested_scroll_view_song.setVisibility(View.VISIBLE);
+            relative_loading.setVisibility(View.GONE);
+        } else {
+            Log.d("TAG", "Items list is empty");
+        }
+    }
+
 
     @SuppressLint("NotifyDataSetChanged")
     private void checkCategoriesNewReleaseSong(int category) {
@@ -179,7 +199,7 @@ public class NewReleaseSongFragment extends Fragment {
                 newReleaseSongAdapter.setFilterList(itemsArrayList); // Hiển thị tất cả dữ liệu gốc
                 newReleaseSongAdapter.notifyDataSetChanged();
                 recycler_view_song.scrollToPosition(0);
-                return; // Kết thúc phương thức sớm để không tiếp tục xử lý bộ lọc
+                return; // Kết thúc phương thức sớm để không xử lý bộ lọc
         }
         newReleaseSongAdapter.setFilterList(filterCategoriesSong(itemsArrayList, selectedCategory, isOther));
         newReleaseSongAdapter.notifyDataSetChanged();

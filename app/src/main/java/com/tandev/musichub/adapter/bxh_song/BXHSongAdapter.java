@@ -85,11 +85,11 @@ public class BXHSongAdapter extends RecyclerView.Adapter<BXHSongAdapter.ViewHold
                 .into(holder.thumbImageView);
 
         if (song.getRakingStatus() > 0) {
-            setImageAndTint(holder.img_bxh, holder.txt_number_top_song, holder.txt_rank_status, R.drawable.ic_trending_up, R.color.green, song.getRakingStatus(), position);
+            setImageAndTint(holder.img_bxh, holder.txt_number_top_song, holder.txt_rank_status, R.drawable.arrow_drop_up_24px, R.color.green, song.getRakingStatus(), position);
         } else if (song.getRakingStatus() < 0) {
-            setImageAndTint(holder.img_bxh, holder.txt_number_top_song, holder.txt_rank_status, R.drawable.ic_trending_down, R.color.red, song.getRakingStatus(), position);
+            setImageAndTint(holder.img_bxh, holder.txt_number_top_song, holder.txt_rank_status, R.drawable.arrow_drop_down_24px, R.color.red, song.getRakingStatus(), position);
         } else {
-            setImageAndTint(holder.img_bxh, holder.txt_number_top_song, holder.txt_rank_status, R.drawable.ic_trending_flat, R.color.colorSecondaryText, song.getRakingStatus(), position);
+            setImageAndTint(holder.img_bxh, holder.txt_number_top_song, holder.txt_rank_status, R.drawable.horizontal_rule_24px, R.color.colorSecondaryText, song.getRakingStatus(), position);
         }
 
         if (selectedPosition == position) {

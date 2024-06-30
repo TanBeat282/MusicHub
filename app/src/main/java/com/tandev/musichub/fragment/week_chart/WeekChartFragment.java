@@ -90,7 +90,7 @@ public class WeekChartFragment extends Fragment {
     private void onClick(){
         linear_filter_song.setOnClickListener(view -> {
             Intent intent = new Intent("send_week_year_to_fragment");
-            intent.putExtra("week_chart", "21");
+            intent.putExtra("week_chart", "24");
             intent.putExtra("year_chart", "2024");
             LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent);
         });

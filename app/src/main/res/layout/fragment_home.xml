@@ -84,7 +84,7 @@
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/view_pager_banner"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="@dimen/_150sdp"
                 android:paddingStart="@dimen/_30sdp"
                 android:paddingEnd="@dimen/_30sdp" />
 
@@ -505,6 +505,7 @@
                             android:textSize="20sp" />
 
                         <LinearLayout
+                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:padding="5dp">

@@ -1,10 +1,9 @@
 <!-- item_song.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="400dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingEnd="10dp"
     android:paddingBottom="14dp">
 
     <TextView
@@ -18,7 +17,7 @@
         android:textSize="20sp" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/_20sdp"
         android:layout_height="match_parent"
         android:layout_marginEnd="10dp"
         android:gravity="center"
@@ -26,10 +25,10 @@
 
         <TextView
             android:id="@+id/txt_rank_status"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="2dp"
+            android:gravity="center"
             android:fontFamily="@font/roboto_bold"
             android:textColor="@color/white"
             android:textSize="14sp" />
@@ -39,7 +38,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_trending_up"
+            android:src="@drawable/arrow_drop_up_24px"
             app:tint="@color/green" />
     </LinearLayout>
 

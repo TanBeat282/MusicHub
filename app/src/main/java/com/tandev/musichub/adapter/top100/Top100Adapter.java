@@ -16,8 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.playlist.PlaylistMoreAdapter;
+import com.tandev.musichub.fragment.album.AlbumFragment;
+import com.tandev.musichub.fragment.playlist.PlaylistViewAllFragment;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.tandev.musichub.model.search.search_recommend.DataSearchRecommend;
 import com.tandev.musichub.model.top100.DataTop100;
@@ -57,6 +60,19 @@ public class Top100Adapter extends RecyclerView.Adapter<Top100Adapter.ViewHolder
         holder.rv_playlist_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         PlaylistMoreAdapter playlistMoreAdapter = new PlaylistMoreAdapter(dataTop100.getItems(), activity, context);
         holder.rv_playlist_horizontal.setAdapter(playlistMoreAdapter);
+
+        holder.linear_playlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PlaylistViewAllFragment playlistViewAllFragment = new PlaylistViewAllFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("data_top_100", dataTop100);
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(playlistViewAllFragment, bundle);
+                }
+            }
+        });
     }
 
 
