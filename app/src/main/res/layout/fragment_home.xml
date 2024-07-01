@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
-        android:layout_marginHorizontal="@dimen/_20sdp"
+        android:layout_marginHorizontal="@dimen/_10sdp"
         android:fitsSystemWindows="true">
 
         <ImageView
@@ -71,8 +71,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/action_bar"
         android:layout_alignParentBottom="true"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginHorizontal="@dimen/_10sdp"
         android:visibility="gone">
 
         <LinearLayout
@@ -84,14 +83,14 @@
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/view_pager_banner"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_150sdp"
-                android:paddingStart="@dimen/_30sdp"
-                android:paddingEnd="@dimen/_30sdp" />
+                android:layout_height="@dimen/_130sdp"
+                android:paddingStart="@dimen/_20sdp"
+                android:paddingEnd="@dimen/_20sdp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/_20sdp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -107,7 +106,7 @@
                         android:fontFamily="@font/roboto"
                         android:text="MỚI PHÁT HÀNH"
                         android:textColor="@color/colorSecondaryText"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -119,7 +118,7 @@
                             android:fontFamily="@font/roboto_bold"
                             android:text="Bài hát mới phát hành"
                             android:textColor="@color/white"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -206,7 +205,7 @@
                 android:id="@+id/rv_new_release_song"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal" />
 
 
@@ -214,8 +213,7 @@
                 android:id="@+id/rv_playlist"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginVertical="@dimen/_10sdp"
                 android:orientation="horizontal" />
 
             <LinearLayout
@@ -237,7 +235,7 @@
                         android:fontFamily="@font/roboto"
                         android:text="DÀNH CHO BẠN"
                         android:textColor="@color/colorSecondaryText"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -249,7 +247,7 @@
                             android:fontFamily="@font/roboto_bold"
                             android:text="BXH Nhạc mới"
                             android:textColor="@color/white"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -272,14 +270,14 @@
                 android:id="@+id/rv_bxh_new_release_song"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -295,7 +293,7 @@
                         android:fontFamily="@font/roboto"
                         android:text="DÀNH CHO BẠN"
                         android:textColor="@color/colorSecondaryText"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -307,7 +305,7 @@
                             android:fontFamily="@font/roboto_bold"
                             android:text="Các bài hát thịnh hành"
                             android:textColor="@color/white"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -330,14 +328,14 @@
                 android:id="@+id/rv_bang_xep_hang"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="@dimen/_80sdp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -350,8 +348,8 @@
                         android:id="@+id/view_pager_week_chart"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingStart="40dp"
-                        android:paddingEnd="40dp" />
+                        android:paddingStart="@dimen/_20sdp"
+                        android:paddingEnd="@dimen/_20sdp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -360,7 +358,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -375,7 +373,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto"
                         android:textColor="@color/colorSecondaryText"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -388,7 +386,7 @@
                             android:fontFamily="@font/roboto_bold"
                             android:text="Chủ đề &amp; thể loại"
                             android:textColor="@color/white"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -410,15 +408,14 @@
                 android:id="@+id/rv_hub_home"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -433,7 +430,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto"
                         android:textColor="@color/colorSecondaryText"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -445,7 +442,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_bold"
                             android:textColor="@color/white"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -467,15 +464,14 @@
                 android:id="@+id/rv_top100"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -490,7 +486,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto"
                         android:textColor="@color/colorSecondaryText"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -502,13 +498,14 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_bold"
                             android:textColor="@color/white"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <LinearLayout
-                            android:visibility="gone"
+                            android:id="@+id/linear_more"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:padding="5dp">
+                            android:padding="5dp"
+                            android:visibility="visible">
 
                             <ImageView
                                 android:layout_width="wrap_content"
@@ -525,15 +522,14 @@
                 android:id="@+id/rv_album"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -548,7 +544,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto"
                         android:textColor="@color/colorSecondaryText"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -560,7 +556,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_bold"
                             android:textColor="@color/white"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -582,8 +578,7 @@
                 android:id="@+id/rv_radio"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal" />
 
         </LinearLayout>

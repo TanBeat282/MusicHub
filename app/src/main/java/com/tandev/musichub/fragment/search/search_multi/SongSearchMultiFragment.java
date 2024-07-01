@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +30,7 @@ import com.tandev.musichub.helper.uliti.log.LogUtil;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.search.song.SearchSong;
 import com.google.gson.Gson;
+import com.tandev.musichub.view_model.search.SearchMultiSongViewModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SongSearchMultiFragment extends Fragment {
+    private SearchMultiSongViewModel searchMultiSongViewModel;
+
     private static final String ARG_DATA = "query";
     private static final String allowCorrect = "1";
     private static final int TYPE = 1;
@@ -82,9 +86,9 @@ public class SongSearchMultiFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        searchMultiSongViewModel = new ViewModelProvider(this).get(SearchMultiSongViewModel.class);
         if (getArguments() != null) {
             query = getArguments().getString(ARG_DATA);
-            searchSong(query, TYPE, currentPage);
         }
     }
 
@@ -101,6 +105,21 @@ public class SongSearchMultiFragment extends Fragment {
 
         initViews(view);
         initAdapter();
+initViewModel();
+    }
+
+    private void initViewModel() {
+        searchMultiSongViewModel.getSearchSongMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUI(artistDetail);
+            } else {
+                searchSong(query, TYPE, currentPage);
+            }
+        });
+
+        if (searchMultiSongViewModel.getSearchSongMutableLiveData().getValue() == null) {
+            searchSong(query, TYPE, currentPage);
+        }
     }
 
     private void initViews(View view) {
@@ -157,18 +176,7 @@ public class SongSearchMultiFragment extends Fragment {
                                     SearchSong searchSong = gson.fromJson(json, SearchSong.class);
 
                                     if (searchSong != null && searchSong.getData() != null) {
-                                        itemsArrayList.clear(); // Clear existing items
-                                        itemsArrayList.addAll(searchSong.getData().getItems());
-                                        requireActivity().runOnUiThread(() -> {
-                                            totalPages = calculateTotalPages(searchSong.getData().getTotal());
-                                            songAllMoreAdapter.setFilterList(itemsArrayList);
-
-                                            if (currentPage < totalPages) {
-                                                songAllMoreAdapter.addFooterLoading();
-                                            } else {
-                                                isLastPage = true;
-                                            }
-                                        });
+                                        searchMultiSongViewModel.setSearchSongMutableLiveData(searchSong);
                                     }
                                 } catch (IOException e) {
                                     Log.e("TAG", "Error reading response: " + e.getMessage(), e);
@@ -213,18 +221,7 @@ public class SongSearchMultiFragment extends Fragment {
                                     SearchSong searchSong = gson.fromJson(json, SearchSong.class);
 
                                     if (searchSong != null && searchSong.getData() != null) {
-                                        ArrayList<Items> newItems = searchSong.getData().getItems();
-                                        requireActivity().runOnUiThread(() -> {
-                                            itemsArrayList.addAll(newItems); // Add new items to existing list
-                                            songAllMoreAdapter.notifyDataSetChanged();
-
-                                            isLoading = false;
-                                            if (currentPage < totalPages) {
-                                                songAllMoreAdapter.addFooterLoading();
-                                            } else {
-                                                isLastPage = true;
-                                            }
-                                        });
+                                        updateUIMore(searchSong);
                                     }
                                 } catch (IOException e) {
                                     Log.e("TAG", "Error reading response: " + e.getMessage(), e);
@@ -249,10 +246,39 @@ public class SongSearchMultiFragment extends Fragment {
         });
     }
 
+    private void updateUI(SearchSong searchSong) {
+        itemsArrayList.clear(); // Clear existing items
+        itemsArrayList.addAll(searchSong.getData().getItems());
+        requireActivity().runOnUiThread(() -> {
+            totalPages = calculateTotalPages(searchSong.getData().getTotal());
+            songAllMoreAdapter.setFilterList(itemsArrayList);
+
+            if (currentPage < totalPages) {
+                songAllMoreAdapter.addFooterLoading();
+            } else {
+                isLastPage = true;
+            }
+        });
+    }
+
+    private void updateUIMore(SearchSong searchSong) {
+        ArrayList<Items> newItems = searchSong.getData().getItems();
+        requireActivity().runOnUiThread(() -> {
+            itemsArrayList.addAll(newItems); // Add new items to existing list
+            songAllMoreAdapter.notifyDataSetChanged();
+
+            isLoading = false;
+            if (currentPage < totalPages) {
+                songAllMoreAdapter.addFooterLoading();
+            } else {
+                isLastPage = true;
+            }
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        searchSong(query, TYPE, currentPage);
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(broadcastReceiverSearchMulti, new IntentFilter("search_query"));
     }
 

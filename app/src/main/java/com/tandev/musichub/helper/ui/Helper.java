@@ -59,6 +59,7 @@ public class Helper {
     }
 
 
+    // convert number to string follow
     @SuppressLint("DefaultLocale")
     public static String convertToIntString(int number) {
         String numberStr = String.valueOf(number);
@@ -79,6 +80,8 @@ public class Helper {
         }
     }
 
+
+    // convert time to text
     public static String convertLongToTime(String timeInMillis) {
         long time = Long.parseLong(timeInMillis);
         Date date = new Date(time);
@@ -119,31 +122,34 @@ public class Helper {
         return text;
     }
 
+    //check type of url search recommend
+    public static String getType(String url) {
+        if (url.contains("/album/")) {
+            return "album";
+        } else if (url.contains("/hub/")) {
+            return "hub";
+        } else {
+            return "unknown";
+        }
+    }
+
+    // get endCodeId form link
     public static String extractEndCodeID(String url) {
         int startIndex = url.lastIndexOf("/") + 1;
         int endIndex = url.lastIndexOf(".html");
+        if (endIndex == -1 || startIndex >= endIndex) {
+            return "Invalid URL";
+        }
         return url.substring(startIndex, endIndex);
     }
 
-    public static String extractFullEndCodeID(String url) {
-        // Tìm vị trí bắt đầu của mã sau dấu "/"
-        int startIndex = url.lastIndexOf("/") + 1;
 
-        // Tìm vị trí kết thúc của mã trước phần mở rộng ".html"
-        int endIndex = url.lastIndexOf(".html");
-
-        // Lấy chuỗi mã từ vị trí startIndex đến endIndex
-        return url.substring(startIndex, endIndex);
-    }
-
-    public static void finishFragment(AppCompatActivity activity) {
-        activity.getSupportFragmentManager().popBackStack();
-    }
-
+    // convert quality image
     public static String changeQualityUrl(String originalUrl) {
         return originalUrl.replace("w240", "w1080");
     }
 
+    // convert duration to minutes and seconds
     @SuppressLint("DefaultLocale")
     public static String convertDurationToMinutesAndSeconds(int durationInSeconds) {
         int minutes = durationInSeconds / 60;

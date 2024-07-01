@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
+import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.fragment.hub.HubFragment;
+import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.search.search_recommend.DataSearchRecommend;
@@ -52,7 +54,7 @@ public class SearchRecommendAdapter extends RecyclerView.Adapter<SearchRecommend
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_keyword, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_recommend, parent, false);
         return new ViewHolder(view);
     }
 
@@ -66,14 +68,30 @@ public class SearchRecommendAdapter extends RecyclerView.Adapter<SearchRecommend
             @Override
             public void onClick(View view) {
                 if (!dataSearchRecommend.getLink().isEmpty()) {
-                    // Tạo đối tượng HubFragment và Bundle
-                    HubFragment hubFragment = new HubFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("encodeId", Helper.extractEndCodeID(dataSearchRecommend.getLink()));
+                    if (Helper.getType(dataSearchRecommend.getLink()).equals("album")) {
+                        AlbumFragment albumFragment = new AlbumFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("album_endCodeId", Helper.extractEndCodeID(dataSearchRecommend.getLink()));
 
-                    // Sử dụng phương thức replaceFragmentWithBundle trong MainActivity
-                    if (context instanceof MainActivity) {
-                        ((MainActivity) context).replaceFragmentWithBundle(hubFragment, bundle);
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).replaceFragmentWithBundle(albumFragment, bundle);
+                        }
+                    } else if (Helper.getType(dataSearchRecommend.getLink()).equals("playlist")) {
+                        PlaylistFragment playlistFragment = new PlaylistFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("encodeId", Helper.extractEndCodeID(dataSearchRecommend.getLink()));
+
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).replaceFragmentWithBundle(playlistFragment, bundle);
+                        }
+                    } else {
+                        HubFragment hubFragment = new HubFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("encodeId", Helper.extractEndCodeID(dataSearchRecommend.getLink()));
+
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).replaceFragmentWithBundle(hubFragment, bundle);
+                        }
                     }
                 } else {
                     listener.onSearchRecommendClickListener(dataSearchRecommend.getKeyword());

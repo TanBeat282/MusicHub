@@ -3,7 +3,6 @@ package com.tandev.musichub.adapter.playlist;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
-//import com.tandev.musichub.activity.ViewAllArtistActivity;
-//import com.tandev.musichub.activity.ViewAllPlaylistActivity;
-//import com.tandev.musichub.activity.ViewPlaylistActivity;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.model.playlist.DataPlaylist;
-import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.ArrayList;
 
@@ -48,10 +44,10 @@ public class PlaylistMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-        if (position < 5) {
-            return VIEW_TYPE_PLAYLIST;
-        } else {
+        if (dataPlaylistArrayList.size() > 5 && position == 5) {
             return VIEW_TYPE_MORE;
+        } else {
+            return VIEW_TYPE_PLAYLIST;
         }
     }
 
@@ -90,12 +86,7 @@ public class PlaylistMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else {
             MoreViewHolder moreViewHolder = (MoreViewHolder) holder;
             moreViewHolder.linear_more.setOnClickListener(v -> {
-//                Intent intent = new Intent(context, ViewAllPlaylistActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("data_playlist_arraylist", dataPlaylistArrayList);
-//                intent.putExtras(bundle);
-//
-//                context.startActivity(intent);
+                // Handle "More" item click
             });
         }
     }
@@ -105,7 +96,7 @@ public class PlaylistMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (dataPlaylistArrayList == null || dataPlaylistArrayList.isEmpty()) {
             return 0;
         }
-        return Math.min(dataPlaylistArrayList.size(), 5) + 1; // Showing 5 items + 1 "More" button
+        return dataPlaylistArrayList.size() > 5 ? 6 : dataPlaylistArrayList.size(); // Showing 5 items + 1 "More" button or all items if less than 5
     }
 
     public static class PlaylistViewHolder extends RecyclerView.ViewHolder {

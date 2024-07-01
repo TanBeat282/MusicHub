@@ -78,6 +78,15 @@ public class SongMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if (songList.size() > 5 && position == 5) {
+            return VIEW_TYPE_BUTTON;
+        } else {
+            return VIEW_TYPE_SONG;
+        }
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -151,44 +160,17 @@ public class SongMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ButtonViewHolder buttonViewHolder = (ButtonViewHolder) holder;
             // Handle button click event
             buttonViewHolder.btn_more.setOnClickListener(v -> {
-//                if (typeOnClicked == 1) {
-//                    Intent intent = new Intent(context, BXHNewSongActivity.class);
-//                    context.startActivity(intent);
-//                } else if (typeOnClicked == 2) {
-////                    Intent intent = new Intent(context, BXHNewSongActivity.class);
-////                    Bundle bundle = new Bundle();
-////                    bundle.putSerializable("new_release_song", songList);
-////                    intent.putExtras(bundle);
-////
-////                    context.startActivity(intent);
-//                } else if (typeOnClicked == 3) {
-////                    Intent intent = new Intent(context, ViewAllSongActivity.class);
-////                    Bundle bundle = new Bundle();
-////                    bundle.putString("id", id);
-////                    bundle.putString("sectionId", sectionArtistSong.getSectionId());
-////                    intent.putExtras(bundle);
-////
-////                    context.startActivity(intent);
-//                } else {
-//                    Intent intent = new Intent(context, NewReleaseSongActivity.class);
-//                    context.startActivity(intent);
-//                }
+                // Handle "More" button click event
             });
         }
     }
 
     @Override
     public int getItemCount() {
-        return Math.min(songList.size(), 16); // Limit to maximum 16 items
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (position < 15) {
-            return VIEW_TYPE_SONG;
-        } else {
-            return VIEW_TYPE_BUTTON;
+        if (songList == null || songList.isEmpty()) {
+            return 0;
         }
+        return songList.size() > 5 ? 6 : songList.size(); // Showing 5 items + 1 "More" button or all items if less than 5
     }
 
     public static class SongViewHolder extends RecyclerView.ViewHolder {
@@ -226,4 +208,3 @@ public class SongMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
 }
-

@@ -1,21 +1,14 @@
-package com.tandev.musichub.model.search.search_multil;
+package com.tandev.musichub.model.search.search_multil.search_top;
 
 import com.tandev.musichub.model.chart.chart_home.Album;
 import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.chart.chart_home.PreviewInfo;
-import com.tandev.musichub.model.search.search_multil.search_top.SearchMultiDataTopArtist;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchMultiDataTop implements Serializable {
-    private String id;
-    private String name;
-    private boolean spotlight;
-    private String playlistId;
-    private String cover;
-
+public class SearchMultiDataTopSong implements Serializable {
     private String encodeId;
     private String title;
     private String alias;
@@ -24,6 +17,7 @@ public class SearchMultiDataTop implements Serializable {
     private String artistsNames;
     private ArrayList<Artists> artists;
     private boolean isWorldWide;
+    private PreviewInfo previewInfo;
     private String thumbnailM;
     private String link;
     private String thumbnail;
@@ -32,66 +26,18 @@ public class SearchMultiDataTop implements Serializable {
     private boolean isPrivate;
     private boolean preRelease;
     private String releaseDate;
-    private ArrayList<String> genreIds;
+    private List<String> genreIds;
+    private Album album;
     private String distributor;
-    private ArrayList<String> indicators;
     private boolean isIndie;
     private int streamingStatus;
     private boolean allowAudioAds;
     private boolean hasLyric;
-    private String objectType;
-
-    private String sortDescription;
-    private String releasedAt;
-    private boolean PR;
-    private int playItemMode;
-    private int subType;
-    private int uid;
-    private boolean isShuffle;
-    private String userName;
-    private boolean isAlbum;
-    private String textType;
-    private String isSingle;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isSpotlight() {
-        return spotlight;
-    }
-
-    public void setSpotlight(boolean spotlight) {
-        this.spotlight = spotlight;
-    }
-
-    public String getPlaylistId() {
-        return playlistId;
-    }
-
-    public void setPlaylistId(String playlistId) {
-        this.playlistId = playlistId;
-    }
-
-    public String getCover() {
-        return cover;
-    }
-
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
+    private int rakingStatus;
+    private int score;
+    private int totalTopZing;
+    private Artists artist;
+    private int historyCount;
 
     public String getEncodeId() {
         return encodeId;
@@ -155,6 +101,14 @@ public class SearchMultiDataTop implements Serializable {
 
     public void setWorldWide(boolean worldWide) {
         isWorldWide = worldWide;
+    }
+
+    public PreviewInfo getPreviewInfo() {
+        return previewInfo;
+    }
+
+    public void setPreviewInfo(PreviewInfo previewInfo) {
+        this.previewInfo = previewInfo;
     }
 
     public String getThumbnailM() {
@@ -221,12 +175,20 @@ public class SearchMultiDataTop implements Serializable {
         this.releaseDate = releaseDate;
     }
 
-    public ArrayList<String> getGenreIds() {
+    public List<String> getGenreIds() {
         return genreIds;
     }
 
-    public void setGenreIds(ArrayList<String> genreIds) {
+    public void setGenreIds(List<String> genreIds) {
         this.genreIds = genreIds;
+    }
+
+    public Album getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(Album album) {
+        this.album = album;
     }
 
     public String getDistributor() {
@@ -235,14 +197,6 @@ public class SearchMultiDataTop implements Serializable {
 
     public void setDistributor(String distributor) {
         this.distributor = distributor;
-    }
-
-    public ArrayList<String> getIndicators() {
-        return indicators;
-    }
-
-    public void setIndicators(ArrayList<String> indicators) {
-        this.indicators = indicators;
     }
 
     public boolean isIndie() {
@@ -277,99 +231,43 @@ public class SearchMultiDataTop implements Serializable {
         this.hasLyric = hasLyric;
     }
 
-    public String getObjectType() {
-        return objectType;
+    public int getRakingStatus() {
+        return rakingStatus;
     }
 
-    public void setObjectType(String objectType) {
-        this.objectType = objectType;
+    public void setRakingStatus(int rakingStatus) {
+        this.rakingStatus = rakingStatus;
     }
 
-    public String getSortDescription() {
-        return sortDescription;
+    public int getScore() {
+        return score;
     }
 
-    public void setSortDescription(String sortDescription) {
-        this.sortDescription = sortDescription;
+    public void setScore(int score) {
+        this.score = score;
     }
 
-    public String getReleasedAt() {
-        return releasedAt;
+    public int getTotalTopZing() {
+        return totalTopZing;
     }
 
-    public void setReleasedAt(String releasedAt) {
-        this.releasedAt = releasedAt;
+    public void setTotalTopZing(int totalTopZing) {
+        this.totalTopZing = totalTopZing;
     }
 
-    public boolean isPR() {
-        return PR;
+    public Artists getArtist() {
+        return artist;
     }
 
-    public void setPR(boolean PR) {
-        this.PR = PR;
+    public void setArtist(Artists artist) {
+        this.artist = artist;
     }
 
-    public int getPlayItemMode() {
-        return playItemMode;
+    public int getHistoryCount() {
+        return historyCount;
     }
 
-    public void setPlayItemMode(int playItemMode) {
-        this.playItemMode = playItemMode;
-    }
-
-    public int getSubType() {
-        return subType;
-    }
-
-    public void setSubType(int subType) {
-        this.subType = subType;
-    }
-
-    public int getUid() {
-        return uid;
-    }
-
-    public void setUid(int uid) {
-        this.uid = uid;
-    }
-
-    public boolean isShuffle() {
-        return isShuffle;
-    }
-
-    public void setShuffle(boolean shuffle) {
-        isShuffle = shuffle;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public boolean isAlbum() {
-        return isAlbum;
-    }
-
-    public void setAlbum(boolean album) {
-        isAlbum = album;
-    }
-
-    public String getTextType() {
-        return textType;
-    }
-
-    public void setTextType(String textType) {
-        this.textType = textType;
-    }
-
-    public String getIsSingle() {
-        return isSingle;
-    }
-
-    public void setIsSingle(String isSingle) {
-        this.isSingle = isSingle;
+    public void setHistoryCount(int historyCount) {
+        this.historyCount = historyCount;
     }
 }

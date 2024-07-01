@@ -3,7 +3,6 @@ package com.tandev.musichub.adapter.album;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
-//import com.tandev.musichub.activity.ViewAlbumActivity;
-//import com.tandev.musichub.activity.ViewAllAlbumActivity;
 import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.fragment.album.AllAlbumFragment;
 import com.tandev.musichub.model.album.DataAlbum;
-import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.ArrayList;
 
@@ -48,10 +45,10 @@ public class AlbumMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemViewType(int position) {
-        if (position < 5) {
-            return VIEW_TYPE_PLAYLIST;
-        } else {
+        if (dataAlbumArrayList.size() > 5 && position == 5) {
             return VIEW_TYPE_MORE;
+        } else {
+            return VIEW_TYPE_PLAYLIST;
         }
     }
 
@@ -106,7 +103,11 @@ public class AlbumMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (dataAlbumArrayList == null || dataAlbumArrayList.isEmpty()) {
             return 0;
         }
-        return Math.min(dataAlbumArrayList.size(), 5) + 1; // Showing 5 items + 1 "More" button
+        if (dataAlbumArrayList.size() > 5) {
+            return 6; // Showing 5 items + 1 "More" button
+        } else {
+            return dataAlbumArrayList.size();
+        }
     }
 
     public static class PlaylistViewHolder extends RecyclerView.ViewHolder {

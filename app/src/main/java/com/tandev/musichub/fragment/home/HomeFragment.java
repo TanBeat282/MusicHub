@@ -158,9 +158,10 @@ public class HomeFragment extends Fragment {
     private ArrayList<DataPlaylist> dataPlaylistArrayListTop100;
 
     private TextView txt_title_album;
+    private LinearLayout linear_more;
     private RecyclerView rv_album;
     private ArrayList<DataAlbum> dataAlbumArrayList;
-    private AlbumAllAdapter albumMoreAdapter;
+    private AlbumMoreAdapter albumMoreAdapter;
 
     private TextView txt_title_radio;
     private RecyclerView rv_radio;
@@ -278,6 +279,7 @@ public class HomeFragment extends Fragment {
         rv_top100 = view.findViewById(R.id.rv_top100);
 
         txt_title_album = view.findViewById(R.id.txt_title_album);
+        linear_more = view.findViewById(R.id.linear_more);
         rv_album = view.findViewById(R.id.rv_album);
 
         txt_title_radio = view.findViewById(R.id.txt_title_radio);
@@ -320,7 +322,7 @@ public class HomeFragment extends Fragment {
         playlistMoreAdapter = new PlaylistMoreAdapter(dataPlaylistArrayListTop100, requireActivity(), requireContext());
         rv_top100.setAdapter(playlistMoreAdapter);
 
-        albumMoreAdapter = new AlbumAllAdapter(dataAlbumArrayList, requireActivity(), requireContext());
+        albumMoreAdapter = new AlbumMoreAdapter(dataAlbumArrayList, requireActivity(), requireContext());
         rv_album.setAdapter(albumMoreAdapter);
         radioMoreAdapter = new RadioMoreAdapter(homeDataItemRadioItemArrayList, requireActivity(), requireContext());
         rv_radio.setAdapter(radioMoreAdapter);

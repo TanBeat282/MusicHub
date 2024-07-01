@@ -2,6 +2,7 @@ package com.tandev.musichub.model.search.search_multil;
 
 import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.chart.chart_home.Items;
+import com.tandev.musichub.model.hub.HubVideo;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 
 import java.io.Serializable;
@@ -11,7 +12,7 @@ public class SearchMultiData implements Serializable {
     private SearchMultiDataTop top;
     private ArrayList<Artists> artists;
     private ArrayList<Items> songs;
-    private ArrayList<SearchMultiDataVideo> videos;
+    private ArrayList<HubVideo> videos;
     private ArrayList<DataPlaylist> playlists;
     private SearchMultiDataCounter counter;
     private String sectionId;
@@ -40,11 +41,11 @@ public class SearchMultiData implements Serializable {
         this.songs = songs;
     }
 
-    public ArrayList<SearchMultiDataVideo> getVideos() {
+    public ArrayList<HubVideo> getVideos() {
         return videos;
     }
 
-    public void setVideos(ArrayList<SearchMultiDataVideo> videos) {
+    public void setVideos(ArrayList<HubVideo> videos) {
         this.videos = videos;
     }
 

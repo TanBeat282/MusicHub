@@ -1,15 +1,23 @@
 package com.tandev.musichub.fragment.search;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -18,6 +26,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Handler;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +38,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
@@ -57,6 +70,7 @@ import com.tandev.musichub.model.search.search_suggestion.suggestion.SearchSugge
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -65,12 +79,28 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SearchFragment extends Fragment implements SearchSuggestionAdapter.KeyWordItemClickListener, SearchRecommendAdapter.SearchRecommendClickListener {
+    private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
+    private static final int RECORD_AUDIO_REQUEST_CODE = 2000;
+
     private SearchView searchView;
+    private ImageView img_mic;
     private ImageView img_back;
+
+    //search recommend
+    private LinearLayout linear_search_recommend;
+    private RecyclerView rv_search_recommend;
+    private SearchRecommendAdapter searchRecommendAdapter;
+    private ArrayList<DataSearchRecommend> dataSearchRecommendArrayList;
+
 
     //search suggestion
     private RelativeLayout relative_search_suggestion;
     private RecyclerView rv_search_suggestion;
+
+    //search history
+    private View view_search_history;
+    private TextView txt_search_history;
+    private RecyclerView rv_search_history;
 
     //search multi
     private RelativeLayout relative_search_multi;
@@ -79,24 +109,22 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     private static final String allowCorrect = "1";
 
     //no data
-    private LinearLayout linear_search_recommend;
-    private RecyclerView rv_search_recommend;
     private ProgressBar progress_bar_loading;
-    private SearchRecommendAdapter searchRecommendAdapter;
-    private ArrayList<DataSearchRecommend> dataSearchRecommendArrayList = new ArrayList<>();
 
 
     private SearchSuggestionAdapter searchSuggestionAdapter;
-    private final ArrayList<SearchSuggestionsDataItemKeyWordsItem> searchSuggestionsDataItemKeyWordsItems = new ArrayList<>();
-    private final ArrayList<SearchSuggestionsDataItemSuggestionsArtist> searchSuggestionsDataItemSuggestionsArtists = new ArrayList<>();
-    private final ArrayList<SearchSuggestionsDataItemSuggestionsSong> searchSuggestionsDataItemSuggestionsSongs = new ArrayList<>();
-    private final ArrayList<SearchSuggestionsDataItemSuggestionsPlaylist> searchSuggestionsDataItemSuggestionsPlaylists = new ArrayList<>();
-    private SharedPreferencesManager sharedPreferencesManager;
-    private final Handler handler = new Handler();
+    private ArrayList<SearchSuggestionsDataItemKeyWordsItem> searchSuggestionsDataItemKeyWordsItems;
+    private ArrayList<SearchSuggestionsDataItemSuggestionsArtist> searchSuggestionsDataItemSuggestionsArtists;
+    private ArrayList<SearchSuggestionsDataItemSuggestionsSong> searchSuggestionsDataItemSuggestionsSongs;
+    private ArrayList<SearchSuggestionsDataItemSuggestionsPlaylist> searchSuggestionsDataItemSuggestionsPlaylists;
+    private Handler handler;
     private static final int DELAY = 500;
     private Runnable searchRunnable;
 
     private ApiService apiService;
+
+    private SpeechRecognizer speechRecognizer;
+
 
     private final BroadcastReceiver broadcastReceiverTabLayout = new BroadcastReceiver() {
         @Override
@@ -124,19 +152,22 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
         Helper.changeStatusBarColor(requireActivity(), R.color.black);
         apiService = RetrofitClient.getClient().create(ApiService.class);
 
-        initViewsSearchMulti(view);
         initViewsSearchSuggestion(view);
         conFigViewSearchSuggestion();
 
+        initViewsSearchHistory(view);
+
+
+        initViewsSearchMulti(view);
 
         initAdapter();
         onClick();
         getSearchRecommend();
+        handler = new Handler();
 
         searchRunnable = () -> {
             try {
@@ -146,14 +177,22 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
             }
         };
     }
+
     private void initViewsSearchSuggestion(View view) {
         searchView = view.findViewById(R.id.searchView);
+        img_mic = view.findViewById(R.id.img_mic);
         relative_search_suggestion = view.findViewById(R.id.relative_search_suggestion);
         rv_search_suggestion = view.findViewById(R.id.rv_search_suggestion);
         linear_search_recommend = view.findViewById(R.id.linear_search_recommend);
         rv_search_recommend = view.findViewById(R.id.rv_search_recommend);
         progress_bar_loading = view.findViewById(R.id.progress_bar_loading);
         img_back = view.findViewById(R.id.img_back);
+    }
+
+    private void initViewsSearchHistory(View view) {
+        view_search_history = view.findViewById(R.id.view_search_history);
+        txt_search_history = view.findViewById(R.id.txt_search_history);
+        rv_search_history = view.findViewById(R.id.rv_search_history);
     }
 
     private void initViewsSearchMulti(View view) {
@@ -214,11 +253,17 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     }
 
     private void initAdapter() {
+        searchSuggestionsDataItemKeyWordsItems = new ArrayList<>();
+        searchSuggestionsDataItemSuggestionsArtists = new ArrayList<>();
+        searchSuggestionsDataItemSuggestionsSongs = new ArrayList<>();
+        searchSuggestionsDataItemSuggestionsPlaylists = new ArrayList<>();
+
         rv_search_suggestion.setLayoutManager(new LinearLayoutManager(requireContext()));
         searchSuggestionAdapter = new SearchSuggestionAdapter(requireContext(), requireActivity(), searchSuggestionsDataItemKeyWordsItems, searchSuggestionsDataItemSuggestionsArtists, searchSuggestionsDataItemSuggestionsPlaylists, searchSuggestionsDataItemSuggestionsSongs);
         rv_search_suggestion.setAdapter(searchSuggestionAdapter);
         searchSuggestionAdapter.setListener(this);
 
+        dataSearchRecommendArrayList = new ArrayList<>();
         rv_search_recommend.setLayoutManager(new LinearLayoutManager(requireContext()));
         searchRecommendAdapter = new SearchRecommendAdapter(dataSearchRecommendArrayList, requireActivity(), requireContext());
         rv_search_recommend.setAdapter(searchRecommendAdapter);
@@ -231,7 +276,104 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
                 getActivity().getSupportFragmentManager().popBackStack();
             }
         });
+        img_mic.setOnClickListener(view -> {
+            if (checkPermission()) {
+                promptSpeechInput();
+            } else {
+                requestPermission();
+            }
+        });
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext());
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle params) {
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+            }
+
+            @Override
+            public void onRmsChanged(float rmsdB) {
+            }
+
+            @Override
+            public void onBufferReceived(byte[] buffer) {
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+            }
+
+            @Override
+            public void onError(int error) {
+            }
+
+            @Override
+            public void onResults(Bundle results) {
+                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (matches != null) {
+                    searchView.setQuery(matches.get(0), true);
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle partialResults) {
+            }
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {
+            }
+        });
     }
+
+    private boolean checkPermission() {
+        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_AUDIO_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == RECORD_AUDIO_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                promptSpeechInput();
+            } else {
+                Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Nói gì đó...");
+
+        try {
+            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
+            if (resultCode == RESULT_OK && null != data) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                if (result != null && !result.isEmpty()) {
+                    searchView.setQuery(result.get(0), true);
+                }
+            }
+        }
+    }
+
 
     private void getSearchRecommend() {
         ApiServiceFactory.createServiceAsync(new ApiServiceFactory.ApiServiceCallback() {
@@ -244,7 +386,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
                     retrofit2.Call<SearchRecommend> call = service.SEARCH_RECOMMEND_CALL(map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
                     call.enqueue(new Callback<SearchRecommend>() {
                         @Override
-                        public void onResponse(Call<SearchRecommend> call, Response<SearchRecommend> response) {
+                        public void onResponse(@NonNull Call<SearchRecommend> call, @NonNull Response<SearchRecommend> response) {
                             LogUtil.d(Constants.TAG, "getSearchRecommend: " + call.request().url());
                             if (response.isSuccessful()) {
                                 SearchRecommend searchRecommend = response.body();
@@ -261,7 +403,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
                         }
 
                         @Override
-                        public void onFailure(Call<SearchRecommend> call, Throwable throwable) {
+                        public void onFailure(@NonNull Call<SearchRecommend> call, @NonNull Throwable throwable) {
 
                         }
                     });
@@ -398,6 +540,9 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (speechRecognizer != null) {
+            speechRecognizer.destroy();
+        }
         LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(broadcastReceiverTabLayout);
     }
 }

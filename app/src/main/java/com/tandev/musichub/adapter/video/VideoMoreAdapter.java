@@ -3,7 +3,6 @@ package com.tandev.musichub.adapter.video;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
-import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
-import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.hub.HubVideo;
-import com.tandev.musichub.model.playlist.DataPlaylist;
 
 import java.util.ArrayList;
 
@@ -47,10 +43,10 @@ public class VideoMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemViewType(int position) {
-        if (position < 5) {
-            return VIEW_TYPE_PLAYLIST;
-        } else {
+        if (hubVideos.size() > 5 && position == 5) {
             return VIEW_TYPE_MORE;
+        } else {
+            return VIEW_TYPE_PLAYLIST;
         }
     }
 
@@ -90,18 +86,13 @@ public class VideoMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 if (hubVideo.getStreamingStatus() == 2) {
                     Toast.makeText(context, "Không thể phát video Premium!", Toast.LENGTH_SHORT).show();
                 } else {
-                    //
+                    // Handle video click
                 }
             });
         } else {
             MoreViewHolder moreViewHolder = (MoreViewHolder) holder;
             moreViewHolder.linear_more.setOnClickListener(v -> {
-//                Intent intent = new Intent(context, ViewAllPlaylistActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("data_playlist_arraylist", dataPlaylistArrayList);
-//                intent.putExtras(bundle);
-//
-//                context.startActivity(intent);
+                // Handle "More" item click
             });
         }
     }
@@ -111,7 +102,11 @@ public class VideoMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (hubVideos == null || hubVideos.isEmpty()) {
             return 0;
         }
-        return hubVideos.size() + 1;
+        if (hubVideos.size() > 5) {
+            return 6; // 5 items + 1 "More" item
+        } else {
+            return hubVideos.size();
+        }
     }
 
     public static class PlaylistViewHolder extends RecyclerView.ViewHolder {
