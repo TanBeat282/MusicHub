@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/linear_layout_categories"
-        android:layout_marginHorizontal="@dimen/_20sdp"
+        android:layout_marginHorizontal="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:visibility="gone">
 
@@ -29,7 +29,7 @@
         android:id="@+id/linear_layout_categories"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/_20sdp"
+        android:layout_marginHorizontal="@dimen/_10sdp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -132,7 +132,6 @@
         android:id="@+id/relative_loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/layoutPlayerBottom"
         android:visibility="visible">
 
         <ProgressBar

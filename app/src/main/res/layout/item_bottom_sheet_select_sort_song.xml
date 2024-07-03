@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginHorizontal="@dimen/_20sdp"
+        android:layout_marginHorizontal="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:orientation="vertical">
 
@@ -28,14 +28,14 @@
             android:id="@+id/radioGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp">
+            android:layout_marginTop="@dimen/_5sdp">
 
             <RadioButton
                 android:id="@+id/radio_new_release"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto"
-                android:paddingStart="@dimen/_10sdp"
+                android:paddingStart="@dimen/_5sdp"
                 android:text="Mới nhất"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_12ssp" />
@@ -45,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto"
-                android:paddingStart="@dimen/_10sdp"
+                android:paddingStart="@dimen/_5sdp"
                 android:text="Nghe nhiều"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_12ssp" />

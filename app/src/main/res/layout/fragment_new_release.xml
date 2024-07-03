@@ -23,7 +23,7 @@
                 android:id="@+id/txt_new_release"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_20sdp"
+                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:fontFamily="@font/roboto_bold"
                 android:text="Mới phát hành"
@@ -42,7 +42,7 @@
                     android:id="@+id/tab_layout_new_release_song"
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_20sdp"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
                     android:background="@color/black"
                     app:tabSelectedTextColor="@color/white" />
 
@@ -62,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginHorizontal="@dimen/_20sdp"
+        android:layout_marginHorizontal="@dimen/_10sdp"
         android:fitsSystemWindows="true">
 
         <LinearLayout

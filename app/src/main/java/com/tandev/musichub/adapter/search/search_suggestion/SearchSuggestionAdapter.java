@@ -27,6 +27,7 @@ import com.tandev.musichub.adapter.artist.SelectArtistAdapter;
 import com.tandev.musichub.fragment.artist.ArtistFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.helper.ui.PlayingStatusUpdater;
+import com.tandev.musichub.model.search.search_recommend.DataSearchRecommend;
 import com.tandev.musichub.model.search.search_suggestion.keyword.SearchSuggestionsDataItemKeyWordsItem;
 import com.tandev.musichub.model.search.search_suggestion.playlist.SearchSuggestionsDataItemSuggestionsPlaylist;
 import com.tandev.musichub.model.search.search_suggestion.suggestion.SearchSuggestionsDataItemSuggestionsArtist;
@@ -36,11 +37,13 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import java.util.ArrayList;
 
 public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements PlayingStatusUpdater {
-    private static final int VIEW_TYPE_KEYWORD = 0;
-    private static final int VIEW_TYPE_ARTIST = 1;
-    private static final int VIEW_TYPE_SONG = 2;
-    private static final int VIEW_TYPE_PLAYLIST = 3;
+    private static final int VIEW_TYPE_HISTORY = 0;
+    private static final int VIEW_TYPE_KEYWORD = 1;
+    private static final int VIEW_TYPE_ARTIST = 2;
+    private static final int VIEW_TYPE_SONG = 3;
+    private static final int VIEW_TYPE_PLAYLIST = 4;
 
+    private ArrayList<DataSearchRecommend> dataSearchHistoryArrayList;
     private ArrayList<SearchSuggestionsDataItemKeyWordsItem> searchSuggestionsDataItemKeyWordsItems;
     private ArrayList<SearchSuggestionsDataItemSuggestionsArtist> searchSuggestionsDataItemSuggestionsArtists;
     private ArrayList<SearchSuggestionsDataItemSuggestionsPlaylist> searchSuggestionsDataItemSuggestionsPlaylists;
@@ -48,13 +51,14 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
     private final Context context;
     private final Activity activity;
     private int selectedPosition = -1;
-    private int keywordCount, artistCount, songCount, playlistCount;
+    private int historyCount, keywordCount, artistCount, songCount, playlistCount;
 
     private KeyWordItemClickListener listener;
 
-    public SearchSuggestionAdapter(Context context, Activity activity, ArrayList<SearchSuggestionsDataItemKeyWordsItem> searchSuggestionsDataItemKeyWordsItems, ArrayList<SearchSuggestionsDataItemSuggestionsArtist> searchSuggestionsDataItemSuggestionsArtists, ArrayList<SearchSuggestionsDataItemSuggestionsPlaylist> searchSuggestionsDataItemSuggestionsPlaylists, ArrayList<SearchSuggestionsDataItemSuggestionsSong> searchSuggestionsDataItemSuggestionsSongs) {
+    public SearchSuggestionAdapter(Context context, Activity activity, ArrayList<DataSearchRecommend> dataSearchHistoryArrayList, ArrayList<SearchSuggestionsDataItemKeyWordsItem> searchSuggestionsDataItemKeyWordsItems, ArrayList<SearchSuggestionsDataItemSuggestionsArtist> searchSuggestionsDataItemSuggestionsArtists, ArrayList<SearchSuggestionsDataItemSuggestionsPlaylist> searchSuggestionsDataItemSuggestionsPlaylists, ArrayList<SearchSuggestionsDataItemSuggestionsSong> searchSuggestionsDataItemSuggestionsSongs) {
         this.context = context;
         this.activity = activity;
+        this.dataSearchHistoryArrayList = dataSearchHistoryArrayList;
         this.searchSuggestionsDataItemKeyWordsItems = searchSuggestionsDataItemKeyWordsItems;
         this.searchSuggestionsDataItemSuggestionsArtists = searchSuggestionsDataItemSuggestionsArtists;
         this.searchSuggestionsDataItemSuggestionsPlaylists = searchSuggestionsDataItemSuggestionsPlaylists;
@@ -64,6 +68,7 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     private void updateCounts() {
+        historyCount = dataSearchHistoryArrayList.size();
         keywordCount = searchSuggestionsDataItemKeyWordsItems.size();
         artistCount = searchSuggestionsDataItemSuggestionsArtists.size();
         songCount = searchSuggestionsDataItemSuggestionsSongs.size();
@@ -86,7 +91,8 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setFilterList(ArrayList<SearchSuggestionsDataItemKeyWordsItem> keyWordsItems, ArrayList<SearchSuggestionsDataItemSuggestionsArtist> artists, ArrayList<SearchSuggestionsDataItemSuggestionsPlaylist> playlists, ArrayList<SearchSuggestionsDataItemSuggestionsSong> songs) {
+    public void setFilterList(ArrayList<DataSearchRecommend> dataSearchHistoryArrayList, ArrayList<SearchSuggestionsDataItemKeyWordsItem> keyWordsItems, ArrayList<SearchSuggestionsDataItemSuggestionsArtist> artists, ArrayList<SearchSuggestionsDataItemSuggestionsPlaylist> playlists, ArrayList<SearchSuggestionsDataItemSuggestionsSong> songs) {
+        this.dataSearchHistoryArrayList = dataSearchHistoryArrayList;
         this.searchSuggestionsDataItemKeyWordsItems = keyWordsItems;
         this.searchSuggestionsDataItemSuggestionsArtists = artists;
         this.searchSuggestionsDataItemSuggestionsSongs = songs;
@@ -114,6 +120,9 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
         View view;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
+            case VIEW_TYPE_HISTORY:
+                view = inflater.inflate(R.layout.item_search_history, parent, false);
+                return new HistoryViewHolder(view);
             case VIEW_TYPE_KEYWORD:
                 view = inflater.inflate(R.layout.item_keyword, parent, false);
                 return new KeyWordViewHolder(view);
@@ -134,13 +143,24 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         switch (holder.getItemViewType()) {
+            case VIEW_TYPE_HISTORY:
+                HistoryViewHolder historyViewHolder = (HistoryViewHolder) holder;
+                DataSearchRecommend historyItem = dataSearchHistoryArrayList.get(position);
+                historyViewHolder.txt_history.setText(historyItem.getKeyword());
+
+                historyViewHolder.linear_history.setOnClickListener(view -> {
+                    if (listener != null) {
+                        listener.onKeyWordItemClick(historyItem.getKeyword());
+                    }
+                });
+                break;
             case VIEW_TYPE_KEYWORD:
                 KeyWordViewHolder keywordViewHolder = (KeyWordViewHolder) holder;
-                SearchSuggestionsDataItemKeyWordsItem keywordItem = searchSuggestionsDataItemKeyWordsItems.get(position);
+                SearchSuggestionsDataItemKeyWordsItem keywordItem = searchSuggestionsDataItemKeyWordsItems.get(position - historyCount);
                 keywordViewHolder.txt_keyword.setText(keywordItem.getKeyword());
 
                 // Kiểm tra xem position có phải là item cuối cùng không
-                if (position == searchSuggestionsDataItemKeyWordsItems.size() - 1) {
+                if (position == dataSearchHistoryArrayList.size() - 1) {
                     // Nếu là item cuối cùng, thêm marginBottom
                     ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) keywordViewHolder.itemView.getLayoutParams();
                     layoutParams.bottomMargin = 100; // Đặt giá trị marginBottom bạn muốn
@@ -155,7 +175,7 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
                 break;
             case VIEW_TYPE_ARTIST:
                 ArtistViewHolder artistViewHolder = (ArtistViewHolder) holder;
-                int artistPosition = position - keywordCount;
+                int artistPosition = position - historyCount - keywordCount;
                 if (artistPosition >= 0 && artistPosition < artistCount) {
                     SearchSuggestionsDataItemSuggestionsArtist artistItem = searchSuggestionsDataItemSuggestionsArtists.get(artistPosition);
                     artistViewHolder.nameTextView.setText(artistItem.getName());
@@ -173,14 +193,15 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                             if (context instanceof MainActivity) {
                                 ((MainActivity) context).replaceFragmentWithBundle(artistFragment, bundle);
-                            };
+                            }
+                            ;
                         }
                     });
                 }
                 break;
             case VIEW_TYPE_PLAYLIST:
                 PlaylistViewHolder playlistViewHolder = (PlaylistViewHolder) holder;
-                int playlistPosition = position - keywordCount - artistCount;
+                int playlistPosition = position - historyCount - keywordCount - artistCount;
                 if (playlistPosition >= 0 && playlistPosition < playlistCount) {
                     SearchSuggestionsDataItemSuggestionsPlaylist playlistItem = searchSuggestionsDataItemSuggestionsPlaylists.get(playlistPosition);
                     playlistViewHolder.nameTextView.setText(playlistItem.getTitle());
@@ -214,7 +235,7 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
             case VIEW_TYPE_SONG:
             default:
                 SongViewHolder songViewHolder = (SongViewHolder) holder;
-                int songPosition = position - keywordCount - artistCount - playlistCount;
+                int songPosition = position - historyCount - keywordCount - artistCount - playlistCount;
                 if (songPosition >= 0 && songPosition < songCount) {
                     SearchSuggestionsDataItemSuggestionsSong songItem = searchSuggestionsDataItemSuggestionsSongs.get(songPosition);
                     songViewHolder.nameTextView.setText(songItem.getTitle());
@@ -247,19 +268,32 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public int getItemCount() {
-        return keywordCount + artistCount + songCount + playlistCount;
+        return historyCount + keywordCount + artistCount + songCount + playlistCount;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position < keywordCount) {
+        if (position < historyCount) {
+            return VIEW_TYPE_HISTORY;
+        } else if (position < historyCount + keywordCount) {
             return VIEW_TYPE_KEYWORD;
-        } else if (position < keywordCount + artistCount) {
+        } else if (position < historyCount + keywordCount + artistCount) {
             return VIEW_TYPE_ARTIST;
-        } else if (position < keywordCount + artistCount + playlistCount) {
-            return VIEW_TYPE_PLAYLIST;
-        } else {
+        } else if (position < historyCount + keywordCount + artistCount + songCount) {
             return VIEW_TYPE_SONG;
+        } else {
+            return VIEW_TYPE_PLAYLIST;
+        }
+    }
+
+    public static class HistoryViewHolder extends RecyclerView.ViewHolder {
+        private final TextView txt_history;
+        private final LinearLayout linear_history;
+
+        public HistoryViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txt_history = itemView.findViewById(R.id.txt_keyword);
+            linear_history = itemView.findViewById(R.id.linear_keyword);
         }
     }
 

@@ -2,11 +2,16 @@ package com.tandev.musichub.sharedpreferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
+import com.google.gson.JsonSyntaxException;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tandev.musichub.model.search.search_recommend.DataSearchRecommend;
+import com.tandev.musichub.model.search.search_recommend.SearchRecommend;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class SharedPreferencesManager {
@@ -118,15 +123,24 @@ public class SharedPreferencesManager {
     // save data search
     public void saveSearchHistory(String keyword) {
         // Lấy danh sách lịch sử tìm kiếm hiện tại
-        ArrayList<String> searchHistory = restoreSearchHistory();
+        ArrayList<DataSearchRecommend> searchHistory = restoreSearchHistory();
 
         // Kiểm tra nếu danh sách lịch sử tìm kiếm là null
         if (searchHistory == null) {
             searchHistory = new ArrayList<>();
         }
 
+        // Tạo đối tượng DataSearchRecommend mới
+        DataSearchRecommend newSearch = new DataSearchRecommend(keyword, "");
+
+        // Kiểm tra nếu từ khóa đã có trong danh sách
+        if (searchHistory.contains(newSearch)) {
+            // Di chuyển từ khóa lên đầu danh sách
+            searchHistory.remove(newSearch);
+        }
+
         // Thêm từ khóa tìm kiếm mới vào đầu danh sách
-        searchHistory.add(0, keyword);
+        searchHistory.add(0, newSearch);
 
         // Giới hạn số lượng mục trong danh sách lịch sử tìm kiếm (nếu cần)
         int maxSearchHistorySize = 20; // Số lượng tối đa mục trong danh sách lịch sử tìm kiếm
@@ -144,18 +158,33 @@ public class SharedPreferencesManager {
         editor.apply();
     }
 
-    public ArrayList<String> restoreSearchHistory() {
+
+    // restoreSearchHistory function
+    public ArrayList<DataSearchRecommend> restoreSearchHistory() {
         SharedPreferences sharedPreferences = context.getSharedPreferences("searchHistory", Context.MODE_PRIVATE);
         String searchHistoryJson = sharedPreferences.getString("search_history", null);
 
         if (searchHistoryJson != null) {
             Gson gson = new Gson();
-            return gson.fromJson(searchHistoryJson, new TypeToken<ArrayList<String>>() {
-            }.getType());
-        } else {
-            return null;
+            try {
+                Type type = new TypeToken<ArrayList<DataSearchRecommend>>() {}.getType();
+                return gson.fromJson(searchHistoryJson, type);
+            } catch (JsonSyntaxException e) {
+                // Log the error
+                Log.e("SharedPreferencesManager", "Failed to parse search history JSON", e);
+                // Optionally clear the corrupted JSON
+                sharedPreferences.edit().remove("search_history").apply();
+            }
         }
+        return new ArrayList<>();
     }
+    //delete data search
+    public void deleteSearchHistory() {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("searchHistory", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear().apply();
+    }
+
 
 
     //position song
@@ -237,6 +266,7 @@ public class SharedPreferencesManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences("music_is_navigation_transparent", Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean("is_navigation_transparent", false);
     }
+
     public void saveIsStatusBarGrayState(boolean is_status_bar_gray) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("music_is_status_bar_gray", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();

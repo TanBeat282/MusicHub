@@ -11,10 +11,12 @@ import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class Helper {
 
@@ -158,6 +160,10 @@ public class Helper {
         // Sử dụng String.format để đảm bảo phút và giây đều có 2 chữ số
         return String.format("%02d:%02d", minutes, seconds);
     }
-
+    public static String normalizeString(String input) {
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(normalized).replaceAll("").toLowerCase();
+    }
 
 }

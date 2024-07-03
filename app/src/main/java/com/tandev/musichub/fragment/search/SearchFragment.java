@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,6 +46,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tandev.musichub.R;
+import com.tandev.musichub.adapter.search.search_history.SearchHistoryAdapter;
 import com.tandev.musichub.adapter.search.search_multi.SearchMultiViewPageAdapter;
 import com.tandev.musichub.adapter.search.search_recommend.SearchRecommendAdapter;
 import com.tandev.musichub.adapter.search.search_suggestion.SearchSuggestionAdapter;
@@ -68,6 +70,7 @@ import com.tandev.musichub.model.search.search_suggestion.suggestion.SearchSugge
 import com.tandev.musichub.model.search.search_suggestion.suggestion.SearchSuggestionsDataItemSuggestionsItem;
 import com.tandev.musichub.model.search.search_suggestion.suggestion.SearchSuggestionsDataItemSuggestionsSong;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
+import com.tandev.musichub.view_model.search.SearchRecommendViewModel;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -78,9 +81,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SearchFragment extends Fragment implements SearchSuggestionAdapter.KeyWordItemClickListener, SearchRecommendAdapter.SearchRecommendClickListener {
+public class SearchFragment extends Fragment implements SearchSuggestionAdapter.KeyWordItemClickListener, SearchRecommendAdapter.SearchRecommendClickListener, SearchHistoryAdapter.SearchRecommendClickListener {
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
     private static final int RECORD_AUDIO_REQUEST_CODE = 2000;
+    private SharedPreferencesManager sharedPreferencesManager;
+    private SearchRecommendViewModel searchRecommendViewModel;
 
     private SearchView searchView;
     private ImageView img_mic;
@@ -100,7 +105,10 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     //search history
     private View view_search_history;
     private TextView txt_search_history;
+    private TextView txt_delete_search_history;
     private RecyclerView rv_search_history;
+    private SearchHistoryAdapter searchHistoryAdapter;
+    private ArrayList<DataSearchRecommend> dataSearchHistoryArrayList;
 
     //search multi
     private RelativeLayout relative_search_multi;
@@ -141,6 +149,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        searchRecommendViewModel = new ViewModelProvider(this).get(SearchRecommendViewModel.class);
     }
 
     @Override
@@ -155,6 +164,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
         Helper.changeStatusBarColor(requireActivity(), R.color.black);
         apiService = RetrofitClient.getClient().create(ApiService.class);
+        sharedPreferencesManager = new SharedPreferencesManager(requireContext());
 
         initViewsSearchSuggestion(view);
         conFigViewSearchSuggestion();
@@ -166,7 +176,8 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
 
         initAdapter();
         onClick();
-        getSearchRecommend();
+        getSearchHistory();
+        initViewModel();
         handler = new Handler();
 
         searchRunnable = () -> {
@@ -176,6 +187,20 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
                 throw new RuntimeException(e);
             }
         };
+    }
+
+    private void initViewModel() {
+        searchRecommendViewModel.getSearchRecommendMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUISearchRecommend(artistDetail);
+            } else {
+                getSearchRecommend();
+            }
+        });
+
+        if (searchRecommendViewModel.getSearchRecommendMutableLiveData().getValue() == null) {
+            getSearchRecommend();
+        }
     }
 
     private void initViewsSearchSuggestion(View view) {
@@ -192,7 +217,9 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     private void initViewsSearchHistory(View view) {
         view_search_history = view.findViewById(R.id.view_search_history);
         txt_search_history = view.findViewById(R.id.txt_search_history);
+        txt_delete_search_history = view.findViewById(R.id.txt_delete_search_history);
         rv_search_history = view.findViewById(R.id.rv_search_history);
+
     }
 
     private void initViewsSearchMulti(View view) {
@@ -219,14 +246,16 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
             public boolean onQueryTextSubmit(String query) {
                 initViewPager(query);
                 sendBroadcast(query);
-                relative_search_suggestion.setVisibility(View.GONE);
-                relative_search_multi.setVisibility(View.VISIBLE);
+                saveSearchHistory(query);
 
                 // Close the keyboard
                 InputMethodManager inputMethodManager = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (inputMethodManager != null) {
                     inputMethodManager.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                 }
+                relative_search_suggestion.setVisibility(View.GONE);
+                relative_search_multi.setVisibility(View.VISIBLE);
+
                 return true;
             }
 
@@ -236,6 +265,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
                 relative_search_multi.setVisibility(View.GONE);
 
                 if (newText == null || newText.isEmpty()) {
+                    initViewModel();
                     linear_search_recommend.setVisibility(View.VISIBLE);
                     progress_bar_loading.setVisibility(View.GONE);
                     rv_search_suggestion.setVisibility(View.GONE);
@@ -257,17 +287,24 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         searchSuggestionsDataItemSuggestionsArtists = new ArrayList<>();
         searchSuggestionsDataItemSuggestionsSongs = new ArrayList<>();
         searchSuggestionsDataItemSuggestionsPlaylists = new ArrayList<>();
+        dataSearchRecommendArrayList = new ArrayList<>();
+        dataSearchHistoryArrayList = new ArrayList<>();
+
 
         rv_search_suggestion.setLayoutManager(new LinearLayoutManager(requireContext()));
-        searchSuggestionAdapter = new SearchSuggestionAdapter(requireContext(), requireActivity(), searchSuggestionsDataItemKeyWordsItems, searchSuggestionsDataItemSuggestionsArtists, searchSuggestionsDataItemSuggestionsPlaylists, searchSuggestionsDataItemSuggestionsSongs);
+        searchSuggestionAdapter = new SearchSuggestionAdapter(requireContext(), requireActivity(), dataSearchHistoryArrayList, searchSuggestionsDataItemKeyWordsItems, searchSuggestionsDataItemSuggestionsArtists, searchSuggestionsDataItemSuggestionsPlaylists, searchSuggestionsDataItemSuggestionsSongs);
         rv_search_suggestion.setAdapter(searchSuggestionAdapter);
         searchSuggestionAdapter.setListener(this);
-
-        dataSearchRecommendArrayList = new ArrayList<>();
         rv_search_recommend.setLayoutManager(new LinearLayoutManager(requireContext()));
         searchRecommendAdapter = new SearchRecommendAdapter(dataSearchRecommendArrayList, requireActivity(), requireContext());
         rv_search_recommend.setAdapter(searchRecommendAdapter);
         searchRecommendAdapter.setListener(this);
+
+        rv_search_history.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        searchHistoryAdapter = new SearchHistoryAdapter(dataSearchHistoryArrayList, requireActivity(), requireContext());
+        rv_search_history.setAdapter(searchHistoryAdapter);
+        searchHistoryAdapter.setListener(this);
+
     }
 
     private void onClick() {
@@ -325,6 +362,30 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
             public void onEvent(int eventType, Bundle params) {
             }
         });
+        txt_delete_search_history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Tạo dialog xác nhận
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Xác nhận")
+                        .setMessage("Bạn có chắc chắn muốn xóa tất cả lịch sử tìm kiếm không?")
+                        .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                               sharedPreferencesManager.deleteSearchHistory();
+                                getSearchHistory();
+                            }
+                        })
+                        .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        });
+
     }
 
     private boolean checkPermission() {
@@ -391,13 +452,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
                             if (response.isSuccessful()) {
                                 SearchRecommend searchRecommend = response.body();
                                 if (searchRecommend != null) {
-                                    ArrayList<DataSearchRecommend> data = searchRecommend.getData();
-                                    if (!data.isEmpty()) {
-                                        requireActivity().runOnUiThread(() -> {
-                                            dataSearchRecommendArrayList = data;
-                                            searchRecommendAdapter.setFilterList(dataSearchRecommendArrayList);
-                                        });
-                                    }
+                                    searchRecommendViewModel.setSearchRecommendMutableLiveData(searchRecommend);
                                 }
                             }
                         }
@@ -419,6 +474,23 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         });
     }
 
+    private void getSearchHistory() {
+        // Lấy danh sách lịch sử tìm kiếm hiện tại
+        ArrayList<DataSearchRecommend> searchHistory = sharedPreferencesManager.restoreSearchHistory();
+
+        // Kiểm tra nếu danh sách lịch sử tìm kiếm là null
+        if (searchHistory == null) {
+            view_search_history.setVisibility(View.GONE);
+            txt_search_history.setVisibility(View.GONE);
+            rv_search_history.setVisibility(View.GONE);
+        } else {
+            dataSearchHistoryArrayList = searchHistory;
+            searchHistoryAdapter.setFilterList(dataSearchHistoryArrayList);
+            view_search_history.setVisibility(View.VISIBLE);
+            txt_search_history.setVisibility(View.VISIBLE);
+            rv_search_history.setVisibility(View.VISIBLE);
+        }
+    }
 
     private void searchSuggestion(String query) throws Exception {
         // Clear previous data before making a new search request
@@ -447,37 +519,9 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
                         Gson gson = gsonBuilder.create();
 
                         SearchSuggestions searchSuggestions = gson.fromJson(jsonData, SearchSuggestions.class);
-
-                        requireActivity().runOnUiThread(() -> {
-                            ArrayList<SearchSuggestionsDataItem> items = searchSuggestions.getData().getItems();
-                            for (SearchSuggestionsDataItem item : items) {
-                                if (item instanceof SearchSuggestionsDataItemKeyWords) {
-                                    SearchSuggestionsDataItemKeyWords searchSuggestionsDataItemKeyWords = (SearchSuggestionsDataItemKeyWords) item;
-                                    searchSuggestionsDataItemKeyWordsItems.addAll(searchSuggestionsDataItemKeyWords.getKeywords());
-
-                                } else if (item instanceof SearchSuggestionsDataItemSuggestions) {
-                                    SearchSuggestionsDataItemSuggestions searchSuggestionsDataItemSuggestions = (SearchSuggestionsDataItemSuggestions) item;
-
-                                    ArrayList<SearchSuggestionsDataItemSuggestionsItem> suggestions = searchSuggestionsDataItemSuggestions.getSuggestions();
-                                    for (SearchSuggestionsDataItemSuggestionsItem item2 : suggestions) {
-                                        if (item2 instanceof SearchSuggestionsDataItemSuggestionsArtist) {
-                                            SearchSuggestionsDataItemSuggestionsArtist searchSuggestionsDataItemSuggestionsArtist = (SearchSuggestionsDataItemSuggestionsArtist) item2;
-                                            searchSuggestionsDataItemSuggestionsArtists.add(searchSuggestionsDataItemSuggestionsArtist);
-                                        } else if (item2 instanceof SearchSuggestionsDataItemSuggestionsSong) {
-                                            SearchSuggestionsDataItemSuggestionsSong searchSuggestionsDataItemSuggestionsSong = (SearchSuggestionsDataItemSuggestionsSong) item2;
-                                            searchSuggestionsDataItemSuggestionsSongs.add(searchSuggestionsDataItemSuggestionsSong);
-                                        } else if (item2 instanceof SearchSuggestionsDataItemSuggestionsPlaylist) {
-                                            SearchSuggestionsDataItemSuggestionsPlaylist searchSuggestionsDataItemSuggestionsPlaylist = (SearchSuggestionsDataItemSuggestionsPlaylist) item2;
-                                            searchSuggestionsDataItemSuggestionsPlaylists.add(searchSuggestionsDataItemSuggestionsPlaylist);
-                                        }
-                                    }
-                                }
-                            }
-                            linear_search_recommend.setVisibility(View.GONE);
-                            progress_bar_loading.setVisibility(View.GONE);
-                            rv_search_suggestion.setVisibility(View.VISIBLE);
-                            searchSuggestionAdapter.setFilterList(searchSuggestionsDataItemKeyWordsItems, searchSuggestionsDataItemSuggestionsArtists, searchSuggestionsDataItemSuggestionsPlaylists, searchSuggestionsDataItemSuggestionsSongs);
-                        });
+                        if (searchSuggestions != null) {
+                            updateUISearchSuggestion(searchSuggestions, query);
+                        }
 
                     } catch (Exception e) {
                         Log.e("TAG", "Error: " + e.getMessage(), e);
@@ -495,6 +539,58 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         });
     }
 
+    private void updateUISearchRecommend(SearchRecommend searchRecommend) {
+        ArrayList<DataSearchRecommend> data = searchRecommend.getData();
+        if (!data.isEmpty()) {
+            dataSearchRecommendArrayList = data;
+            searchRecommendAdapter.setFilterList(dataSearchRecommendArrayList);
+        }
+    }
+
+    private void updateUISearchSuggestion(SearchSuggestions searchSuggestions, String keyword) {
+        ArrayList<SearchSuggestionsDataItem> items = searchSuggestions.getData().getItems();
+        for (SearchSuggestionsDataItem item : items) {
+            if (item instanceof SearchSuggestionsDataItemKeyWords) {
+                SearchSuggestionsDataItemKeyWords searchSuggestionsDataItemKeyWords = (SearchSuggestionsDataItemKeyWords) item;
+                searchSuggestionsDataItemKeyWordsItems.addAll(searchSuggestionsDataItemKeyWords.getKeywords());
+
+            } else if (item instanceof SearchSuggestionsDataItemSuggestions) {
+                SearchSuggestionsDataItemSuggestions searchSuggestionsDataItemSuggestions = (SearchSuggestionsDataItemSuggestions) item;
+
+                ArrayList<SearchSuggestionsDataItemSuggestionsItem> suggestions = searchSuggestionsDataItemSuggestions.getSuggestions();
+                for (SearchSuggestionsDataItemSuggestionsItem item2 : suggestions) {
+                    if (item2 instanceof SearchSuggestionsDataItemSuggestionsArtist) {
+                        SearchSuggestionsDataItemSuggestionsArtist searchSuggestionsDataItemSuggestionsArtist = (SearchSuggestionsDataItemSuggestionsArtist) item2;
+                        searchSuggestionsDataItemSuggestionsArtists.add(searchSuggestionsDataItemSuggestionsArtist);
+                    } else if (item2 instanceof SearchSuggestionsDataItemSuggestionsSong) {
+                        SearchSuggestionsDataItemSuggestionsSong searchSuggestionsDataItemSuggestionsSong = (SearchSuggestionsDataItemSuggestionsSong) item2;
+                        searchSuggestionsDataItemSuggestionsSongs.add(searchSuggestionsDataItemSuggestionsSong);
+                    } else if (item2 instanceof SearchSuggestionsDataItemSuggestionsPlaylist) {
+                        SearchSuggestionsDataItemSuggestionsPlaylist searchSuggestionsDataItemSuggestionsPlaylist = (SearchSuggestionsDataItemSuggestionsPlaylist) item2;
+                        searchSuggestionsDataItemSuggestionsPlaylists.add(searchSuggestionsDataItemSuggestionsPlaylist);
+                    }
+                }
+            }
+        }
+        ArrayList<DataSearchRecommend> filteredData = new ArrayList<>();
+        String normalizedKeyword = Helper.normalizeString(keyword);
+        for (DataSearchRecommend dataSearchRecommend : dataSearchHistoryArrayList) {
+            if (Helper.normalizeString(dataSearchRecommend.getKeyword()).contains(normalizedKeyword)) {
+                filteredData.add(dataSearchRecommend);
+            }
+        }
+
+        searchSuggestionAdapter.setFilterList(filteredData, searchSuggestionsDataItemKeyWordsItems, searchSuggestionsDataItemSuggestionsArtists, searchSuggestionsDataItemSuggestionsPlaylists, searchSuggestionsDataItemSuggestionsSongs);
+
+        linear_search_recommend.setVisibility(View.GONE);
+        progress_bar_loading.setVisibility(View.GONE);
+        rv_search_suggestion.setVisibility(View.VISIBLE);
+    }
+
+    private void saveSearchHistory(String keyword) {
+        sharedPreferencesManager.saveSearchHistory(keyword);
+    }
+
     private void sendBroadcast(String query) {
         Intent intent = new Intent("search_query");
         Bundle bundle = new Bundle();
@@ -508,6 +604,8 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     public void onKeyWordItemClick(String keyword) {
         initViewPager(keyword);
         sendBroadcast(keyword);
+        saveSearchHistory(keyword);
+
         relative_search_suggestion.setVisibility(View.GONE);
         relative_search_multi.setVisibility(View.VISIBLE);
         // Close the keyboard
@@ -528,12 +626,14 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         if (inputMethodManager != null) {
             inputMethodManager.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
         }
+        saveSearchHistory(keyword);
         searchView.setQuery(keyword, true);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        getSearchHistory();
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(broadcastReceiverTabLayout, new IntentFilter("tab_layout_position"));
     }
 

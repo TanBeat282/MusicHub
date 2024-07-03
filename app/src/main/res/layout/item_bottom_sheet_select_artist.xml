@@ -5,31 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_bottomsheet_option_song"
-    android:paddingBottom="10dp">
+    android:paddingBottom="@dimen/_10sdp">
 
     <LinearLayout
         android:id="@+id/layoutPlayer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="@dimen/_10sdp"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:text="Nghệ sĩ"
             android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:textSize="@dimen/_14ssp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_select_artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="20dp" />
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp" />
 
     </LinearLayout>
 </RelativeLayout>

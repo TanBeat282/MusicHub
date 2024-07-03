@@ -18,7 +18,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/_20sdp">
+            android:layout_marginHorizontal="@dimen/_10sdp">
 
             <TextView
                 android:id="@+id/txt_new_release"
@@ -70,7 +70,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginHorizontal="20dp"
+            android:layout_marginHorizontal="@dimen/_10sdp"
             android:orientation="horizontal">
 
             <ImageView

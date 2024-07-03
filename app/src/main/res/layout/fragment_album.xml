@@ -22,7 +22,7 @@
         android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="20dp">
+        android:layout_marginHorizontal="@dimen/_10sdp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -317,6 +317,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_marginHorizontal="@dimen/_10sdp"
             android:orientation="horizontal">
 
             <ImageView
@@ -324,7 +325,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="20dp"
                 android:src="@drawable/ic_back" />
 
             <TextView
@@ -357,7 +357,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="20dp"
                 android:src="@drawable/baseline_more_vert_24" />
         </LinearLayout>
 
