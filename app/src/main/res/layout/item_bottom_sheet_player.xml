@@ -1,21 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/media_player_bar_view"
+    android:id="@+id/layout_bottom_player"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:background="@color/gray">
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/material_card_view"
+        style="@style/Widget.Material3.CardView.Filled"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_3sdp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:cardBackgroundColor="@color/colorSecondaryText">
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <RelativeLayout
+        android:id="@+id/relative_player"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/material_card_view"
+        android:visibility="gone">
 
         <LinearLayout
-            android:id="@+id/layoutPlayer"
+            android:id="@+id/layout_player"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/gray"
+            android:layout_margin="@dimen/_10sdp"
             android:orientation="horizontal">
 
             <com.makeramen.roundedimageview.RoundedImageView
@@ -23,8 +38,8 @@
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
                 android:layout_gravity="center"
-                android:layout_marginVertical="@dimen/_6sdp"
                 android:layout_marginStart="@dimen/_10sdp"
+                android:src="@color/white"
                 app:riv_corner_radius="@dimen/_2sdp" />
 
             <LinearLayout
@@ -89,16 +104,16 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/linear_close"
+                    android:id="@+id/linear_next"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@null">
 
                     <ImageView
-                        android:id="@+id/img_close"
+                        android:id="@+id/img_next"
                         android:layout_width="@dimen/_25sdp"
                         android:layout_height="@dimen/_25sdp"
-                        android:src="@drawable/baseline_close_24"
+                        android:src="@drawable/baseline_skip_next_24"
                         app:tint="@color/white" />
                 </LinearLayout>
 
@@ -107,15 +122,49 @@
 
         </LinearLayout>
 
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/progress_indicator"
+        <LinearLayout
+            android:id="@+id/layout_view_pager"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/layout_player"
+            android:background="@drawable/background_bottomsheet"
+            android:orientation="vertical">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@color/black"
+                app:tabGravity="fill"
+                app:tabIndicatorFullWidth="true"
+                app:tabMode="fixed"
+                app:tabTextColor="@color/colorSecondaryText1" />
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/_10sdp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relative_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/material_card_view"
+        android:layout_alignParentBottom="true"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:indicatorColor="@color/white"
-            app:trackColor="@color/colorSecondaryText2"
-            app:trackThickness="@dimen/_1sdp" />
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:indeterminateTint="@android:color/white"
+            android:progressTint="@android:color/white" />
+    </RelativeLayout>
 
-    </LinearLayout>
 
-
-</FrameLayout>
+</RelativeLayout>

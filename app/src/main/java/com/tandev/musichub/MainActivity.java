@@ -24,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -38,6 +39,7 @@ import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.bottomsheet.BottomSheetInfoSong;
+import com.tandev.musichub.bottomsheet.BottomSheetPlayer;
 import com.tandev.musichub.constants.Constants;
 import com.tandev.musichub.fragment.home.HomeFragment;
 import com.tandev.musichub.helper.ui.Helper;
@@ -88,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView txt_current_time, txt_total_time;
     private LottieAnimationView lottie_play_pause;
     private ImageButton img_btn_next, img_btn_repeat, img_btn_previous, img_btn_shuffle;
+
+    //bottom sheet player
+    private LinearLayout linear_bottom;
 
     private Items items;
     private boolean isPlaying;
@@ -159,15 +164,20 @@ public class MainActivity extends AppCompatActivity {
         //main
         initViewsMain();
 
-        //bottom player
-        initViewBottomPlayer();
-        conFigViewsBottomPlayer();
-        onClickBottomPlayer();
+        //bottom main
+        initViewBottomMain();
+        conFigViewsBottomMain();
+        onClickBottomMain();
 
         //player
         initViewPlayer();
         conFigViewsPlayer();
         onClickPlayer();
+
+        //bottom sheet player
+        initViewBottomSheetPlayer();
+        conFigViewsBottomSheetPlayer();
+        onClickBottomSheetPlayer();
 
         //data
         getDataSharedPreferencesSong();
@@ -203,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //bottom player
-    private void initViewBottomPlayer() {
+    private void initViewBottomMain() {
         View layoutPlayerBottom = layout_bottom_player_main.findViewById(R.id.layoutPlayerBottom);
         img_album_song = layoutPlayerBottom.findViewById(R.id.img_album_song);
         txt_title = layoutPlayerBottom.findViewById(R.id.txt_title_song);
@@ -215,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         progress_indicator = layoutPlayerBottom.findViewById(R.id.progress_indicator);
     }
 
-    private void conFigViewsBottomPlayer() {
+    private void conFigViewsBottomMain() {
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @SuppressLint("SwitchIntDef")
             @Override
@@ -311,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void onClickBottomPlayer() {
+    private void onClickBottomMain() {
         layout_bottom_player_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -530,19 +540,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void getIntentNotification() {
-        Intent intent = getIntent();
-        if (intent != null && intent.getExtras() != null) {
-            boolean is_click_notification = intent.getBooleanExtra("is_click_notification", false);
-            boolean fromNotification = intent.getBooleanExtra("from_notification", false);
-            if (fromNotification) {
-                if (is_click_notification) {
-                    showBottomSheetNowPlaying(true);
-                }
-            }
-        }
-    }
-
     private void getSongDetail(String encodeId) {
         ApiServiceFactory.createServiceAsync(new ApiServiceFactory.ApiServiceCallback() {
             @Override
@@ -601,6 +598,29 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //bottom sheet player
+    private void initViewBottomSheetPlayer() {
+        RelativeLayout relative_player = layout_bottom_player_main.findViewById(R.id.relative_player);
+        linear_bottom = relative_player.findViewById(R.id.linear_bottom);
+    }
+
+    private void conFigViewsBottomSheetPlayer() {
+    }
+
+    private void onClickBottomSheetPlayer() {
+        linear_bottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showBottomSheetPlayer();
+            }
+        });
+    }
+
+    private void showBottomSheetPlayer() {
+        BottomSheetPlayer bottomSheetPlayer = new BottomSheetPlayer(MainActivity.this, MainActivity.this);
+        bottomSheetPlayer.show(getSupportFragmentManager(), bottomSheetPlayer.getTag());
+    }
+
     private void showBottomSheetInfo() {
         BottomSheetInfoSong bottomSheetInfoSong = new BottomSheetInfoSong(MainActivity.this, MainActivity.this, items);
         bottomSheetInfoSong.show(getSupportFragmentManager(), bottomSheetInfoSong.getTag());
@@ -622,18 +642,22 @@ public class MainActivity extends AppCompatActivity {
         return formattedTime;
     }
 
-    private void setBackground(int color_background) {
+    private void setBackground(int color_background, int color_bottomsheet) {
         image_background.setBackgroundColor(color_background);
         Window window = getWindow();
         window.setStatusBarColor(color_background);
-        window.setNavigationBarColor(color_background);
+        window.setNavigationBarColor(color_bottomsheet);
+
+        ColorStateList colorStateList = ColorStateList.valueOf(color_bottomsheet);
+        ViewCompat.setBackgroundTintList(linear_bottom, colorStateList);
+        window.setNavigationBarColor(color_bottomsheet);
     }
 
     private void getColorBackground() {
         int[] colors = sharedPreferencesManager.restoreColorBackgrounState();
         int color_background = colors[0];
-//        int color_bottomsheet = colors[1];
-        setBackground(color_background);
+        int color_bottomsheet = colors[1];
+        setBackground(color_background, color_bottomsheet);
     }
 
     public void sendActionToService(int action) {
@@ -642,8 +666,20 @@ public class MainActivity extends AppCompatActivity {
         startService(intent);
     }
 
+    private void getIntentNotification() {
+        Intent intent = getIntent();
+        if (intent != null && intent.getExtras() != null) {
+            boolean is_click_notification = intent.getBooleanExtra("is_click_notification", false);
+            boolean fromNotification = intent.getBooleanExtra("from_notification", false);
+            if (fromNotification) {
+                if (is_click_notification) {
+                    showBottomSheetNowPlaying(true);
+                }
+            }
+        }
+    }
 
-    //fragment
+
     // Thay thế Fragment với hiệu ứng chuyển đổi
     public void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();

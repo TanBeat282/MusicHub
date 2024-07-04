@@ -1,7 +1,7 @@
 <!-- item_song.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="@dimen/_120sdp"
     android:layout_height="wrap_content"
     android:layout_marginEnd="@dimen/_10sdp"
     android:orientation="vertical">
@@ -23,10 +23,11 @@
         android:focusableInTouchMode="true"
         android:fontFamily="@font/roboto_bold"
         android:marqueeRepeatLimit="marquee_forever"
+        android:maxLines="1"
         android:scrollHorizontally="true"
         android:singleLine="true"
         android:textColor="@color/white"
-        android:textSize="@dimen/_14ssp" />
+        android:textSize="@dimen/_12ssp" />
 
     <TextView
         android:id="@+id/txt_follow"

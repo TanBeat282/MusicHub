@@ -9,7 +9,6 @@ import com.tandev.musichub.model.chart.chart_home.Items;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tandev.musichub.model.search.search_recommend.DataSearchRecommend;
-import com.tandev.musichub.model.search.search_recommend.SearchRecommend;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -303,20 +302,4 @@ public class SharedPreferencesManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences("quality_audio", Context.MODE_PRIVATE);
         return sharedPreferences.getInt("quality_audio", 0);
     }
-
-
-    public void clearAll() {
-        SharedPreferences musicPrefs = context.getSharedPreferences("music_prefs", Context.MODE_PRIVATE);
-        SharedPreferences musicActionPrefs = context.getSharedPreferences("music_action", Context.MODE_PRIVATE);
-        SharedPreferences musicIsPlayPrefs = context.getSharedPreferences("music_is_play", Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor musicPrefsEditor = musicPrefs.edit();
-        SharedPreferences.Editor musicActionPrefsEditor = musicActionPrefs.edit();
-        SharedPreferences.Editor musicIsPlayPrefsEditor = musicIsPlayPrefs.edit();
-
-        musicPrefsEditor.clear().apply();
-        musicActionPrefsEditor.clear().apply();
-        musicIsPlayPrefsEditor.clear().apply();
-    }
-
 }

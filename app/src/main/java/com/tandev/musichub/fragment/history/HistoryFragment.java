@@ -73,12 +73,12 @@ public class HistoryFragment extends Fragment {
 
         LinearLayoutManager layoutManagerNgheNhieu = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_history_count.setLayoutManager(layoutManagerNgheNhieu);
-        lichSuBaiHatNgheNhieuAdapter = new HistoryAdapter(songListLichSuBaiHatNgheNhieu, requireContext());
+        lichSuBaiHatNgheNhieuAdapter = new HistoryAdapter(requireContext(),requireActivity(),songListLichSuBaiHatNgheNhieu);
         rv_history_count.setAdapter(lichSuBaiHatNgheNhieuAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_history.setLayoutManager(layoutManager);
-        lichSuBaiHatAdapter = new HistoryAdapter(songListLichSuBaiHat, requireContext());
+        lichSuBaiHatAdapter = new HistoryAdapter(requireContext(),requireActivity(),songListLichSuBaiHat);
         rv_history.setAdapter(lichSuBaiHatAdapter);
 
         nested_scroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
