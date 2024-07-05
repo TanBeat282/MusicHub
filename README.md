@@ -1,5 +1,6 @@
 ## MusicHub
-#This is the new app version of Musichub. You can view the old version at: https://github.com/TanBeat282/MusicHub_old
+⚠️ **Warning**
+This is the new app version of Musichub. You can view the old version at: https://github.com/TanBeat282/MusicHub_old
 
 MusicHub is an online music streaming application designed and developed independently using Java. This project aims to provide users with a seamless and enjoyable music listening experience. The application allows users to stream music, create and manage playlists, and explore various genres and artists.
 
