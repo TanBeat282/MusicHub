@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="@dimen/_10sdp"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/select_item"
+    android:padding="@dimen/_5sdp">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/img_avatar"

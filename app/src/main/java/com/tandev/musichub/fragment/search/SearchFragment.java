@@ -253,6 +253,9 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
                 if (inputMethodManager != null) {
                     inputMethodManager.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                 }
+                // Clear focus from the SearchView to prevent the keyboard from reopening
+                searchView.clearFocus();
+
                 relative_search_suggestion.setVisibility(View.GONE);
                 relative_search_multi.setVisibility(View.VISIBLE);
 
@@ -372,7 +375,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
                         .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                               sharedPreferencesManager.deleteSearchHistory();
+                                sharedPreferencesManager.deleteSearchHistory();
                                 getSearchHistory();
                             }
                         })

@@ -1,8 +1,0 @@
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true">
-        <color android:color="@color/colorSecondaryText2" /> <!-- Màu nền khi nhấn -->
-    </item>
-    <item>
-        <color android:color="@color/transparent" /> <!-- Màu nền bình thường -->
-    </item>
-</selector>

@@ -45,7 +45,7 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment {
     private final Activity activity;
     private final Items items;
     private BottomSheetDialog bottomSheetDialog;
-    private TextView txtTile, txtArtist, txtDownload;
+    private TextView txt_title_song, txt_artist, txtDownload;
     private ImageView img_Download;
     private RoundedImageView img_album_song;
 
@@ -76,8 +76,8 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment {
 
 
         img_album_song = bottomSheetDialog.findViewById(R.id.img_album_song);
-        txtTile = bottomSheetDialog.findViewById(R.id.txtTile);
-        txtArtist = bottomSheetDialog.findViewById(R.id.txtArtist);
+        txt_title_song = bottomSheetDialog.findViewById(R.id.txt_title_song);
+        txt_artist = bottomSheetDialog.findViewById(R.id.txt_artist);
 
         LinearLayout linear_play_cont = bottomSheetDialog.findViewById(R.id.linear_play_cont);
         LinearLayout linear_playlist_add = bottomSheetDialog.findViewById(R.id.linear_playlist_add);
@@ -145,8 +145,8 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment {
 
     @SuppressLint("SetTextI18n")
     private void setInfoSong(Items items) {
-        txtTile.setText(items.getTitle());
-        txtArtist.setText(items.getArtistsNames());
+        txt_title_song.setText(items.getTitle());
+        txt_artist.setText(items.getArtistsNames());
         Glide.with(context)
                 .load(items.getThumbnail())
                 .into(img_album_song);

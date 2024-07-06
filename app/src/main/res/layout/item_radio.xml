@@ -1,40 +1,42 @@
 <!-- item_song.xml -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="140dp"
-    android:layout_height="210dp"
-    android:layout_marginEnd="20dp">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/select_item"
+    android:padding="@dimen/_5sdp">
 
     <RelativeLayout
         android:id="@+id/relative_img"
-        android:layout_width="match_parent"
-        android:layout_height="140dp">
+        android:layout_width="@dimen/_120sdp"
+        android:layout_height="@dimen/_120sdp">
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/img_avatar"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
+            android:layout_width="@dimen/_120sdp"
+            android:layout_height="@dimen/_120sdp"
             android:background="@drawable/background_radio_live"
-            android:padding="3dp"
-            app:riv_corner_radius="100dp" />
+            android:padding="@dimen/_3sdp"
+            app:riv_corner_radius="@dimen/_100sdp" />
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/img_user"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-           android:layout_margin="5dp"
-            app:riv_corner_radius="100dp" />
+            android:layout_margin="@dimen/_5sdp"
+            app:riv_corner_radius="@dimen/_100sdp" />
+
+        <ImageView
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_15sdp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_live" />
+
 
     </RelativeLayout>
-
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="150dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_live" />
 
     <TextView
         android:id="@+id/txt_name"
@@ -42,9 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/relative_img"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="2dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="2dp"
+        android:layout_marginTop="@dimen/_5sdp"
         android:ellipsize="marquee"
         android:focusable="true"
         android:focusableInTouchMode="true"
@@ -53,7 +53,7 @@
         android:scrollHorizontally="true"
         android:singleLine="true"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="@dimen/_14ssp" />
 
     <TextView
         android:id="@+id/txt_view"
@@ -61,9 +61,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/txt_name"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="2dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginBottom="5dp"
         android:ellipsize="marquee"
         android:focusable="true"
         android:focusableInTouchMode="true"
@@ -72,6 +69,6 @@
         android:scrollHorizontally="true"
         android:singleLine="true"
         android:textColor="@color/white"
-        android:textSize="12sp" />
+        android:textSize="@dimen/_12ssp" />
 
 </RelativeLayout>

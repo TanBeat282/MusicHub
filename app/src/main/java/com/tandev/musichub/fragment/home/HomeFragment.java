@@ -54,6 +54,7 @@ import com.tandev.musichub.fragment.new_release.NewReleaseFragment;
 import com.tandev.musichub.fragment.search.SearchFragment;
 import com.tandev.musichub.fragment.top100.Top100Fragment;
 import com.tandev.musichub.helper.ui.Helper;
+import com.tandev.musichub.helper.ui.MusicHelper;
 import com.tandev.musichub.model.album.DataAlbum;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.chart.home.home_new.Home;
@@ -79,6 +80,7 @@ import com.tandev.musichub.model.hub.hub_home.nations.HubHomeNations;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.tandev.musichub.model.user_active_radio.DataUserActiveRadio;
 import com.tandev.musichub.model.user_active_radio.UserActiveRadio;
+import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 import com.tandev.musichub.view_model.home.HomeViewModel;
 import com.tandev.musichub.view_model.home.HubHomeViewModel;
 
@@ -96,6 +98,8 @@ public class HomeFragment extends Fragment {
 
     private Handler mHandler;
     private static final int INTERVAL = 15000;
+    private MusicHelper musicHelper;
+    private SharedPreferencesManager sharedPreferencesManager;
 
     private ImageView img_icon_app;
     private TextView txt_name_app;
@@ -186,6 +190,9 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         requireActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.black));
+
+        sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+        musicHelper = new MusicHelper(requireContext(), sharedPreferencesManager);
 
         initData();
         initViews(view);
@@ -312,6 +319,7 @@ public class HomeFragment extends Fragment {
 
         bang_xep_hangAdapter = new SongChartAdapter(bang_xep_hangArrayList, 2, requireActivity(), requireContext());
         rv_bang_xep_hang.setAdapter(bang_xep_hangAdapter);
+        musicHelper.initAdapter(bang_xep_hangAdapter);
 
         homePlaylistAdapter = new HomePlaylistAdapter(requireContext(), requireActivity(), homeDataItems);
         rv_playlist.setAdapter(homePlaylistAdapter);
@@ -630,6 +638,7 @@ public class HomeFragment extends Fragment {
                     HomeDataItemRTChart homeDataItemRTChart = (HomeDataItemRTChart) item;
                     bang_xep_hangArrayList = homeDataItemRTChart.getItems();
                     bang_xep_hangAdapter.setFilterList(homeDataItemRTChart.getItems());
+                    musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), bang_xep_hangArrayList, bang_xep_hangAdapter);
                 }
             }
         } else {

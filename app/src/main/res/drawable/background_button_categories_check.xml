@@ -8,5 +8,5 @@
     <solid android:color="@color/colorSecondaryText" />
 
     <corners
-        android:radius="30dp" />
+        android:radius="@dimen/_5sdp" />
 </shape>

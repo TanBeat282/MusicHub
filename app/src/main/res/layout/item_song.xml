@@ -1,24 +1,39 @@
 <!-- item_song.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingBottom="15dp"
-    tools:ignore="RtlSymmetry">
+    android:background="@drawable/select_item"
+    android:padding="@dimen/_5sdp">
 
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/thumbImageView"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        app:riv_corner_radius="5dp" />
+    <RelativeLayout
+        android:layout_width="@dimen/_45sdp"
+        android:layout_height="@dimen/_45sdp">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/thumbImageView"
+            android:layout_width="@dimen/_45sdp"
+            android:layout_height="@dimen/_45sdp"
+            app:riv_corner_radius="@dimen/_5sdp" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/aniPlay"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_colorFilter="@color/white"
+            app:lottie_rawRes="@raw/play" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="@dimen/_10sdp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -27,19 +42,10 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/aniPlay"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true"
-                app:lottie_rawRes="@raw/play" />
-
             <TextView
                 android:id="@+id/nameTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
                 android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:focusable="true"
@@ -50,7 +56,7 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textSize="@dimen/_14ssp" />
         </LinearLayout>
 
         <TextView
@@ -65,7 +71,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textColor="@color/colorSecondaryText1"
-            android:textSize="14sp" />
+            android:textSize="@dimen/_12ssp" />
 
     </LinearLayout>
 
@@ -76,6 +82,5 @@
         android:layout_gravity="center"
         android:src="@drawable/baseline_more_vert_24"
         app:tint="@color/colorSecondaryText" />
-
 
 </LinearLayout>

@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linear_keyword"
     android:layout_width="match_parent"
+    android:background="@drawable/select_item"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/_10sdp"
     android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="@dimen/_5sdp">
 
     <ImageView
         android:layout_width="wrap_content"

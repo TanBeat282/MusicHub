@@ -1,11 +1,12 @@
 <!-- item_song.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="@dimen/_10sdp"
-    android:background="@color/black"
-    android:orientation="vertical">
+    android:background="@drawable/select_item"
+    android:orientation="vertical"
+    android:padding="@dimen/_5sdp">
 
     <RelativeLayout
         android:layout_width="@dimen/_220sdp"
@@ -29,7 +30,6 @@
             android:background="@drawable/background_time_video"
             android:paddingHorizontal="@dimen/_5sdp"
             android:paddingVertical="@dimen/_2sdp"
-            android:text="05:00"
             android:textColor="@color/white"
             android:textSize="@dimen/_10ssp" />
 
@@ -45,7 +45,8 @@
             android:padding="@dimen/_2sdp"
             android:text="Premium"
             android:textColor="@color/white"
-            android:textSize="@dimen/_8ssp" />
+            android:textSize="@dimen/_8ssp"
+            tools:ignore="HardcodedText" />
     </RelativeLayout>
 
     <LinearLayout
@@ -83,7 +84,6 @@
                 android:maxLines="1"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="AAAAAAAAAAAAAAAAAAAAAAAAAAAa"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_12sdp" />
 
@@ -99,7 +99,6 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="aaaaaaaaaaaa"
                 android:textColor="@color/colorSecondaryText1"
                 android:textSize="@dimen/_10ssp" />
 

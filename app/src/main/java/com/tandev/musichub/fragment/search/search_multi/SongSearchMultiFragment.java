@@ -1,5 +1,6 @@
 package com.tandev.musichub.fragment.search.search_multi;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,12 +52,14 @@ public class SongSearchMultiFragment extends Fragment {
     private String query;
 
     private RecyclerView rv_search_song;
+    private RelativeLayout linear_empty_search;
     private ArrayList<Items> itemsArrayList = new ArrayList<>();
     private SongAllMoreAdapter songAllMoreAdapter;
     private boolean isLoading;
     private boolean isLastPage;
     private int currentPage = 1;
     private int totalPages;
+    private boolean no_data = false;
 
 
     private final BroadcastReceiver broadcastReceiverSearchMulti = new BroadcastReceiver() {
@@ -105,7 +109,7 @@ public class SongSearchMultiFragment extends Fragment {
 
         initViews(view);
         initAdapter();
-initViewModel();
+        initViewModel();
     }
 
     private void initViewModel() {
@@ -124,6 +128,7 @@ initViewModel();
 
     private void initViews(View view) {
         rv_search_song = view.findViewById(R.id.rv_search_song);
+        linear_empty_search = view.findViewById(R.id.linear_empty_search);
     }
 
     private void initAdapter() {
@@ -135,9 +140,11 @@ initViewModel();
         rv_search_song.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
             @Override
             public void loadMoreItems() {
-                isLoading = true;
-                currentPage += 1;
-                new Handler().postDelayed(() -> searchSongMore(query, TYPE, currentPage), 300);
+                if (!no_data) {
+                    isLoading = true;
+                    currentPage += 1;
+                    new Handler().postDelayed(() -> searchSongMore(query, TYPE, currentPage), 300);
+                }
             }
 
             @Override
@@ -175,8 +182,12 @@ initViewModel();
                                     String json = response.body().string();
                                     SearchSong searchSong = gson.fromJson(json, SearchSong.class);
 
-                                    if (searchSong != null && searchSong.getData() != null) {
+                                    if (searchSong != null && searchSong.getData().getItems() != null) {
                                         searchMultiSongViewModel.setSearchSongMutableLiveData(searchSong);
+                                    } else {
+                                        no_data = true;
+                                        linear_empty_search.setVisibility(View.VISIBLE);
+                                        rv_search_song.setVisibility(View.GONE);
                                     }
                                 } catch (IOException e) {
                                     Log.e("TAG", "Error reading response: " + e.getMessage(), e);
@@ -249,31 +260,30 @@ initViewModel();
     private void updateUI(SearchSong searchSong) {
         itemsArrayList.clear(); // Clear existing items
         itemsArrayList.addAll(searchSong.getData().getItems());
-        requireActivity().runOnUiThread(() -> {
-            totalPages = calculateTotalPages(searchSong.getData().getTotal());
-            songAllMoreAdapter.setFilterList(itemsArrayList);
+        totalPages = calculateTotalPages(searchSong.getData().getTotal());
+        songAllMoreAdapter.setFilterList(itemsArrayList);
 
-            if (currentPage < totalPages) {
-                songAllMoreAdapter.addFooterLoading();
-            } else {
-                isLastPage = true;
-            }
-        });
+        if (currentPage < totalPages) {
+            songAllMoreAdapter.addFooterLoading();
+        } else {
+            isLastPage = true;
+        }
+        linear_empty_search.setVisibility(View.GONE);
+        rv_search_song.setVisibility(View.VISIBLE);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void updateUIMore(SearchSong searchSong) {
         ArrayList<Items> newItems = searchSong.getData().getItems();
-        requireActivity().runOnUiThread(() -> {
-            itemsArrayList.addAll(newItems); // Add new items to existing list
-            songAllMoreAdapter.notifyDataSetChanged();
+        itemsArrayList.addAll(newItems); // Add new items to existing list
+        songAllMoreAdapter.notifyDataSetChanged();
 
-            isLoading = false;
-            if (currentPage < totalPages) {
-                songAllMoreAdapter.addFooterLoading();
-            } else {
-                isLastPage = true;
-            }
-        });
+        isLoading = false;
+        if (currentPage < totalPages) {
+            songAllMoreAdapter.addFooterLoading();
+        } else {
+            isLastPage = true;
+        }
     }
 
     @Override

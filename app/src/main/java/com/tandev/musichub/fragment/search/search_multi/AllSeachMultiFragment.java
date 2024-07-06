@@ -74,6 +74,7 @@ public class AllSeachMultiFragment extends Fragment {
     //view
     private NestedScrollView nested_scroll_view;
     private RelativeLayout relative_loading;
+    private RelativeLayout linear_empty_search;
 
     private LinearLayout linear_top;
     private LinearLayout linear_info;
@@ -172,6 +173,7 @@ public class AllSeachMultiFragment extends Fragment {
     private void initView(View view) {
         nested_scroll_view = view.findViewById(R.id.nested_scroll_view);
         relative_loading = view.findViewById(R.id.relative_loading);
+        linear_empty_search = view.findViewById(R.id.linear_empty_search);
 
         linear_top = view.findViewById(R.id.linear_top);
         linear_info = view.findViewById(R.id.linear_info);
@@ -268,10 +270,12 @@ public class AllSeachMultiFragment extends Fragment {
                             LogUtil.d(Constants.TAG, "searchMulti: " + call.request().url());
                             if (response.isSuccessful()) {
                                 SearchMulti searchMulti = response.body();
-                                if (searchMulti != null && searchMulti.getErr() == 0) {
+                                if (searchMulti != null && searchMulti.getData().getSongs() != null) {
                                     searchMultiAllViewModel.setSearchMultiMutableLiveData(searchMulti);
                                 } else {
-                                    Log.d("TAG", "Error: ");
+                                    relative_loading.setVisibility(View.GONE);
+                                    linear_empty_search.setVisibility(View.VISIBLE);
+                                    nested_scroll_view.setVisibility(View.GONE);
                                 }
                             }
                         }
@@ -316,7 +320,7 @@ public class AllSeachMultiFragment extends Fragment {
 
                                     ArtistDetail artistDetail = gson.fromJson(jsonData, ArtistDetail.class);
 
-                                    if (artistDetail != null) {
+                                    if (artistDetail != null && artistDetail.getData() != null) {
                                         setDataTop(artistDetail);
                                     }
 
@@ -426,6 +430,7 @@ public class AllSeachMultiFragment extends Fragment {
         setDataArtist(artistsArrayList);
 
         relative_loading.setVisibility(View.GONE);
+        linear_empty_search.setVisibility(View.GONE);
         nested_scroll_view.setVisibility(View.VISIBLE);
 
     }

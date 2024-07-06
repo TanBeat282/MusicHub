@@ -101,7 +101,7 @@ public class SongChartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             songViewHolder.nameTextView.setText(song.getTitle());
             songViewHolder.artistTextView.setText(song.getArtistsNames());
             Glide.with(context)
-                    .load(song.getThumbnail())
+                    .load(song.getThumbnailM())
                     .into(songViewHolder.thumbImageView);
 
             if (selectedPosition == position) {

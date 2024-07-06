@@ -34,28 +34,6 @@
                 android:orientation="vertical"
                 android:visibility="visible">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_bold"
-                    android:text="Đề xuất cho bạn"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_14ssp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_search_recommend"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp" />
-
-                <View
-                    android:id="@+id/view_search_history"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_1sdp"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:layout_marginBottom="@dimen/_10sdp"
-                    android:background="@color/gray" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -75,7 +53,9 @@
                         android:id="@+id/txt_delete_search_history"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/select_onclick"
                         android:fontFamily="@font/roboto"
+                        android:padding="@dimen/_5sdp"
                         android:text="Xóa tất cả"
                         android:textColor="@color/red"
                         android:textSize="@dimen/_10ssp" />
@@ -84,6 +64,28 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_search_history"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp" />
+
+                <View
+                    android:id="@+id/view_search_history"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:background="@color/gray" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="Đề xuất cho bạn"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_14ssp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_search_recommend"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp" />
@@ -140,6 +142,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:background="@drawable/select_onclick"
                 android:src="@drawable/ic_back" />
 
             <androidx.appcompat.widget.SearchView
@@ -166,7 +169,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:background="@drawable/select_onclick"
+                android:padding="@dimen/_5sdp"
                 android:src="@drawable/mic_24px"
                 app:tint="@color/white" />
 
@@ -175,6 +179,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:background="@drawable/select_onclick"
+                android:padding="@dimen/_5sdp"
                 android:src="@drawable/baseline_more_vert_24" />
         </LinearLayout>
 

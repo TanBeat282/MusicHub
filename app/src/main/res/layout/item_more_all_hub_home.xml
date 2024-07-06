@@ -4,10 +4,10 @@
     android:id="@+id/linear_more"
     android:layout_width="@dimen/_140sdp"
     android:layout_height="@dimen/_80sdp"
-    android:layout_marginEnd="@dimen/_10sdp"
-    android:background="@android:color/transparent"
+    android:background="@drawable/select_item"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="@dimen/_5sdp">
 
     <ImageView
         android:id="@+id/thumbImageView"
@@ -26,7 +26,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"
         android:fontFamily="@font/roboto_bold"
         android:text="Xem tất cả"

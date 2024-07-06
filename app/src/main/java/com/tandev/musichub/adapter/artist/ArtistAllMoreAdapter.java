@@ -3,7 +3,6 @@ package com.tandev.musichub.adapter.artist;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +23,6 @@ import com.tandev.musichub.R;
 import com.tandev.musichub.bottomsheet.BottomSheetOptionSong;
 import com.tandev.musichub.fragment.artist.ArtistFragment;
 import com.tandev.musichub.helper.ui.Helper;
-import com.tandev.musichub.helper.ui.PlayingStatusUpdater;
 import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -70,7 +68,7 @@ public class ArtistAllMoreAdapter extends RecyclerView.Adapter<RecyclerView.View
             view = inflater.inflate(R.layout.item_select_artist, parent, false);
             return new SongViewHolder(view);
         } else {
-            view = inflater.inflate(R.layout.item_loading, parent, false);
+            view = inflater.inflate(R.layout.item_loading_more_song, parent, false);
             return new LoadingViewHolder(view);
         }
     }

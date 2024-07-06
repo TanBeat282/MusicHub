@@ -1,24 +1,14 @@
 <!-- item_song.xml -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="@dimen/_140sdp"
-    android:layout_height="@dimen/_80sdp"
-    android:layout_marginEnd="@dimen/_10sdp">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/select_item"
+    android:padding="@dimen/_5sdp">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/thumbImageView"
         android:layout_width="@dimen/_140sdp"
         android:layout_height="@dimen/_80sdp"
         app:riv_corner_radius="@dimen/_5sdp" />
-
-    <TextView
-        android:id="@+id/nameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/_10sdp"
-        android:fontFamily="@font/roboto_bold"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_14ssp" />
 </RelativeLayout>

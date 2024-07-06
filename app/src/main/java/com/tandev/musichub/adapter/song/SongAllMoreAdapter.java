@@ -86,7 +86,7 @@ public class SongAllMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             view = inflater.inflate(R.layout.item_song, parent, false);
             return new SongViewHolder(view);
         } else {
-            view = inflater.inflate(R.layout.item_loading, parent, false);
+            view = inflater.inflate(R.layout.item_loading_more_song, parent, false);
             return new LoadingViewHolder(view);
         }
     }
@@ -106,7 +106,7 @@ public class SongAllMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         holder.nameTextView.setText(song.getTitle());
         holder.artistTextView.setText(song.getArtistsNames());
         Glide.with(context)
-                .load(song.getThumbnail())
+                .load(song.getThumbnailM())
                 .into(holder.thumbImageView);
 
         if (selectedPosition == position) {
