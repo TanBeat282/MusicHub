@@ -50,9 +50,13 @@ import retrofit2.Response;
 
 public class HubFragment extends Fragment {
     private HubViewModel hubViewModel;
+
+    //tool bar
+    private View tool_bar;
     private RelativeLayout relative_header;
+    private TextView txt_title_toolbar;
     private ImageView img_back;
-    private TextView txt_name_playlist, txt_view;
+
     private NestedScrollView nested_scroll;
     private RecyclerView rv_playlist_vertical;
     private ImageView img_playlist;
@@ -109,10 +113,12 @@ public class HubFragment extends Fragment {
     }
 
     private void initViews(View view) {
-        relative_header = view.findViewById(R.id.relative_header);
-        img_back = view.findViewById(R.id.img_back);
-        txt_name_playlist = view.findViewById(R.id.txt_name_playlist);
-        txt_view = view.findViewById(R.id.txt_view);
+        tool_bar = view.findViewById(R.id.tool_bar);
+        relative_header = tool_bar.findViewById(R.id.relative_header);
+        img_back = tool_bar.findViewById(R.id.img_back);
+        txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);
+
+
         nested_scroll = view.findViewById(R.id.nested_scroll);
         rv_playlist_vertical = view.findViewById(R.id.rv_playlist_vertical);
 
@@ -144,17 +150,14 @@ public class HubFragment extends Fragment {
                 // Kiểm tra nếu người dùng đã cuộn đến đầu trang
                 if (scrollY <= 600) {
                     // Ẩn TextView khi người dùng cuộn trở lại đầu trang
-                    txt_name_playlist.setVisibility(View.GONE);
-                    txt_view.setVisibility(View.VISIBLE);
+                    txt_title_toolbar.setText("");
                     relative_header.setBackgroundResource(android.R.color.transparent);
                     // Make the content appear under the status barr
                     Helper.changeStatusBarTransparent(requireActivity());
 
                 } else if (scrollY >= 800) {
                     // Hiển thị TextView khi người dùng cuộn xuống khỏi đầu trang
-                    txt_name_playlist.setVisibility(View.VISIBLE);
-                    txt_view.setVisibility(View.GONE);
-                    txt_name_playlist.setText(hubViewModel.getHubMutableLiveData().getValue().getData().getTitle());
+                    txt_title_toolbar.setText(hubViewModel.getHubMutableLiveData().getValue().getData().getTitle());
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
                     Helper.changeStatusBarColor(requireActivity(), R.color.gray);
                 }
@@ -247,6 +250,7 @@ public class HubFragment extends Fragment {
 
         Glide.with(requireContext())
                 .load(hub.getData().getThumbnailHasText())  // Tải ảnh chính từ liên kết
+                .placeholder(R.drawable.holder_video)
                 .apply(requestOptions)  // Áp dụng RequestOptions
                 .into(img_playlist);  // Hiển thị ảnh chính lên ImageView
 // Hiển thị ảnh chính lên ImageView

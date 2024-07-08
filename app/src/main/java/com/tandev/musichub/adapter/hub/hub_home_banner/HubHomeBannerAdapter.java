@@ -58,6 +58,7 @@ public class HubHomeBannerAdapter extends RecyclerView.Adapter<HubHomeBannerAdap
 
         Glide.with(context)
                 .load(hubHomeBanner.getCover())
+                .placeholder(R.drawable.holder_video)
                 .into(holder.roundedImageView);
 
         if (position == hubHomeBannerArrayList.size() - 2) {

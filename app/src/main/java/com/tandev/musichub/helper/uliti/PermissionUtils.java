@@ -1,40 +1,49 @@
 package com.tandev.musichub.helper.uliti;
 
 import android.app.Activity;
-import android.content.pm.PackageManager;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-public class PermissionUtils {
+import java.util.List;
 
-    public static boolean checkAndRequestPermissions(Activity activity, int requestCode, String... permissions) {
-        boolean allPermissionsGranted = true;
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
-                allPermissionsGranted = false;
-                break;
-            }
-        }
+import pub.devrel.easypermissions.EasyPermissions;
 
-        if (!allPermissionsGranted) {
-            ActivityCompat.requestPermissions(activity, permissions, requestCode);
-            return false;
-        }
+public class PermissionUtils implements EasyPermissions.PermissionCallbacks {
 
-        return true;
+    private Context context;
+    private PermissionCallback callback;
+
+    public PermissionUtils(Context context, PermissionCallback callback) {
+        this.context = context;
+        this.callback = callback;
     }
 
-    public static boolean arePermissionsGranted(@NonNull int[] grantResults) {
-        if (grantResults.length == 0) {
-            return false;
+    public void checkAndRequestPermissions(int requestCode, String... perms) {
+        if (EasyPermissions.hasPermissions(context, perms)) {
+            callback.onPermissionsGranted(requestCode, List.of(perms));
+        } else {
+            EasyPermissions.requestPermissions((Activity) context, "Ứng dụng cần quyền truy cập bộ nhớ để tải bài hát!", requestCode, perms);
         }
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        callback.onPermissionsGranted(requestCode, perms);
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        callback.onPermissionsDenied(requestCode, perms);
+    }
+
+    public interface PermissionCallback {
+        void onPermissionsGranted(int requestCode, List<String> perms);
+        void onPermissionsDenied(int requestCode, List<String> perms);
     }
 }

@@ -59,6 +59,7 @@ public class AlbumNewReleaseAdapter extends RecyclerView.Adapter<AlbumNewRelease
         holder.artistTextView.setText(album.getArtistsNames());
         Glide.with(context)
                 .load(album.getThumbnail())
+                .placeholder(R.drawable.holder)
                 .into(holder.thumbImageView);
         holder.txt_time_release_date.setText(Helper.convertLongToTime(String.valueOf(album.getReleasedAt())));
         holder.itemView.setOnClickListener(new View.OnClickListener() {

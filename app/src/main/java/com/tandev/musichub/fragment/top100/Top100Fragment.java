@@ -195,7 +195,7 @@ public class Top100Fragment extends Fragment {
 
     private void updateUI(Top100 top100) {
         ArrayList<DataTop100> arrayList = top100.getData();
-        Glide.with(requireContext()).load("https://photo-zmp3.zmdcdn.me/cover/d/8/3/2/d8326486b929ec525e44f7059ca3ebca.jpg").into(img_playlist);
+        Glide.with(requireContext()).load("https://photo-zmp3.zmdcdn.me/cover/d/8/3/2/d8326486b929ec525e44f7059ca3ebca.jpg").placeholder(R.drawable.holder_video).into(img_playlist);
         if (!arrayList.isEmpty()) {
             dataTop100ArrayList = arrayList;
             top100Adapter.setFilterList(dataTop100ArrayList);

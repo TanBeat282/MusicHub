@@ -354,7 +354,7 @@ public class AllSeachMultiFragment extends Fragment {
             return;
         }
         tv_name.setText(artistDetail.getData().getName());
-        Glide.with(requireContext()).load(artistDetail.getData().getThumbnail()).into(img_avatar);
+        Glide.with(requireContext()).load(artistDetail.getData().getThumbnail()).placeholder(R.drawable.holder).into(img_avatar);
 
         txt_followers.setText(Helper.convertToIntString(artistDetail.getData().getTotalFollow()) + " quan tâm");
 
@@ -373,7 +373,7 @@ public class AllSeachMultiFragment extends Fragment {
     private void setDataPlaylist(ArrayList<DataPlaylist> dataPlaylistArrayList, Artists artists) {
         if (dataPlaylistArrayList != null && artists != null) {
             txt_name_artist_playlist.setText(artists.getName());
-            Glide.with(requireContext()).load(artists.getThumbnail()).into(img_avatar_artist_playlist);
+            Glide.with(requireContext()).load(artists.getThumbnail()).placeholder(R.drawable.holder).into(img_avatar_artist_playlist);
             playlistMoreAdapter.setFilterList(dataPlaylistArrayList);
 
             linear_playlist.setVisibility(View.VISIBLE);
@@ -406,12 +406,19 @@ public class AllSeachMultiFragment extends Fragment {
     }
 
     private void updateUI(SearchMulti searchMulti) {
-        if (searchMulti.getData().getTop().getObjectType().equals("artist")) {
-            getArtist(searchMulti.getData().getTop().getAlias());
-        } else if (searchMulti.getData().getTop().getObjectType().equals("playlist")) {
-            getArtist(searchMulti.getData().getTop().getArtists().get(0).getAlias());
+        if (searchMulti.getData().getTop() != null) {
+            if (searchMulti.getData().getTop().getObjectType().equals("artist")) {
+                getArtist(searchMulti.getData().getTop().getAlias());
+            } else if (searchMulti.getData().getTop().getObjectType().equals("playlist")) {
+                getArtist(searchMulti.getData().getTop().getArtists().get(0).getAlias());
+            } else {
+                getArtist(searchMulti.getData().getTop().getArtists().get(0).getAlias());
+            }
+            dataPlaylistArrayList = searchMulti.getData().getPlaylists();
+            setDataPlaylist(dataPlaylistArrayList, searchMulti.getData().getPlaylists().get(0).getArtists().get(0));
         } else {
-            getArtist(searchMulti.getData().getTop().getArtists().get(0).getAlias());
+            linear_top.setVisibility(View.VISIBLE);
+            linear_info.setVisibility(View.VISIBLE);
         }
 
         searchSongTopArrayList = searchMulti.getData().getSongs();
@@ -420,8 +427,7 @@ public class AllSeachMultiFragment extends Fragment {
         songArrayList = searchMulti.getData().getSongs();
         setDataSong(songArrayList);
 
-        dataPlaylistArrayList = searchMulti.getData().getPlaylists();
-        setDataPlaylist(dataPlaylistArrayList, searchMulti.getData().getPlaylists().get(0).getArtists().get(0));
+
 
         hubVideos = searchMulti.getData().getVideos();
         setDataVideo(hubVideos);
@@ -432,6 +438,7 @@ public class AllSeachMultiFragment extends Fragment {
         relative_loading.setVisibility(View.GONE);
         linear_empty_search.setVisibility(View.GONE);
         nested_scroll_view.setVisibility(View.VISIBLE);
+
 
     }
 

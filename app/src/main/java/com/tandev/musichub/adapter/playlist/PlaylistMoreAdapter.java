@@ -72,6 +72,7 @@ public class PlaylistMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             playlistViewHolder.nameTextView.setText(dataPlaylist.getTitle());
             Glide.with(context)
                     .load(dataPlaylist.getThumbnailM())
+                    .placeholder(R.drawable.holder)
                     .into(playlistViewHolder.thumbImageView);
 
             playlistViewHolder.itemView.setOnClickListener(v -> {

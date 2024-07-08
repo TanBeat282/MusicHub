@@ -41,12 +41,13 @@ import retrofit2.Response;
 public class ChartNewReleaseFragment extends Fragment {
     private ChartNewReleaseViewModel chartNewReleaseViewModel;
 
+    //tool bar
+    private View tool_bar;
     private RelativeLayout relative_header;
-    private RelativeLayout relative_loading;
+    private TextView txt_title_toolbar;
     private ImageView img_back;
-    private ImageView img_more;
-    private TextView txt_name_artist;
-    private TextView txt_view;
+
+    private RelativeLayout relative_loading;
     private NestedScrollView nested_scroll;
     private TextView txt_new_release;
     private RecyclerView rv_new_release_song;
@@ -92,15 +93,14 @@ public class ChartNewReleaseFragment extends Fragment {
     }
 
     private void initViews(View view) {
+        tool_bar = view.findViewById(R.id.tool_bar);
+        relative_header = tool_bar.findViewById(R.id.relative_header);
+        img_back = tool_bar.findViewById(R.id.img_back);
+        txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);
+
         relative_loading = view.findViewById(R.id.relative_loading);
         nested_scroll = view.findViewById(R.id.nested_scroll);
-        img_back = view.findViewById(R.id.img_back);
-        img_more = view.findViewById(R.id.img_more);
-
-        relative_header = view.findViewById(R.id.relative_header);
         txt_new_release = view.findViewById(R.id.txt_new_release);
-        txt_name_artist = view.findViewById(R.id.txt_name_artist);
-        txt_view = view.findViewById(R.id.txt_view);
 
         rv_new_release_song = view.findViewById(R.id.rv_new_release_song);
     }
@@ -124,8 +124,7 @@ public class ChartNewReleaseFragment extends Fragment {
             @Override
             public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 if (scrollY <= 200) {
-                    txt_name_artist.setVisibility(View.GONE);
-                    txt_view.setVisibility(View.VISIBLE);
+                    txt_title_toolbar.setText("");
                     relative_header.setBackgroundResource(android.R.color.transparent);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -133,9 +132,7 @@ public class ChartNewReleaseFragment extends Fragment {
                     }
 
                 } else if (scrollY >= 300) {
-                    txt_name_artist.setVisibility(View.VISIBLE);
-                    txt_view.setVisibility(View.GONE);
-                    txt_name_artist.setText(chartNewReleaseViewModel.getNewReleaseMutableLiveData().getValue().getData().getTitle());
+                    txt_title_toolbar.setText(chartNewReleaseViewModel.getNewReleaseMutableLiveData().getValue().getData().getTitle());
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
                     Helper.changeStatusBarColor(requireActivity(), R.color.gray);
                 }
@@ -148,9 +145,6 @@ public class ChartNewReleaseFragment extends Fragment {
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().popBackStack();
             }
-        });
-        img_more.setOnClickListener(view -> {
-            //
         });
     }
 

@@ -63,12 +63,16 @@ public class ArtistFragment extends Fragment {
     private ArrayList<SectionArtistVideo> sectionArtistVideos;
     private ArrayList<SectionArtistArtist> sectionArtistArtists;
 
+    //tool bar
+    private View tool_bar;
     private RelativeLayout relative_header;
-    private RelativeLayout relative_loading;
-    private NestedScrollView nested_scroll;
-    private TextView txt_name_artist;
-    private TextView txt_view;
+    private TextView txt_title_toolbar;
     private ImageView img_back;
+
+    private RelativeLayout relative_loading;
+
+    private NestedScrollView nested_scroll;
+
     private ImageView img_artist;
     private TextView txt_artist;
     private TextView txt_follow;
@@ -134,15 +138,14 @@ public class ArtistFragment extends Fragment {
     }
 
     private void initViews(View view) {
-        img_back = view.findViewById(R.id.img_back);
-        ImageView img_more = view.findViewById(R.id.img_more);
+        tool_bar = view.findViewById(R.id.tool_bar);
+        relative_header = tool_bar.findViewById(R.id.relative_header);
+        img_back = tool_bar.findViewById(R.id.img_back);
+        txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);
 
-        relative_header = view.findViewById(R.id.relative_header);
+
         relative_loading = view.findViewById(R.id.relative_loading);
         nested_scroll = view.findViewById(R.id.nested_scroll);
-        txt_name_artist = view.findViewById(R.id.txt_name_artist);
-        txt_view = view.findViewById(R.id.txt_view);
-
         img_artist = view.findViewById(R.id.img_artist);
         ProgressBar progress_image = view.findViewById(R.id.progress_image);
         txt_artist = view.findViewById(R.id.txt_artist);
@@ -173,23 +176,17 @@ public class ArtistFragment extends Fragment {
             @SuppressLint("ObsoleteSdkInt")
             @Override
             public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                // Kiểm tra nếu người dùng đã cuộn đến đầu trang
                 if (scrollY <= 600) {
-                    // Ẩn TextView khi người dùng cuộn trở lại đầu trang
-                    txt_name_artist.setVisibility(View.GONE);
-                    txt_view.setVisibility(View.VISIBLE);
+                    txt_title_toolbar.setText("");
                     relative_header.setBackgroundResource(android.R.color.transparent);
-                    // Make the content appear under the status bar
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                         requireActivity().getWindow().setStatusBarColor(Color.TRANSPARENT);
                     }
 
                 } else if (scrollY >= 800) {
-                    // Hiển thị TextView khi người dùng cuộn xuống khỏi đầu trang
-                    txt_name_artist.setVisibility(View.VISIBLE);
-                    txt_view.setVisibility(View.GONE);
-                    txt_name_artist.setText(name);
+                    txt_title_toolbar.setText(name);
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
                     Helper.changeStatusBarColor(requireActivity(), R.color.gray);
                 }
@@ -317,6 +314,7 @@ public class ArtistFragment extends Fragment {
                     .error(R.color.red);
             Glide.with(requireContext())
                     .load(artistDetail.getData().getThumbnailM())
+                    .placeholder(R.drawable.holder)
                     .apply(requestOptions)
                     .into(img_artist);
             txt_artist.setText(artistDetail.getData().getName());
@@ -325,6 +323,7 @@ public class ArtistFragment extends Fragment {
             if (sectionArtistSong != null && sectionArtistSong.getTopAlbum() != null) {
                 Glide.with(requireContext())
                         .load(sectionArtistSong.getTopAlbum().getThumbnail())
+                        .placeholder(R.drawable.holder)
                         .into(img_song);
                 txtTitle.setText(sectionArtistSong.getTopAlbum().getTitle());
                 txtArtist.setText(sectionArtistSong.getTopAlbum().getArtistsNames());

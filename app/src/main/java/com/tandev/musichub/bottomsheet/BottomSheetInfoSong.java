@@ -31,6 +31,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.bumptech.glide.Glide;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
+import com.tandev.musichub.constants.PermissionConstants;
 import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.fragment.artist.ArtistFragment;
 import com.tandev.musichub.helper.ui.Helper;
@@ -47,8 +48,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.makeramen.roundedimageview.RoundedImageView;
 
+import java.util.List;
 
-public class BottomSheetInfoSong extends BottomSheetDialogFragment {
+
+public class BottomSheetInfoSong extends BottomSheetDialogFragment implements PermissionUtils.PermissionCallback{
     private final Context context;
     private final Activity activity;
     private final Items items;
@@ -60,12 +63,13 @@ public class BottomSheetInfoSong extends BottomSheetDialogFragment {
     private GetUrlAudioHelper getUrlAudioHelper;
     private DownloadAudio downloadAudio;
     private long downloadID;
-    private static final int PERMISSIONS_REQUEST_CODE = 100;
+    private PermissionUtils permissionUtils;
 
     public BottomSheetInfoSong(Context context, Activity activity, Items items) {
         this.context = context;
         this.activity = activity;
         this.items = items;
+        this.permissionUtils = new PermissionUtils(context, this);
     }
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("SetTextI18n")
@@ -106,7 +110,7 @@ public class BottomSheetInfoSong extends BottomSheetDialogFragment {
                     Toast.makeText(context, "Lỗi bất định, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                xinquyen();
+                permissionStorage();
             }
         });
 
@@ -166,6 +170,7 @@ public class BottomSheetInfoSong extends BottomSheetDialogFragment {
         txtArtist.setText(items.getArtistsNames());
         Glide.with(context)
                 .load(items.getThumbnail())
+                .placeholder(R.drawable.holder)
                 .into(img_album_song);
 
         if (CheckIsFile.isFileDownloaded(items.getTitle() + " - " + items.getArtistsNames() + ".mp3")) {
@@ -189,13 +194,14 @@ public class BottomSheetInfoSong extends BottomSheetDialogFragment {
         }
     };
 
-    private void xinquyen() {
-        if (!PermissionUtils.checkAndRequestPermissions(activity, PERMISSIONS_REQUEST_CODE,
+    private void permissionStorage() {
+        permissionUtils.checkAndRequestPermissions(PermissionConstants.REQUEST_CODE_WRITE_EXTERNAL_STORAGE,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            // Quyền chưa được cấp, đang yêu cầu...
-        } else {
-            // Tất cả quyền đã được cấp
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        if (requestCode == PermissionConstants.REQUEST_CODE_WRITE_EXTERNAL_STORAGE) {
             if (items.getStreamingStatus() == 2) {
                 Toast.makeText(context, "Không thể tải bài hát Premium!", Toast.LENGTH_SHORT).show();
             } else {
@@ -209,11 +215,23 @@ public class BottomSheetInfoSong extends BottomSheetDialogFragment {
 
                     @Override
                     public void onFailure(Throwable throwable) {
-
+                        Toast.makeText(context, "Lỗi bất định, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        if (requestCode == PermissionConstants.REQUEST_CODE_WRITE_EXTERNAL_STORAGE) {
+            Toast.makeText(context, "Quyền bị từ chối. Không thể tải bài hát.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        permissionUtils.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

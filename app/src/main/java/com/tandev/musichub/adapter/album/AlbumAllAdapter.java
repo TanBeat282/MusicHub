@@ -52,6 +52,7 @@ public class AlbumAllAdapter extends RecyclerView.Adapter<AlbumAllAdapter.Playli
         holder.nameTextView.setText(dataAlbum.getTitle());
         Glide.with(context)
                 .load(dataAlbum.getThumbnailM())
+                .placeholder(R.drawable.holder)
                 .into(holder.thumbImageView);
 
         holder.itemView.setOnClickListener(v -> {

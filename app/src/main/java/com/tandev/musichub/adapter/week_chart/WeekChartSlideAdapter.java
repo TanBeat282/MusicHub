@@ -57,6 +57,7 @@ public class WeekChartSlideAdapter extends RecyclerView.Adapter<WeekChartSlideAd
 
         Glide.with(context)
                 .load(homeDataItemWeekChartItem.getCover())
+                .placeholder(R.drawable.holder)
                 .into(holder.roundedImageView);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

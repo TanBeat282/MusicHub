@@ -1,6 +1,7 @@
 package com.tandev.musichub.api.service;
 
 import com.tandev.musichub.api.ApiService;
+import com.tandev.musichub.constants.Constants;
 import com.tandev.musichub.helper.uliti.AddCookiesInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,11 +19,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiServiceFactory {
-    private static String baseURL = "https://zingmp3.vn";
     private static volatile ApiService apiServiceInstance;
 
     private static String getCookie() throws IOException {
-        URL url = new URL(baseURL);
+        URL url = new URL(Constants.BASE_URL_MOBILE);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         Map<String, List<String>> headers = connection.getHeaderFields();
@@ -56,7 +56,7 @@ public class ApiServiceFactory {
                         .create();
 
                 Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(baseURL)
+                        .baseUrl(Constants.BASE_URL_MOBILE)
                         .client(client)
                         .addConverterFactory(GsonConverterFactory.create(gson))
                         .build();

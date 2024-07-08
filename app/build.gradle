@@ -87,4 +87,7 @@ dependencies {
 
     implementation libs.ssp.android
     implementation libs.sdp.android
+
+    // For developers using AndroidX in their applications
+    implementation libs.easypermissions
 }

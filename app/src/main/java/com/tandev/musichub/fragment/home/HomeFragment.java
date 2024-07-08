@@ -51,6 +51,7 @@ import com.tandev.musichub.fragment.chart_new_release.ChartNewReleaseFragment;
 import com.tandev.musichub.fragment.history.HistoryFragment;
 import com.tandev.musichub.fragment.hub.hub_home.HubHomeFragment;
 import com.tandev.musichub.fragment.new_release.NewReleaseFragment;
+import com.tandev.musichub.fragment.profile.ProfileFragment;
 import com.tandev.musichub.fragment.search.SearchFragment;
 import com.tandev.musichub.fragment.top100.Top100Fragment;
 import com.tandev.musichub.helper.ui.Helper;
@@ -350,8 +351,11 @@ public class HomeFragment extends Fragment {
             }
         });
         img_account.setOnClickListener(view -> {
-            BottomSheetProfile bottomSheetProfile = new BottomSheetProfile(requireContext(), requireActivity());
-            bottomSheetProfile.show(requireActivity().getSupportFragmentManager(), bottomSheetProfile.getTag());
+//            BottomSheetProfile bottomSheetProfile = new BottomSheetProfile(requireContext(), requireActivity());
+//            bottomSheetProfile.show(requireActivity().getSupportFragmentManager(), bottomSheetProfile.getTag());
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).replaceFragment(new ProfileFragment());
+            }
         });
         linear_new_release_song.setOnClickListener(view -> {
             if (getActivity() instanceof MainActivity) {

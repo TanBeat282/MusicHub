@@ -133,8 +133,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_50sdp"
-            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_height="@dimen/_42sdp"
+            android:layout_marginHorizontal="@dimen/_5sdp"
             android:orientation="horizontal">
 
             <ImageView
@@ -143,6 +143,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@drawable/select_onclick"
+                android:padding="@dimen/_5sdp"
                 android:src="@drawable/ic_back" />
 
             <androidx.appcompat.widget.SearchView
@@ -150,7 +151,7 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/_30sdp"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginHorizontal="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:background="@drawable/shapebgsearch"
                 android:fontFamily="@font/roboto"

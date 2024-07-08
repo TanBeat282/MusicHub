@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -77,6 +78,12 @@ public class MainActivity extends AppCompatActivity {
     private RoundedImageView image_song;
     private ProgressBar progress_image;
 
+    // tua 5s
+    private LinearLayout linear_detail_song;
+    private LinearLayout linear_previous_five_second;
+    private LinearLayout linear_next_five_second;
+
+    //
     private LinearLayout linear_info;
     private TextView txt_title_song, txt_artist_song;
 
@@ -93,11 +100,16 @@ public class MainActivity extends AppCompatActivity {
 
     //bottom sheet player
     private LinearLayout linear_bottom;
+    private TextView txt_continue_song, txt_lyric_song, txt_relate_song;
 
+
+    //data
     private Items items;
     private boolean isPlaying;
     private int action;
     private SongDetail songDetail;
+    private int currentTime = 0;
+    private int totalTime = 0;
 
     public BroadcastReceiver createBroadcastReceiver() {
         return new BroadcastReceiver() {
@@ -129,8 +141,8 @@ public class MainActivity extends AppCompatActivity {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int currentTime = intent.getIntExtra("current_time", 0);
-                int totalTime = intent.getIntExtra("total_time", 0);
+                currentTime = intent.getIntExtra("current_time", 0);
+                totalTime = intent.getIntExtra("total_time", 0);
                 updateIndicator(currentTime, totalTime);
 
                 //player
@@ -268,6 +280,9 @@ public class MainActivity extends AppCompatActivity {
         items = sharedPreferencesManager.restoreSongState();
         isPlaying = sharedPreferencesManager.restoreIsPlayState();
         action = sharedPreferencesManager.restoreActionState();
+        if (!Helper.isMyServiceRunning(this, MyService.class)) {
+            isPlaying = false;
+        }
         if (items != null) {
             layout_bottom_player_main.setVisibility(View.VISIBLE);
             view_player.setVisibility(View.VISIBLE);
@@ -284,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
         if (!(MainActivity.this).isDestroyed()) {
             Glide.with(this)
                     .load(items.getThumbnail())
+                    .placeholder(R.drawable.holder)
                     .into(img_album_song);
         }
 
@@ -363,6 +379,11 @@ public class MainActivity extends AppCompatActivity {
         image_song = relative_player.findViewById(R.id.image_song);
         progress_image = relative_player.findViewById(R.id.progress_image);
 
+        //tua 5s
+        linear_detail_song = relative_player.findViewById(R.id.linear_detail_song);
+        linear_previous_five_second = relative_player.findViewById(R.id.linear_previous_five_second);
+        linear_next_five_second = relative_player.findViewById(R.id.linear_next_five_second);
+
         //info
         linear_info = relative_player.findViewById(R.id.linear_info);
         txt_title_song = relative_player.findViewById(R.id.txt_title_song);
@@ -415,9 +436,11 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+        if (!Helper.isMyServiceRunning(this, MyService.class)) {
+            isPlaying = false;
+        }
         //player
-        if (isPlaying) {
-
+        if (!isPlaying) {
             lottie_play_pause.setMinAndMaxProgress(0.5f, 1.0f); // pause >
             lottie_play_pause.playAnimation();
         } else {
@@ -431,6 +454,7 @@ public class MainActivity extends AppCompatActivity {
         if (!(MainActivity.this).isDestroyed()) {
             Glide.with(this)
                     .load(Helper.changeQualityUrl(songDetail.getData().getThumbnailM() != null ? songDetail.getData().getThumbnailM() : songDetail.getData().getThumbnail()))
+                    .placeholder(R.drawable.holder)
                     .into(image_song);
         }
         image_song.setVisibility(View.VISIBLE);
@@ -486,6 +510,9 @@ public class MainActivity extends AppCompatActivity {
         image_back.setOnClickListener(view -> showBottomSheetNowPlaying(false));
         image_more.setOnClickListener(v -> showBottomSheetInfo());
 
+        linear_next_five_second.setOnClickListener(view -> nextPreviousFiveSecond(linear_next_five_second, false));
+        linear_previous_five_second.setOnClickListener(view -> nextPreviousFiveSecond(linear_previous_five_second, true));
+
         lottie_play_pause.setOnClickListener(v -> {
             if (!Helper.isMyServiceRunning(this, MyService.class)) {
                 startService(new Intent(this, MyService.class));
@@ -536,6 +563,45 @@ public class MainActivity extends AppCompatActivity {
                 sharedPreferencesManager.saveIsRepeatOneState(false); // Đảm bảo rằng repeatOne không bật
                 img_btn_repeat.setImageResource(R.drawable.ic_repeat);
                 img_btn_repeat.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.colorSpotify)));
+            }
+        });
+    }
+
+    private void nextPreviousFiveSecond(View view, boolean isPrevious) {
+        view.setOnClickListener(new View.OnClickListener() {
+            private long lastClickTime = 0;
+            private int clickCount = 0;
+            private Handler handler = new Handler();
+            private Runnable sendServiceRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (clickCount > 1) { // Only send service if clicked more than once
+                        int totalSeconds = (clickCount - 1) * 5; // Click count - 1, since the first click does nothing
+                        Intent intent = new Intent(MainActivity.this, MyService.class);
+                        if (isPrevious) {
+                            intent.putExtra("seek_to_position", currentTime - (totalSeconds * 1000)); // Adjust currentTime as needed
+                        } else {
+                            intent.putExtra("seek_to_position", currentTime + (totalSeconds * 1000)); // Adjust currentTime as needed
+                        }
+                        startService(intent);
+                    }
+                    clickCount = 0; // Reset click count after sending service
+                }
+            };
+
+            @Override
+            public void onClick(View v) {
+                long clickTime = System.currentTimeMillis();
+                // Post delayed new callback
+                // Remove previous callback
+                if (clickTime - lastClickTime < 500) { // 500 milliseconds threshold for multiple clicks
+                    clickCount++; // Increase click count
+                } else {
+                    clickCount = 1; // Reset to 1 for a single click
+                }
+                handler.removeCallbacks(sendServiceRunnable); // Remove previous callback
+                handler.postDelayed(sendServiceRunnable, 500); // Post delayed new callback
+                lastClickTime = clickTime;
             }
         });
     }
@@ -602,22 +668,24 @@ public class MainActivity extends AppCompatActivity {
     private void initViewBottomSheetPlayer() {
         RelativeLayout relative_player = layout_bottom_player_main.findViewById(R.id.relative_player);
         linear_bottom = relative_player.findViewById(R.id.linear_bottom);
+        txt_continue_song = relative_player.findViewById(R.id.txt_continue_song);
+        txt_lyric_song = relative_player.findViewById(R.id.txt_lyric_song);
+        txt_relate_song = relative_player.findViewById(R.id.txt_relate_song);
     }
 
     private void conFigViewsBottomSheetPlayer() {
+
     }
 
     private void onClickBottomSheetPlayer() {
-        linear_bottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showBottomSheetPlayer();
-            }
-        });
+        linear_bottom.setOnClickListener(view -> showBottomSheetPlayer(1));
+        txt_continue_song.setOnClickListener(view -> showBottomSheetPlayer(0));
+        txt_lyric_song.setOnClickListener(view -> showBottomSheetPlayer(1));
+        txt_relate_song.setOnClickListener(view -> showBottomSheetPlayer(2));
     }
 
-    private void showBottomSheetPlayer() {
-        BottomSheetPlayer bottomSheetPlayer = new BottomSheetPlayer(MainActivity.this, MainActivity.this);
+    private void showBottomSheetPlayer(int tab_layout) {
+        BottomSheetPlayer bottomSheetPlayer = new BottomSheetPlayer(MainActivity.this, MainActivity.this, tab_layout);
         bottomSheetPlayer.show(getSupportFragmentManager(), bottomSheetPlayer.getTag());
     }
 

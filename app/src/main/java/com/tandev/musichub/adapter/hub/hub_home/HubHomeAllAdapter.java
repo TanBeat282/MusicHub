@@ -53,7 +53,7 @@ public class HubHomeAllAdapter extends RecyclerView.Adapter<HubHomeAllAdapter.Vi
         Object item = itemsArrayList.get(position);
         if (item instanceof HubHomeFeaturedItems) {
             HubHomeFeaturedItems homeFeaturedItems = (HubHomeFeaturedItems) item;
-            Glide.with(context).load(homeFeaturedItems.getThumbnailHasText()).into(holder.thumbImageView);
+            Glide.with(context).load(homeFeaturedItems.getThumbnailHasText()).placeholder(R.drawable.holder_video).into(holder.thumbImageView);
             holder.itemView.setOnClickListener(view -> {
                 HubFragment hubFragment = new HubFragment();
                 Bundle bundle = new Bundle();
@@ -66,7 +66,7 @@ public class HubHomeAllAdapter extends RecyclerView.Adapter<HubHomeAllAdapter.Vi
             });
         } else if (item instanceof HubHomeNations) {
             HubHomeNations homeNations = (HubHomeNations) item;
-            Glide.with(context).load(homeNations.getThumbnailHasText()).into(holder.thumbImageView);
+            Glide.with(context).load(homeNations.getThumbnailHasText()).placeholder(R.drawable.holder_video).into(holder.thumbImageView);
             holder.itemView.setOnClickListener(view -> {
                 HubFragment hubFragment = new HubFragment();
                 Bundle bundle = new Bundle();
@@ -79,7 +79,7 @@ public class HubHomeAllAdapter extends RecyclerView.Adapter<HubHomeAllAdapter.Vi
             });
         } else if (item instanceof HubHomeTopic) {
             HubHomeTopic hubHomeTopic = (HubHomeTopic) item;
-            Glide.with(context).load(hubHomeTopic.getThumbnailHasText()).into(holder.thumbImageView);
+            Glide.with(context).load(hubHomeTopic.getThumbnailHasText()).placeholder(R.drawable.holder_video).into(holder.thumbImageView);
             holder.itemView.setOnClickListener(view -> {
                 HubFragment hubFragment = new HubFragment();
                 Bundle bundle = new Bundle();
@@ -92,7 +92,7 @@ public class HubHomeAllAdapter extends RecyclerView.Adapter<HubHomeAllAdapter.Vi
             });
         } else {
             HubHomeGenre hubHomeGenre = (HubHomeGenre) item;
-            Glide.with(context).load(hubHomeGenre.getThumbnailHasText()).into(holder.thumbImageView);
+            Glide.with(context).load(hubHomeGenre.getThumbnailHasText()).placeholder(R.drawable.holder_video).into(holder.thumbImageView);
             holder.itemView.setOnClickListener(view -> {
                 HubFragment hubFragment = new HubFragment();
                 Bundle bundle = new Bundle();

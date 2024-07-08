@@ -56,7 +56,9 @@ import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.api.service.RetrofitClient;
 import com.tandev.musichub.api.type_adapter_Factory.search.SearchTypeAdapter;
 import com.tandev.musichub.constants.Constants;
+import com.tandev.musichub.constants.PermissionConstants;
 import com.tandev.musichub.helper.ui.Helper;
+import com.tandev.musichub.helper.uliti.PermissionUtils;
 import com.tandev.musichub.helper.uliti.log.LogUtil;
 import com.tandev.musichub.model.search.search_recommend.DataSearchRecommend;
 import com.tandev.musichub.model.search.search_recommend.SearchRecommend;
@@ -73,6 +75,7 @@ import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 import com.tandev.musichub.view_model.search.SearchRecommendViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -81,9 +84,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SearchFragment extends Fragment implements SearchSuggestionAdapter.KeyWordItemClickListener, SearchRecommendAdapter.SearchRecommendClickListener, SearchHistoryAdapter.SearchRecommendClickListener {
-    private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
-    private static final int RECORD_AUDIO_REQUEST_CODE = 2000;
+public class SearchFragment extends Fragment implements SearchSuggestionAdapter.KeyWordItemClickListener, SearchRecommendAdapter.SearchRecommendClickListener, SearchHistoryAdapter.SearchRecommendClickListener, PermissionUtils.PermissionCallback {
+    private PermissionUtils permissionUtils;
+
     private SharedPreferencesManager sharedPreferencesManager;
     private SearchRecommendViewModel searchRecommendViewModel;
 
@@ -165,6 +168,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         Helper.changeStatusBarColor(requireActivity(), R.color.black);
         apiService = RetrofitClient.getClient().create(ApiService.class);
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+        permissionUtils = new PermissionUtils(requireContext(), this);
 
         initViewsSearchSuggestion(view);
         conFigViewSearchSuggestion();
@@ -317,11 +321,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
             }
         });
         img_mic.setOnClickListener(view -> {
-            if (checkPermission()) {
-                promptSpeechInput();
-            } else {
-                requestPermission();
-            }
+            permissionStorage();
         });
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext());
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
@@ -391,53 +391,10 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
 
     }
 
-    private boolean checkPermission() {
-        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    private void permissionStorage() {
+        permissionUtils.checkAndRequestPermissions(PermissionConstants.REQUEST_CODE_RECORD_AUDIO,
+                android.Manifest.permission.RECORD_AUDIO);
     }
-
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_AUDIO_REQUEST_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == RECORD_AUDIO_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                promptSpeechInput();
-            } else {
-                Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void promptSpeechInput() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Nói gì đó...");
-
-        try {
-            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
-            if (resultCode == RESULT_OK && null != data) {
-                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                if (result != null && !result.isEmpty()) {
-                    searchView.setQuery(result.get(0), true);
-                }
-            }
-        }
-    }
-
 
     private void getSearchRecommend() {
         ApiServiceFactory.createServiceAsync(new ApiServiceFactory.ApiServiceCallback() {
@@ -631,6 +588,47 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         }
         saveSearchHistory(keyword);
         searchView.setQuery(keyword, true);
+    }
+
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Nói gì đó...");
+
+        try {
+            startActivityForResult(intent, PermissionConstants.REQUEST_CODE_SPEECH_INPUT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PermissionConstants.REQUEST_CODE_SPEECH_INPUT) {
+            if (resultCode == RESULT_OK && null != data) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                if (result != null && !result.isEmpty()) {
+                    searchView.setQuery(result.get(0), true);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        if (requestCode == PermissionConstants.REQUEST_CODE_RECORD_AUDIO) {
+            promptSpeechInput();
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        if (requestCode == PermissionConstants.REQUEST_CODE_RECORD_AUDIO) {
+            Toast.makeText(requireContext(), "Quyền bị từ chối. Không thể lắng nghe.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

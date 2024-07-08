@@ -75,7 +75,7 @@ public class HubHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             PlaylistViewHolder playlistViewHolder = (PlaylistViewHolder) holder;
             if (position < hubHomeFeaturedItemsArrayList.size()) {
                 HubHomeFeaturedItems item = hubHomeFeaturedItemsArrayList.get(position);
-                Glide.with(context).load(item.getThumbnailHasText()).into(playlistViewHolder.thumbImageView);
+                Glide.with(context).load(item.getThumbnailHasText()).placeholder(R.drawable.holder_video).into(playlistViewHolder.thumbImageView);
                 playlistViewHolder.itemView.setOnClickListener(view -> {
                     HubFragment hubFragment = new HubFragment();
                     Bundle bundle = new Bundle();
@@ -89,7 +89,7 @@ public class HubHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 int adjustedPosition = position - hubHomeFeaturedItemsArrayList.size();
                 if (adjustedPosition < hubHomeNationsArrayList.size()) {
                     HubHomeNations item = hubHomeNationsArrayList.get(adjustedPosition);
-                    Glide.with(context).load(item.getThumbnailHasText()).into(playlistViewHolder.thumbImageView);
+                    Glide.with(context).load(item.getThumbnailHasText()).placeholder(R.drawable.holder_video).into(playlistViewHolder.thumbImageView);
                     playlistViewHolder.itemView.setOnClickListener(view -> {
                         HubFragment hubFragment = new HubFragment();
                         Bundle bundle = new Bundle();

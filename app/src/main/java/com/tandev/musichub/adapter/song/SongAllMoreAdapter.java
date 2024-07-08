@@ -107,6 +107,7 @@ public class SongAllMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         holder.artistTextView.setText(song.getArtistsNames());
         Glide.with(context)
                 .load(song.getThumbnailM())
+                .placeholder(R.drawable.holder)
                 .into(holder.thumbImageView);
 
         if (selectedPosition == position) {

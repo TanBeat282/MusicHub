@@ -79,6 +79,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.artistTextView.setText(items.getArtistsNames());
         Glide.with(context)
                 .load(items.getThumbnail())
+                .placeholder(R.drawable.holder)
                 .into(holder.thumbImageView);
 
         if (selectedPosition == position) {

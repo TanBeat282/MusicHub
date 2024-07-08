@@ -82,6 +82,7 @@ public class NewReleaseSongAdapter extends RecyclerView.Adapter<NewReleaseSongAd
         holder.artistTextView.setText(song.getArtistsNames());
         Glide.with(context)
                 .load(song.getThumbnail())
+                .placeholder(R.drawable.holder)
                 .into(holder.thumbImageView);
 
         if (selectedPosition == position) {

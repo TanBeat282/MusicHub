@@ -26,6 +26,7 @@ import com.tandev.musichub.adapter.lyric.LyricsAdapter;
 import com.tandev.musichub.helper.uliti.GetUrlAudioHelper;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.lyric.LyricLine;
+import com.tandev.musichub.service.MyService;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 
 import java.io.BufferedReader;
@@ -51,18 +52,17 @@ public class LyricFragment extends Fragment {
     private int action;
     private GetUrlAudioHelper getUrlAudioHelper;
     private SharedPreferencesManager sharedPreferencesManager;
-    private MediaPlayer mediaPlayer;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
-            if (bundle == null) {
-                return;
-            }
+            if (bundle == null) return;
             song = (Items) bundle.get("object_song");
             isPlaying = bundle.getBoolean("status_player");
             action = bundle.getInt("action_music");
-            getDataSong(song);
+            if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS) {
+                getDataSong(song);
+            }
         }
     };
 
@@ -75,91 +75,85 @@ public class LyricFragment extends Fragment {
         }
     };
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        executor = Executors.newSingleThreadExecutor(); // Tạo ExecutorService một lần
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_lyric, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         song = sharedPreferencesManager.restoreSongState();
-
         getUrlAudioHelper = new GetUrlAudioHelper();
 
-        executor = Executors.newSingleThreadExecutor();
-
         lyrics = new ArrayList<>();
-
         recyclerViewLyrics = view.findViewById(R.id.recyclerViewLyrics);
         txtNoData = view.findViewById(R.id.txtNoData);
 
         recyclerViewLyrics.setLayoutManager(new LinearLayoutManager(getContext()));
-
         lyricsAdapter = new LyricsAdapter(getContext(), lyrics);
         recyclerViewLyrics.setAdapter(lyricsAdapter);
 
         recyclerViewLyrics.setVisibility(View.GONE);
         txtNoData.setVisibility(View.VISIBLE);
 
-
-        lyrics = new ArrayList<>();
-
-        mediaPlayer = new MediaPlayer();
-
         getDataSong(sharedPreferencesManager.restoreSongState());
     }
 
-    private class GetLyricTask implements Runnable {
-        private final String url;
-
-        public GetLyricTask(String url) {
-            this.url = url;
-        }
-
-        @Override
-        public void run() {
-            try {
-                URL url = new URL(this.url);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder result = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    result.append(line).append("\n");
-                }
-                reader.close();
-                connection.disconnect();
-                final String lyricContent = result.toString();
-
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        lyrics = parseLyrics(lyricContent);
-                        updateLyricDisplay();
+    private void getDataSong(Items song) {
+        if (song != null) {
+            getUrlAudioHelper.getLyricUrl(song.getEncodeId(), new GetUrlAudioHelper.LyricUrlCallback() {
+                @Override
+                public void onSuccess(String lyricUrl) {
+                    if (lyricUrl != null && !lyricUrl.trim().isEmpty()) {
+                        executor.execute(() -> fetchLyricsFromUrl(lyricUrl));
+                        recyclerViewLyrics.setVisibility(View.VISIBLE);
+                        recyclerViewLyrics.scrollToPosition(0);
+                        txtNoData.setVisibility(View.GONE);
+                    } else {
+                        recyclerViewLyrics.setVisibility(View.GONE);
+                        txtNoData.setVisibility(View.VISIBLE);
                     }
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    // Xử lý lỗi nếu cần
+                }
+            });
         }
     }
 
-    private void startGetLyricTask(String url) {
-        executor.execute(new GetLyricTask(url));
+    private void fetchLyricsFromUrl(String url) {
+        try {
+            URL urlObject = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) urlObject.openConnection();
+            connection.connect();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder result = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line).append("\n");
+            }
+            reader.close();
+            connection.disconnect();
+            String lyricContent = result.toString();
+            requireActivity().runOnUiThread(() -> {
+                lyrics = parseLyrics(lyricContent);
+                updateLyricDisplay();
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 
     private void updateLyricDisplay() {
         if (lyrics != null && !lyrics.isEmpty()) {
@@ -188,7 +182,6 @@ public class LyricFragment extends Fragment {
 
             @Override
             protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-
                 return MILLISECONDS_PER_INCH_NORMAL / displayMetrics.densityDpi;
             }
         };
@@ -196,7 +189,6 @@ public class LyricFragment extends Fragment {
         smoothScroller.setTargetPosition(position);
         Objects.requireNonNull(recyclerViewLyrics.getLayoutManager()).startSmoothScroll(smoothScroller);
     }
-
 
     private List<LyricLine> parseLyrics(String lyricContent) {
         List<LyricLine> lyricLines = new ArrayList<>();
@@ -220,32 +212,6 @@ public class LyricFragment extends Fragment {
         }
 
         return lyricLines;
-    }
-
-    private void getDataSong(Items song) {
-        if (song != null) {
-            getUrlAudioHelper.getLyricUrl(song.getEncodeId(), new GetUrlAudioHelper.LyricUrlCallback() {
-                @Override
-                public void onSuccess(String lyricUrl) {
-                    // Kiểm tra cả null và rỗng
-                    if (lyricUrl != null && !lyricUrl.isEmpty() && !lyricUrl.trim().equals("")) {
-                        startGetLyricTask(lyricUrl);
-                        recyclerViewLyrics.setVisibility(View.VISIBLE);
-                        recyclerViewLyrics.scrollToPosition(0);
-                        txtNoData.setVisibility(View.GONE);
-                    } else {
-                        recyclerViewLyrics.setVisibility(View.GONE);
-                        txtNoData.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-
-                }
-            });
-
-        }
     }
 
     @Override

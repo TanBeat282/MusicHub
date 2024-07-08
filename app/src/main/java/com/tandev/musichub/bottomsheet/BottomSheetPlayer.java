@@ -54,6 +54,7 @@ import java.util.ArrayList;
 public class BottomSheetPlayer extends BottomSheetDialogFragment {
     private final Context context;
     private final Activity activity;
+    private final int tab_layout;
     private BottomSheetDialog bottomSheetDialog;
 
     private SharedPreferencesManager sharedPreferencesManager;
@@ -97,9 +98,10 @@ public class BottomSheetPlayer extends BottomSheetDialogFragment {
         }
     };
 
-    public BottomSheetPlayer(Context context, Activity activity) {
+    public BottomSheetPlayer(Context context, Activity activity, int tab_layout) {
         this.context = context;
         this.activity = activity;
+        this.tab_layout = tab_layout;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -195,12 +197,12 @@ public class BottomSheetPlayer extends BottomSheetDialogFragment {
                     break;
             }
         }).attach();
-        viewPager.setCurrentItem(1, false);
+        viewPager.setCurrentItem(tab_layout, false);
     }
 
     private void setData(Items items) {
         if (items != null) {
-            Glide.with(context).load(items.getThumbnail()).into(img_album_song);
+            Glide.with(context).load(items.getThumbnail()).placeholder(R.drawable.holder).into(img_album_song);
             txt_title_song.setText(items.getTitle());
             txt_artist.setText(items.getArtistsNames());
 

@@ -61,6 +61,7 @@ public class BannerSlideAdapter extends RecyclerView.Adapter<BannerSlideAdapter.
 
         Glide.with(context)
                 .load(homeDataItemBannerItem.getBanner())
+                .placeholder(R.drawable.holder_video)
                 .into(holder.roundedImageView);
 
         if (position == homeDataItemBannerItems.size() - 2) {

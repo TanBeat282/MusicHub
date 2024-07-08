@@ -82,6 +82,7 @@ public class BXHSongAdapter extends RecyclerView.Adapter<BXHSongAdapter.ViewHold
         holder.artistTextView.setText(song.getArtistsNames());
         Glide.with(context)
                 .load(song.getThumbnail())
+                .placeholder(R.drawable.holder)
                 .into(holder.thumbImageView);
 
         if (song.getRakingStatus() > 0) {

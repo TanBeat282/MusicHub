@@ -1,7 +1,7 @@
 <!-- item_song.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="@dimen/_130sdp"
     android:layout_height="wrap_content"
     android:background="@drawable/select_item"
     android:orientation="vertical"
@@ -24,7 +24,6 @@
         android:focusableInTouchMode="true"
         android:fontFamily="@font/roboto_bold"
         android:marqueeRepeatLimit="marquee_forever"
-        android:maxLines="1"
         android:scrollHorizontally="true"
         android:singleLine="true"
         android:textColor="@color/white"

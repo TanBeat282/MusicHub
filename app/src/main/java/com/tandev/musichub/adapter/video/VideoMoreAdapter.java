@@ -72,13 +72,13 @@ public class VideoMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             playlistViewHolder.txt_time_video.setText(Helper.convertDurationToMinutesAndSeconds(hubVideo.getDuration()));
             Glide.with(context)
                     .load(hubVideo.getThumbnailM())
-                    .thumbnail(0.1f)  // Tải thumbnail với kích thước nhỏ hơn 10% so với ảnh chính
+                    .placeholder(R.drawable.holder_video)
                     .into(playlistViewHolder.image_video);
 
             playlistViewHolder.artistTextView.setText(hubVideo.getArtistsNames());
             Glide.with(context)
                     .load(hubVideo.getArtist().getThumbnail())
-                    .thumbnail(0.1f)  // Tải thumbnail với kích thước nhỏ hơn 10% so với ảnh chính
+                    .placeholder(R.drawable.holder)
                     .into(playlistViewHolder.thumbImageView);
             playlistViewHolder.txt_premium.setVisibility(hubVideo.getStreamingStatus() == 2 ? View.VISIBLE : View.GONE);
 

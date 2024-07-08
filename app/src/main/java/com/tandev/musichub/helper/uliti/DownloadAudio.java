@@ -9,7 +9,6 @@ import java.io.File;
 
 public class DownloadAudio {
     private Context context;
-    // Khai báo biến downloadID để lưu ID của quá trình tải xuống
     private long downloadID;
 
     public DownloadAudio(Context context) {

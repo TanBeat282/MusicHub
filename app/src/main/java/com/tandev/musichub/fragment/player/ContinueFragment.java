@@ -60,8 +60,11 @@ public class ContinueFragment extends Fragment {
                 return;
             }
             items = (Items) bundle.get("object_song");
+            int action = bundle.getInt("action_music");
             if (items != null) {
-                setContinueSong(items);
+                if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS) {
+                    setContinueSong(items);
+                }
             }
         }
     };

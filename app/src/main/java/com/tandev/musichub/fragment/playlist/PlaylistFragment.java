@@ -58,21 +58,23 @@ public class PlaylistFragment extends Fragment {
     private PlaylistViewModel playlistViewModel;
 
     private ImageView imageBackground;
+
+    //tool bar
+    private View tool_bar;
+    private RelativeLayout relative_header;
+    private TextView txt_title_toolbar;
+    private ImageView img_back;
+
     private RoundedImageView img_playlist;
     private ProgressBar progress_image;
     private TextView txt_title_playlist;
     private TextView txt_user_name;
     private TextView txt_song_and_time;
-    private RelativeLayout relative_header;
-    private TextView txt_name_artist;
-    private TextView txt_view;
     private TextView txt_content_playlist;
     private ArrayList<Items> itemsArrayList;
     private SongAllAdapter songAllAdapter;
     private NestedScrollView nested_scroll;
     private RelativeLayout relative_loading;
-    private ImageView img_back;
-    private ImageView img_more;
     private RecyclerView rv_playlist;
     private LinearLayout btn_play_playlist;
 
@@ -134,15 +136,15 @@ public class PlaylistFragment extends Fragment {
 
 
     private void initViews(View view) {
-        imageBackground = view.findViewById(R.id.imageBackground);
-        img_back = view.findViewById(R.id.img_back);
-        img_more = view.findViewById(R.id.img_more);
+        tool_bar = view.findViewById(R.id.tool_bar);
+        relative_header = tool_bar.findViewById(R.id.relative_header);
+        img_back = tool_bar.findViewById(R.id.img_back);
+        txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);
 
-        relative_header = view.findViewById(R.id.relative_header);
+
+        imageBackground = view.findViewById(R.id.imageBackground);
         relative_loading = view.findViewById(R.id.relative_loading);
         nested_scroll = view.findViewById(R.id.nested_scroll_view);
-        txt_name_artist = view.findViewById(R.id.txt_name_artist);
-        txt_view = view.findViewById(R.id.txt_view);
 
         img_playlist = view.findViewById(R.id.img_playlist);
         progress_image = view.findViewById(R.id.progress_image);
@@ -178,8 +180,7 @@ public class PlaylistFragment extends Fragment {
                 // Kiểm tra nếu người dùng đã cuộn đến đầu trang
                 if (scrollY <= 600) {
                     // Ẩn TextView khi người dùng cuộn trở lại đầu trang
-                    txt_name_artist.setVisibility(View.GONE);
-                    txt_view.setVisibility(View.VISIBLE);
+                    txt_title_toolbar.setText("");
                     relative_header.setBackgroundResource(android.R.color.transparent);
                     // Make the content appear under the status bar
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -189,9 +190,8 @@ public class PlaylistFragment extends Fragment {
 
                 } else if (scrollY >= 800) {
                     // Hiển thị TextView khi người dùng cuộn xuống khỏi đầu trang
-                    txt_name_artist.setVisibility(View.VISIBLE);
-                    txt_view.setVisibility(View.GONE);
-                    txt_name_artist.setText(playlistViewModel.getPlaylistMutableLiveData().getValue().getData().getTitle());
+
+                    txt_title_toolbar.setText(playlistViewModel.getPlaylistMutableLiveData().getValue().getData().getTitle());
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
                     Helper.changeStatusBarColor(requireActivity(), R.color.gray);
                 }
@@ -294,12 +294,14 @@ public class PlaylistFragment extends Fragment {
         // Sử dụng Glide để tải và áp dụng hiệu ứng mờ
         Glide.with(requireContext())
                 .load(playlist.getData().getThumbnailM())
+                .placeholder(R.color.black)
                 .transform(new CenterCrop(), new BlurAndBlackOverlayTransformation(requireContext(), 25, 220)) // 25 là mức độ mờ, 150 là độ mờ của lớp phủ đen
                 .into(imageBackground);
 
         //avatar
         Glide.with(requireContext())
                 .load(playlist.getData().getThumbnailM())
+                .placeholder(R.drawable.holder)
                 .into(img_playlist);
 
         relative_loading.setVisibility(View.GONE);

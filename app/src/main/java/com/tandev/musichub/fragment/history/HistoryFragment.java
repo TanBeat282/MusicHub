@@ -30,13 +30,19 @@ import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 import java.util.ArrayList;
 
 public class HistoryFragment extends Fragment {
-    private TextView txt_view, txt_name_artist;
+    //tool bar
+    private View tool_bar;
     private RelativeLayout relative_header;
+    private TextView txt_title_toolbar;
+    private ImageView img_back;
+
+
     private LinearLayout linear_da_nghe, linear_nghe_nhieu, linear_no_data;
-    private ArrayList<Items> songListLichSuBaiHat ;
-    private  ArrayList<Items> songListLichSuBaiHatNgheNhieu ;
+    private ArrayList<Items> songListLichSuBaiHat;
+    private ArrayList<Items> songListLichSuBaiHatNgheNhieu;
     private HistoryAdapter lichSuBaiHatNgheNhieuAdapter, lichSuBaiHatAdapter;
     private SharedPreferencesManager sharedPreferencesManager;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,14 +60,14 @@ public class HistoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Helper.changeStatusBarColor(requireActivity(), R.color.black);
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
-
-
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
 
-        relative_header = view.findViewById(R.id.relative_header);
-        ImageView img_back = view.findViewById(R.id.img_back);
-        txt_view = view.findViewById(R.id.txt_view);
-        txt_name_artist = view.findViewById(R.id.txt_name_artist);
+        tool_bar = view.findViewById(R.id.tool_bar);
+        relative_header = tool_bar.findViewById(R.id.relative_header);
+        img_back = tool_bar.findViewById(R.id.img_back);
+        txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);
+
+
         NestedScrollView nested_scroll = view.findViewById(R.id.nested_scroll);
 
         linear_nghe_nhieu = view.findViewById(R.id.linear_nghe_nhieu);
@@ -73,12 +79,12 @@ public class HistoryFragment extends Fragment {
 
         LinearLayoutManager layoutManagerNgheNhieu = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_history_count.setLayoutManager(layoutManagerNgheNhieu);
-        lichSuBaiHatNgheNhieuAdapter = new HistoryAdapter(requireContext(),requireActivity(),songListLichSuBaiHatNgheNhieu);
+        lichSuBaiHatNgheNhieuAdapter = new HistoryAdapter(requireContext(), requireActivity(), songListLichSuBaiHatNgheNhieu);
         rv_history_count.setAdapter(lichSuBaiHatNgheNhieuAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_history.setLayoutManager(layoutManager);
-        lichSuBaiHatAdapter = new HistoryAdapter(requireContext(),requireActivity(),songListLichSuBaiHat);
+        lichSuBaiHatAdapter = new HistoryAdapter(requireContext(), requireActivity(), songListLichSuBaiHat);
         rv_history.setAdapter(lichSuBaiHatAdapter);
 
         nested_scroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
@@ -86,8 +92,7 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 if (scrollY <= 200) {
-                    txt_name_artist.setVisibility(View.GONE);
-                    txt_view.setVisibility(View.VISIBLE);
+                    txt_title_toolbar.setText("");
                     relative_header.setBackgroundResource(android.R.color.transparent);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -95,9 +100,7 @@ public class HistoryFragment extends Fragment {
                     }
 
                 } else if (scrollY >= 300) {
-                    txt_name_artist.setVisibility(View.VISIBLE);
-                    txt_view.setVisibility(View.GONE);
-                    txt_name_artist.setText("Lịch sử nghe");
+                    txt_title_toolbar.setText("Lịch sử nghe");
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
                     Helper.changeStatusBarColor(requireActivity(), R.color.gray);
                 }
@@ -112,6 +115,7 @@ public class HistoryFragment extends Fragment {
         });
         getSongHistory();
     }
+
     @SuppressLint("NotifyDataSetChanged")
     private void getSongHistory() {
 

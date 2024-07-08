@@ -55,7 +55,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         holder.nameTextView.setText(dataPlaylist.getTitle());
         Glide.with(context)
                 .load(dataPlaylist.getThumbnailM())
-                .thumbnail(0.1f)  // Tải thumbnail với kích thước nhỏ hơn 10% so với ảnh chính
+                .placeholder(R.drawable.holder)
                 .into(holder.thumbImageView);
 
         holder.itemView.setOnClickListener(v -> {

@@ -46,7 +46,8 @@ public class NewReleaseFragment extends Fragment {
 
         tab_layout_new_release_song.setupWithViewPager(view_pager_new_release_song);
 
-        ImageView img_back = view.findViewById(R.id.img_back);
+        View tool_bar = view.findViewById(R.id.tool_bar);
+        ImageView img_back = tool_bar.findViewById(R.id.img_back);
         img_back.setOnClickListener(view1 -> {
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().popBackStack();

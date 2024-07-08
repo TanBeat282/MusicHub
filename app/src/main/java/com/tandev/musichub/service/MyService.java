@@ -264,106 +264,127 @@ public class MyService extends Service {
     }
 
     private void nextMusic() {
-        // Lấy bài hát từ danh sách và phát
         if (mediaPlayer != null) {
-
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
-                mediaPlayer.reset(); // Reset mediaPlayer
+                mediaPlayer.reset();
                 isPlaying = false;
             }
 
-            // Nếu không phải trạng thái lặp lại một bài hát
-            if (!sharedPreferencesManager.restoreIsRepeatOneState()) {
+            // Xử lý theo trạng thái Repeat và Shuffle
+            if (sharedPreferencesManager.restoreIsRepeatOneState()) {
+                // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
+                startMusic(mSong);
+            } else {
                 if (sharedPreferencesManager.restoreIsShuffleState()) {
-                    // Trạng thái shuffle
+                    // Shuffle: Chọn một chỉ số ngẫu nhiên
                     Random random = new Random();
-                    mPositionSong = random.nextInt(mSongList.size()); // Chọn một chỉ số ngẫu nhiên
+                    mPositionSong = random.nextInt(mSongList.size());
                 } else {
-                    // Trạng thái không shuffle
+                    // Không Shuffle: Tiếp tục theo thứ tự
                     mPositionSong++;
                     if (mPositionSong >= mSongList.size()) {
                         mPositionSong = 0;
                     }
                 }
-            } // Không cần thay đổi mPositionSong nếu đang trong trạng thái lặp lại một bài
 
+                if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
+                    mSong = mSongList.get(mPositionSong);
+                    startMusic(mSong);
+                    sendNotificationMedia(mSong, true);
+                    saveSongListAndPosition(mSong, mPositionSong, mSongList);
+                }
+            }
         } else {
             mSongList = sharedPreferencesManager.restoreSongArrayList();
             mPositionSong = sharedPreferencesManager.restoreSongPosition();
-            // Nếu không phải trạng thái lặp lại một bài hát
-            if (!sharedPreferencesManager.restoreIsRepeatOneState()) {
+            if (sharedPreferencesManager.restoreIsRepeatOneState()) {
+                // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
+                startMusic(mSong);
+            } else {
                 if (sharedPreferencesManager.restoreIsShuffleState()) {
-                    // Trạng thái shuffle
+                    // Shuffle: Chọn một chỉ số ngẫu nhiên
                     Random random = new Random();
-                    mPositionSong = random.nextInt(mSongList.size()); // Chọn một chỉ số ngẫu nhiên
+                    mPositionSong = random.nextInt(mSongList.size());
                 } else {
-                    // Trạng thái không shuffle
+                    // Không Shuffle: Tiếp tục theo thứ tự
                     mPositionSong++;
                     if (mPositionSong >= mSongList.size()) {
                         mPositionSong = 0;
                     }
                 }
-            } // Không cần thay đổi mPositionSong nếu đang trong trạng thái lặp lại một bài
 
-        }
-        if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
-            // Lấy bài hát từ danh sách và phát
-            mSong = mSongList.get(mPositionSong);
-            startMusic(mSong);
-            sendNotificationMedia(mSong, true);
-            saveSongListAndPosition(mSong, mPositionSong, mSongList);
+                if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
+                    mSong = mSongList.get(mPositionSong);
+                    startMusic(mSong);
+                    sendNotificationMedia(mSong, true);
+                    saveSongListAndPosition(mSong, mPositionSong, mSongList);
+                }
+            }
         }
     }
-
 
     private void previousMusic() {
         if (mediaPlayer != null) {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
-                mediaPlayer.reset(); // Reset mediaPlayer
+                mediaPlayer.reset();
                 isPlaying = false;
             }
 
-            if (!sharedPreferencesManager.restoreIsRepeatOneState()) {
-
+            // Xử lý theo trạng thái Repeat và Shuffle
+            if (sharedPreferencesManager.restoreIsRepeatOneState()) {
+                // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
+                startMusic(mSong);
+            } else {
                 if (sharedPreferencesManager.restoreIsShuffleState()) {
+                    // Shuffle: Chọn một chỉ số ngẫu nhiên
                     Random random = new Random();
-                    mPositionSong = random.nextInt(mSongList.size()); // Chọn một chỉ số ngẫu nhiên
+                    mPositionSong = random.nextInt(mSongList.size());
                 } else {
+                    // Không Shuffle: Tiếp tục theo thứ tự
+                    mPositionSong--;
                     if (mPositionSong < 0) {
                         mPositionSong = mSongList.size() - 1;
-                    } else {
-                        mPositionSong--;
                     }
                 }
-            }
 
+                if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
+                    mSong = mSongList.get(mPositionSong);
+                    startMusic(mSong);
+                    sendNotificationMedia(mSong, true);
+                    saveSongListAndPosition(mSong, mPositionSong, mSongList);
+                }
+            }
         } else {
             mSongList = sharedPreferencesManager.restoreSongArrayList();
             mPositionSong = sharedPreferencesManager.restoreSongPosition();
-            if (!sharedPreferencesManager.restoreIsRepeatOneState()) {
-
+            if (sharedPreferencesManager.restoreIsRepeatOneState()) {
+                // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
+                startMusic(mSong);
+            } else {
                 if (sharedPreferencesManager.restoreIsShuffleState()) {
+                    // Shuffle: Chọn một chỉ số ngẫu nhiên
                     Random random = new Random();
-                    mPositionSong = random.nextInt(mSongList.size()); // Chọn một chỉ số ngẫu nhiên
+                    mPositionSong = random.nextInt(mSongList.size());
                 } else {
+                    // Không Shuffle: Tiếp tục theo thứ tự
+                    mPositionSong--;
                     if (mPositionSong < 0) {
                         mPositionSong = mSongList.size() - 1;
-                    } else {
-                        mPositionSong--;
                     }
                 }
-            }
 
-        }
-        if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
-            mSong = mSongList.get(mPositionSong);
-            startMusic(mSong);
-            sendNotificationMedia(mSong, true);
-            saveSongListAndPosition(mSong, mPositionSong, mSongList);
+                if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
+                    mSong = mSongList.get(mPositionSong);
+                    startMusic(mSong);
+                    sendNotificationMedia(mSong, true);
+                    saveSongListAndPosition(mSong, mPositionSong, mSongList);
+                }
+            }
         }
     }
+
 
     private void pauseMusic() {
         if (mediaPlayer != null && isPlaying) {

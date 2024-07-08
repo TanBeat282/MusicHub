@@ -77,10 +77,12 @@ public class RadioMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             artistViewHolder.txt_name.setText(homeDataItemRadioItem.getHost().getName());
             artistViewHolder.txt_view.setText(homeDataItemRadioItem.getActiveUsers() + " người đang nghe");
             Glide.with(context)
-                    .load(homeDataItemRadioItem.getProgram().getThumbnail())
+                    .load(homeDataItemRadioItem.getProgram() == null ? homeDataItemRadioItem.getThumbnailM() : homeDataItemRadioItem.getProgram().getThumbnail())
+                    .placeholder(R.drawable.holder)
                     .into(artistViewHolder.img_avatar);
             Glide.with(context)
                     .load(homeDataItemRadioItem.getHost().getThumbnail())
+                    .placeholder(R.drawable.holder)
                     .into(artistViewHolder.img_user);
 
             artistViewHolder.itemView.setOnClickListener(new View.OnClickListener() {

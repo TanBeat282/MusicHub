@@ -81,7 +81,7 @@ public class SongAllAdapter extends RecyclerView.Adapter<SongAllAdapter.ViewHold
         holder.artistTextView.setText(song.getArtistsNames());
         Glide.with(context)
                 .load(song.getThumbnailM())  // Tải ảnh thumbnail từ liên kết
-                .thumbnail(0.1f)  // Tải thumbnail với kích thước nhỏ hơn 10% so với ảnh chính
+                .placeholder(R.drawable.holder)
                 .into(holder.thumbImageView);  // Hiển thị thumbnail lên ImageView
 
         if (selectedPosition == position) {

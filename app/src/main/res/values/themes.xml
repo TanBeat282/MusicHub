@@ -6,4 +6,10 @@
     </style>
 
     <style name="Theme.MusicHub" parent="Base.Theme.MusicHub" />
+
+    <style name="artist_name" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

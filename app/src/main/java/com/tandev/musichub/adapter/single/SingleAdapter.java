@@ -54,6 +54,7 @@ public class SingleAdapter extends RecyclerView.Adapter<SingleAdapter.ViewHolder
         holder.txt_follow.setText(String.valueOf(dataPlaylist.getReleaseDate()));
         Glide.with(context)
                 .load(dataPlaylist.getThumbnail())
+                .placeholder(R.drawable.holder)
                 .into(holder.img_avatar);
 
         holder.itemView.setOnClickListener(v -> {

@@ -19,13 +19,11 @@ import com.tandev.musichub.model.lyric.LyricLine;
 import com.tandev.musichub.service.MyService;
 
 import java.util.List;
-
 public class LyricsAdapter extends RecyclerView.Adapter<LyricsAdapter.LyricsViewHolder> {
 
     private final Context context;
     private List<LyricLine> lyricLines;
     private long currentPlaybackTime;
-    private static final int EXTRA_ITEMS_COUNT = 10;
 
     public LyricsAdapter(Context context, List<LyricLine> lyricLines) {
         this.context = context;
@@ -39,25 +37,8 @@ public class LyricsAdapter extends RecyclerView.Adapter<LyricsAdapter.LyricsView
     }
 
     public void setCurrentPlaybackTime(long currentPlaybackTime) {
-        int previousPosition = findCurrentLyricPosition();
         this.currentPlaybackTime = currentPlaybackTime;
-        int currentPosition = findCurrentLyricPosition();
-
-        if (previousPosition != -1) {
-            notifyItemChanged(previousPosition);
-        }
-        if (currentPosition != -1) {
-            notifyItemChanged(currentPosition);
-        }
-    }
-
-    private int findCurrentLyricPosition() {
-        for (int i = 0; i < lyricLines.size(); i++) {
-            if (isCurrentLyric(i)) {
-                return i;
-            }
-        }
-        return -1;
+        notifyDataSetChanged(); // Đổi thành notifyDataSetChanged để giảm tần suất gọi notifyItemChanged
     }
 
     @NonNull

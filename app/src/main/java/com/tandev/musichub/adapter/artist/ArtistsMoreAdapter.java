@@ -78,6 +78,7 @@ public class ArtistsMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             artistViewHolder.txt_follow.setText(Helper.convertToIntString(artist.getTotalFollow()) + " quan tâm");
             Glide.with(context)
                     .load(artist.getThumbnail())
+                    .placeholder(R.drawable.holder)
                     .into(artistViewHolder.img_avatar);
 
             artistViewHolder.itemView.setOnClickListener(new View.OnClickListener() {

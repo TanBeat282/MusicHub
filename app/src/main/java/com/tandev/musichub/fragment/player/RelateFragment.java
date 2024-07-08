@@ -29,6 +29,7 @@ import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.new_release.NewReleaseSong;
 import com.tandev.musichub.model.song.SongDetail;
 import com.tandev.musichub.model.song.song_recommend.SongRecommend;
+import com.tandev.musichub.service.MyService;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 
 import java.util.ArrayList;
@@ -56,7 +57,10 @@ public class RelateFragment extends Fragment {
                 return;
             }
             items = (Items) bundle.get("object_song");
-            getRelateSong(items.getEncodeId());
+            int action = bundle.getInt("action_music");
+            if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS) {
+                getRelateSong(items.getEncodeId());
+            }
         }
     };
 

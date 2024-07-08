@@ -97,6 +97,7 @@ public class SelectArtistAdapter extends RecyclerView.Adapter<SelectArtistAdapte
 
         Glide.with(context)
                 .load(artists.getThumbnail())
+                .placeholder(R.drawable.holder)
                 .into(holder.thumbImageView);
 
         holder.itemView.setOnClickListener(view -> {

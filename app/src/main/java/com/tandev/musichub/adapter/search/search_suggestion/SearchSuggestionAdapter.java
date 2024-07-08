@@ -182,6 +182,7 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
                     artistViewHolder.artistTextView.setText(artistItem.getFollowers() + " quan tâm");
                     Glide.with(context)
                             .load(artistItem.getAvatar())
+                            .placeholder(R.drawable.holder)
                             .into(artistViewHolder.thumbImageView);
 
                     artistViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -217,6 +218,7 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
                     playlistViewHolder.artistTextView.setText(artistsNames.toString());
                     Glide.with(context)
                             .load(playlistItem.getThumb())
+                            .placeholder(R.drawable.holder)
                             .into(playlistViewHolder.thumbImageView);
                     playlistViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -251,6 +253,7 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                     Glide.with(context)
                             .load(songItem.getThumb())
+                            .placeholder(R.drawable.holder)
                             .into(songViewHolder.thumbImageView);
 
                     if (selectedPosition == position) {

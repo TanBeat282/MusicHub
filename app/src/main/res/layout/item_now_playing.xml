@@ -37,14 +37,15 @@
         <RelativeLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_40sdp"
+            android:layout_height="@dimen/_42sdp"
             android:layout_alignParentTop="true"
+            android:fitsSystemWindows="true"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
+                android:layout_marginHorizontal="@dimen/_5sdp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -52,8 +53,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_20sdp"
-                    android:src="@drawable/baseline_keyboard_arrow_down_24"
+                    android:background="@drawable/select_onclick"
+                    android:padding="@dimen/_5sdp"
+                    android:rotation="-90"
+                    android:src="@drawable/ic_back"
                     app:tint="@color/white" />
 
                 <TextView
@@ -67,7 +70,7 @@
                     android:gravity="center"
                     android:text="Now Playing"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_10ssp"
+                    android:textSize="@dimen/_12ssp"
                     android:textStyle="bold" />
 
                 <ImageView
@@ -75,7 +78,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:background="@drawable/select_onclick"
+                    android:padding="@dimen/_5sdp"
                     android:src="@drawable/baseline_info_24"
                     app:tint="@color/white" />
             </LinearLayout>
@@ -87,6 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_280sdp"
             android:layout_above="@id/linear_info"
+            android:layout_below="@+id/container"
             android:layout_centerHorizontal="true"
             android:gravity="center">
 
@@ -103,6 +109,42 @@
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
                 android:visibility="visible" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_280sdp"
+            android:layout_above="@id/linear_info"
+            android:layout_below="@+id/container"
+            android:layout_centerHorizontal="true"
+            android:gravity="center">
+
+            <LinearLayout
+                android:id="@+id/linear_detail_song"
+                android:layout_width="@dimen/_280sdp"
+                android:layout_height="@dimen/_280sdp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/linear_previous_five_second"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/select_item"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linear_next_five_second"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/select_item"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+            </LinearLayout>
         </RelativeLayout>
 
         <LinearLayout
@@ -329,7 +371,6 @@
                     android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_70sdp"
                     android:layout_centerInParent="true"
-                    android:background="@null"
                     app:lottie_colorFilter="@color/white"
                     app:lottie_rawRes="@raw/animation_lkmi7dh6" />
 
@@ -339,7 +380,7 @@
                     android:layout_height="@dimen/_40sdp"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/lottie_play_pause"
-                    android:background="@null"
+                    android:background="@drawable/select_onclick"
                     android:scaleType="fitCenter"
                     android:src="@drawable/baseline_skip_next_24"
                     app:tint="@color/white">
@@ -348,12 +389,13 @@
 
                 <ImageButton
                     android:id="@+id/img_btn_repeat"
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="@dimen/_20sdp"
                     android:background="@null"
+                    android:padding="@dimen/_5sdp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/baseline_repeat_24"
                     app:tint="@color/white" />
@@ -364,7 +406,7 @@
                     android:layout_height="@dimen/_40sdp"
                     android:layout_centerVertical="true"
                     android:layout_toStartOf="@+id/lottie_play_pause"
-                    android:background="@null"
+                    android:background="@drawable/select_onclick"
                     android:scaleType="fitCenter"
                     android:src="@drawable/baseline_skip_previous_24"
                     app:tint="@color/white">
@@ -373,11 +415,12 @@
 
                 <ImageButton
                     android:id="@+id/img_btn_shuffle"
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:background="@null"
+                    android:background="@drawable/select_onclick"
+                    android:padding="@dimen/_5sdp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/baseline_shuffle_24"
                     app:tint="@color/white"
@@ -393,6 +436,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_marginTop="@dimen/_10sdp"
             android:background="@drawable/background_bottomsheet"
             android:orientation="vertical">
 
@@ -410,7 +454,7 @@
                 android:id="@+id/linear_tab_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:orientation="horizontal"
                 android:visibility="visible">
@@ -422,9 +466,12 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/txt_continue_song"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/select_item"
                         android:fontFamily="@font/roboto"
+                        android:padding="@dimen/_5sdp"
                         android:text="TIẾP THEO"
                         android:textColor="@color/colorSecondaryText"
                         android:textSize="@dimen/_11ssp"
@@ -439,10 +486,13 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/txt_lyric_song"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/select_item"
                         android:fontFamily="@font/roboto"
-                        android:text="LỜI NHẠC"
+                        android:padding="@dimen/_5sdp"
+                        android:text="LỜI BÀI HÁT"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_11ssp"
                         tools:ignore="HardcodedText" />
@@ -456,9 +506,12 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/txt_relate_song"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/select_item"
                         android:fontFamily="@font/roboto"
+                        android:padding="@dimen/_5sdp"
                         android:text="LIÊN QUAN"
                         android:textColor="@color/colorSecondaryText"
                         android:textSize="@dimen/_11ssp"

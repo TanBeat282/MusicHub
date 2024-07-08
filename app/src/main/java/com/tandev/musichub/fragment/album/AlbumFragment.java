@@ -250,11 +250,13 @@ public class AlbumFragment extends Fragment {
         // Sử dụng Glide để tải và áp dụng hiệu ứng mờ
         Glide.with(requireContext())
                 .load(playlist.getData().getThumbnailM())
+                .placeholder(R.color.black)
                 .transform(new CenterCrop(), new BlurAndBlackOverlayTransformation(requireContext(), 25, 220)) // 25 là mức độ mờ, 150 là độ mờ của lớp phủ đen
                 .into(imageBackground);
 
         Glide.with(requireContext())
                 .load(playlist.getData().getThumbnailM())
+                .placeholder(R.drawable.holder)
                 .into(img_playlist);
 
         img_playlist.setVisibility(View.VISIBLE);

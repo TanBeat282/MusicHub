@@ -129,9 +129,9 @@
                     android:id="@+id/linear_new_song"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/background_button_option_song"
+                    android:background="@drawable/background_new_song_artist"
                     android:orientation="horizontal"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_10sdp"
                     android:visibility="visible">
 
                     <com.makeramen.roundedimageview.RoundedImageView
@@ -139,7 +139,6 @@
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:layout_gravity="center"
-                        android:layout_marginStart="10dp"
                         android:src="@color/white"
                         app:riv_corner_radius="@dimen/_5sdp" />
 
@@ -369,54 +368,8 @@
             android:progressTint="@android:color/white" />
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/relative_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:fitsSystemWindows="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginHorizontal="@dimen/_10sdp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/img_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_back" />
-
-            <TextView
-                android:id="@+id/txt_name_artist"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="20dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/roboto_bold"
-                android:text="Trần Ngọc Tân"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/txt_view"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:visibility="visible" />
-
-            <ImageView
-                android:id="@+id/img_more"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/baseline_more_vert_24" />
-        </LinearLayout>
-
-    </RelativeLayout>
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/layout_tool_bar" />
 
 </RelativeLayout>
