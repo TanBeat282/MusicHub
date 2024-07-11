@@ -1,7 +1,6 @@
 package com.tandev.musichub.fragment.song;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,10 +20,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.song.PaginationScrollListener;
-import com.tandev.musichub.adapter.song.SongAllMoreAdapter;
+import com.tandev.musichub.adapter.song.SongLoadMoreAdapter;
 import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.ArtistCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
@@ -45,7 +43,7 @@ public class SongFragment extends Fragment implements BottomSheetSelectSortSong.
     private SharedPreferencesManager sharedPreferencesManager;
     private ArrayList<Items> itemsArrayList = new ArrayList<>();
     private SongOfArtist songOfArtist;
-    private SongAllMoreAdapter songAllMoreAdapter;
+    private SongLoadMoreAdapter songLoadMoreAdapter;
     private boolean isLoading;
     private boolean isLastPage;
     private int currentPage = 1;
@@ -150,8 +148,8 @@ public class SongFragment extends Fragment implements BottomSheetSelectSortSong.
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_song_of_artist.setLayoutManager(linearLayoutManager);
 
-        songAllMoreAdapter = new SongAllMoreAdapter(itemsArrayList, requireActivity(),requireContext());
-        rv_song_of_artist.setAdapter(songAllMoreAdapter);
+        songLoadMoreAdapter = new SongLoadMoreAdapter(itemsArrayList, requireActivity(),requireContext());
+        rv_song_of_artist.setAdapter(songLoadMoreAdapter);
 
         rv_song_of_artist.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
             @Override
@@ -239,11 +237,11 @@ public class SongFragment extends Fragment implements BottomSheetSelectSortSong.
                                     if (!arrayList.isEmpty()) {
                                         requireActivity().runOnUiThread(() -> {
                                             itemsArrayList = arrayList;
-                                            songAllMoreAdapter.setFilterList(arrayList);
+                                            songLoadMoreAdapter.setFilterList(arrayList);
                                             totalPages = calculateTotalPages(songOfArtist.getData().getTotal());
 
                                             if (currentPage < totalPages) {
-                                                songAllMoreAdapter.addFooterLoading();
+                                                songLoadMoreAdapter.addFooterLoading();
                                             } else {
                                                 isLastPage = true;
                                             }
@@ -298,12 +296,12 @@ public class SongFragment extends Fragment implements BottomSheetSelectSortSong.
                                     ArrayList<Items> arrayList = songOfArtist.getData().getItems();
                                     if (!arrayList.isEmpty()) {
                                         requireActivity().runOnUiThread(() -> {
-                                            songAllMoreAdapter.removeFooterLoading();
+                                            songLoadMoreAdapter.removeFooterLoading();
                                             itemsArrayList.addAll(arrayList);
-                                            songAllMoreAdapter.notifyDataSetChanged();
+                                            songLoadMoreAdapter.notifyDataSetChanged();
                                             isLoading = false;
                                             if (currentPage < totalPages) {
-                                                songAllMoreAdapter.addFooterLoading();
+                                                songLoadMoreAdapter.addFooterLoading();
                                             } else {
                                                 isLastPage = true;
                                             }

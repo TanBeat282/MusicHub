@@ -41,7 +41,7 @@ public class NewReleaseFragment extends Fragment {
         TabLayout tab_layout_new_release_song = view.findViewById(R.id.tab_layout_new_release_song);
         ViewPager view_pager_new_release_song = view.findViewById(R.id.view_pager_new_release_song);
 
-        NewReleaseViewPageAdapter mViewPagerAdapter = new NewReleaseViewPageAdapter(requireActivity().getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        NewReleaseViewPageAdapter mViewPagerAdapter = new NewReleaseViewPageAdapter(requireActivity().getSupportFragmentManager());
         view_pager_new_release_song.setAdapter(mViewPagerAdapter);
 
         tab_layout_new_release_song.setupWithViewPager(view_pager_new_release_song);

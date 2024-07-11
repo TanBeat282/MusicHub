@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,14 +20,21 @@ import com.tandev.musichub.fragment.hub.HubFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.search.search_recommend.DataSearchRecommend;
+import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 
 import java.util.ArrayList;
 
-public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdapter.ViewHolder> {
+public class SearchHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<DataSearchRecommend> dataSearchRecommends;
     private final Context context;
     private final Activity activity;
     private SearchRecommendClickListener listener;
+
+    private boolean isExpanded = false;
+
+    private static final int ITEM_TYPE_HISTORY = 0;
+    private static final int ITEM_TYPE_MORE = 1;
+
 
     @SuppressLint("NotifyDataSetChanged")
     public void setFilterList(ArrayList<DataSearchRecommend> filterList) {
@@ -48,22 +56,36 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
         this.context = context;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if (!isExpanded && dataSearchRecommends.size() > 5 && position == 5) {
+            return ITEM_TYPE_MORE;
+        }
+        return ITEM_TYPE_HISTORY;
+    }
+
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_history, parent, false);
-        return new ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == ITEM_TYPE_MORE) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_history_more, parent, false);
+            return new HistoryMoreViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_history, parent, false);
+            return new HistoryViewHolder(view);
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        DataSearchRecommend dataSearchRecommend = dataSearchRecommends.get(position);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        if (holder.getItemViewType() == ITEM_TYPE_HISTORY) {
+            HistoryViewHolder historyViewHolder = (HistoryViewHolder) holder;
 
+            DataSearchRecommend dataSearchRecommend = dataSearchRecommends.get(position);
 
-        holder.txt_keyword.setText(dataSearchRecommend.getKeyword());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            historyViewHolder.txt_keyword.setText(dataSearchRecommend.getKeyword());
+
+            historyViewHolder.itemView.setOnClickListener(view -> {
                 if (!dataSearchRecommend.getLink().isEmpty()) {
                     if (Helper.getType(dataSearchRecommend.getLink()).equals("album")) {
                         AlbumFragment albumFragment = new AlbumFragment();
@@ -93,23 +115,57 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
                 } else {
                     listener.onSearchRecommendClickListener(dataSearchRecommend.getKeyword());
                 }
-            }
-        });
-    }
+            });
 
+            historyViewHolder.img_delete.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("NotifyDataSetChanged")
+                @Override
+                public void onClick(View view) {
+                    SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+                    sharedPreferencesManager.deleteSearchHistoryItem(dataSearchRecommend);
+                    dataSearchRecommends.remove(dataSearchRecommend);
+                    notifyDataSetChanged();
+                }
+            });
+        } else {
+            HistoryMoreViewHolder historyMoreViewHolder = (HistoryMoreViewHolder) holder;
+            historyMoreViewHolder.txt_keyword.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("NotifyDataSetChanged")
+                @Override
+                public void onClick(View view) {
+                    isExpanded = true;
+                    notifyDataSetChanged();
+                }
+            });
+        }
+    }
 
     @Override
     public int getItemCount() {
-        return dataSearchRecommends.size();
+        if (!isExpanded && dataSearchRecommends.size() > 5) {
+            return 6; // 5 items + 1 "more" item
+        } else {
+            return dataSearchRecommends.size();
+        }
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class HistoryViewHolder extends RecyclerView.ViewHolder {
+        public TextView txt_keyword;
+        public ImageView img_delete;
+
+        public HistoryViewHolder(View itemView) {
+            super(itemView);
+            txt_keyword = itemView.findViewById(R.id.txt_keyword);
+            img_delete = itemView.findViewById(R.id.img_delete);
+        }
+    }
+
+    public static class HistoryMoreViewHolder extends RecyclerView.ViewHolder {
         public TextView txt_keyword;
 
-        public ViewHolder(View itemView) {
+        public HistoryMoreViewHolder(View itemView) {
             super(itemView);
             txt_keyword = itemView.findViewById(R.id.txt_keyword);
         }
     }
-
 }

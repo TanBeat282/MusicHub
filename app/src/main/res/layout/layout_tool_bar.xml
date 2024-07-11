@@ -12,7 +12,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_42sdp"
+            android:layout_height="@dimen/_35sdp"
             android:layout_marginHorizontal="@dimen/_5sdp"
             android:orientation="horizontal">
 
@@ -36,7 +36,7 @@
                 android:fontFamily="@font/roboto_bold"
                 android:maxLines="1"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_14sdp"
+                android:textSize="@dimen/_12sdp"
                 android:visibility="visible" />
 
             <ImageView

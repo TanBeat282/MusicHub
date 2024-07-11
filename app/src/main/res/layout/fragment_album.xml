@@ -11,17 +11,13 @@
     <ImageView
         android:id="@+id/imageBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="-150dp"
-        android:layout_marginTop="-50dp"
-        android:layout_marginEnd="-100dp"
-        android:layout_marginBottom="-50dp"
-        android:src="@color/black" />
+        android:layout_height="match_parent" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/tool_bar"
         android:layout_marginHorizontal="@dimen/_10sdp">
 
         <RelativeLayout
@@ -33,18 +29,18 @@
                 android:layout_width="250dp"
                 android:layout_height="250dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="140dp"
+                android:layout_marginTop="@dimen/_50sdp"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/img_playlist"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
+                    android:layout_width="@dimen/_200sdp"
+                    android:layout_height="@dimen/_200sdp"
                     android:scaleType="centerCrop"
                     android:src="@color/white"
                     android:visibility="gone"
-                    app:riv_corner_radius="10dp" />
+                    app:riv_corner_radius="@dimen/_5sdp" />
 
                 <ProgressBar
                     android:id="@+id/progress_image"
@@ -59,43 +55,41 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/linear_img"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/txt_title_playlist"
+                    android:id="@+id/txt_title_album"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:ellipsize="marquee"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/roboto_bold"
                     android:marqueeRepeatLimit="marquee_forever"
                     android:scrollHorizontally="true"
                     android:singleLine="true"
                     android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/_16ssp" />
 
                 <TextView
                     android:id="@+id/txt_user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:fontFamily="@font/roboto"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/_12ssp" />
 
                 <TextView
                     android:id="@+id/txt_song_and_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:fontFamily="@font/roboto"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/_10sdp" />
             </LinearLayout>
 
             <LinearLayout
@@ -103,14 +97,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/linear_title_playlist"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:gravity="center">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -125,15 +118,15 @@
                         android:fontFamily="@font/roboto_bold"
                         android:text="Thêm"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/_10ssp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/btn_play_playlist"
-                    android:layout_width="200dp"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_width="@dimen/_150sdp"
+                    android:layout_height="@dimen/_40sdp"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
                     android:background="@drawable/background_button_player"
                     android:gravity="center">
 
@@ -143,7 +136,7 @@
                         android:fontFamily="@font/roboto_bold"
                         android:text="PHÁT NHẠC"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/_10ssp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -165,7 +158,7 @@
                         android:fontFamily="@font/roboto_bold"
                         android:text="Thích"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/_10ssp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -176,7 +169,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/linear_button"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:gravity="center">
 
                 <TextView
@@ -184,25 +177,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:ellipsize="end"
                     android:fontFamily="@font/roboto"
+                    android:maxLines="2"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/_12ssp" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_album"
+                android:id="@+id/rv_song"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/linear_info"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal" />
 
             <LinearLayout
                 android:id="@+id/linear_info_album"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/rv_album"
-                android:layout_marginTop="40dp"
+                android:layout_below="@+id/rv_song"
+                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:layout_marginVertical="@dimen/_20sdp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -213,19 +209,18 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:fontFamily="@font/roboto"
                         android:text="Phát hành "
                         android:textColor="@color/colorSecondaryText1"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <TextView
                         android:id="@+id/txt_releaseDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="22/22/2222"
+                        android:fontFamily="@font/roboto"
                         android:textColor="@color/colorSecondaryText1"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -237,19 +232,17 @@
                         android:id="@+id/txt_count_song"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="5 bài hát, "
+                        android:fontFamily="@font/roboto"
                         android:textColor="@color/colorSecondaryText1"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <TextView
                         android:id="@+id/txt_time_song"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="17 phút"
+                        android:fontFamily="@font/roboto"
                         android:textColor="@color/colorSecondaryText1"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -260,106 +253,44 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:fontFamily="@font/roboto"
                         android:text="Cung cấp bởi "
                         android:textColor="@color/colorSecondaryText1"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
 
                     <TextView
                         android:id="@+id/txt_distributor"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="DAO"
+                        android:fontFamily="@font/roboto"
                         android:textColor="@color/colorSecondaryText1"
-                        android:textSize="14sp" />
+                        android:textSize="@dimen/_12ssp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/linear_artist"
+            <include
+                android:id="@+id/view_artist"
+                layout="@layout/item_hub_artist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linear_info_album"
-                android:layout_marginTop="30dp"
-                android:orientation="vertical">
+                android:layout_below="@+id/linear_info_album" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_bold"
-                    android:text="Về nghệ sĩ"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_artist"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="20dp" />
-            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_playlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view_artist" />
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_below="@+id/linear_artist" />
+                android:layout_height="@dimen/_100sdp"
+                android:layout_below="@+id/rv_playlist" />
 
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <RelativeLayout
-        android:id="@+id/relative_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:fitsSystemWindows="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginHorizontal="@dimen/_10sdp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/img_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_back" />
-
-            <TextView
-                android:id="@+id/txt_name_artist"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="20dp"
-                android:layout_weight="1"
-                android:ellipsize="marquee"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:fontFamily="@font/roboto_bold"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:scrollHorizontally="true"
-                android:singleLine="true"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/txt_view"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:visibility="visible" />
-
-            <ImageView
-                android:id="@+id/img_more"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/baseline_more_vert_24" />
-        </LinearLayout>
-
-    </RelativeLayout>
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/layout_tool_bar" />
 
 </RelativeLayout>

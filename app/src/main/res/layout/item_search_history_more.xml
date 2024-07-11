@@ -10,29 +10,22 @@
     android:orientation="horizontal"
     android:padding="@dimen/_5sdp">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_history"
-        app:tint="@color/white" />
-
     <TextView
         android:id="@+id/txt_keyword"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginHorizontal="@dimen/_10sdp"
-        android:layout_weight="1"
+        android:layout_marginHorizontal="@dimen/_5sdp"
         android:fontFamily="@font/roboto_bold"
+        android:gravity="center"
+        android:text="Xem tất cả"
         android:textColor="@color/white"
         android:textSize="@dimen/_14ssp" />
 
     <ImageView
-        android:id="@+id/img_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:src="@drawable/baseline_close_24"
-        app:tint="@color/white" />
+        android:layout_width="@dimen/_14sdp"
+        android:layout_height="@dimen/_14sdp"
+        android:layout_marginBottom="@dimen/_3sdp"
+        android:background="@drawable/select_onclick"
+        android:rotation="-90"
+        android:src="@drawable/ic_back" />
 </LinearLayout>

@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
+import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 
@@ -76,12 +77,40 @@ public class PlaylistMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     .into(playlistViewHolder.thumbImageView);
 
             playlistViewHolder.itemView.setOnClickListener(v -> {
-                PlaylistFragment playlistFragment = new PlaylistFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("encodeId", dataPlaylist.getEncodeId());
+                if (dataPlaylist.getTextType() != null) {
+                    if (dataPlaylist.getTextType().equals("Single")) {
+                        AlbumFragment albumFragment = new AlbumFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("album_endCodeId", dataPlaylist.getEncodeId());
 
-                if (context instanceof MainActivity) {
-                    ((MainActivity) context).replaceFragmentWithBundle(playlistFragment, bundle);
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).replaceFragmentWithBundle(albumFragment, bundle);
+                        }
+                    } else if (dataPlaylist.getTextType().equals("Album")) {
+                        AlbumFragment albumFragment = new AlbumFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("album_endCodeId", dataPlaylist.getEncodeId());
+
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).replaceFragmentWithBundle(albumFragment, bundle);
+                        }
+                    } else {
+                        PlaylistFragment playlistFragment = new PlaylistFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("encodeId", dataPlaylist.getEncodeId());
+
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).replaceFragmentWithBundle(playlistFragment, bundle);
+                        }
+                    }
+                } else {
+                    PlaylistFragment playlistFragment = new PlaylistFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("encodeId", dataPlaylist.getEncodeId());
+
+                    if (context instanceof MainActivity) {
+                        ((MainActivity) context).replaceFragmentWithBundle(playlistFragment, bundle);
+                    }
                 }
             });
         } else {

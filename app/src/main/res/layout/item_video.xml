@@ -2,22 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/_230sdp"
+    android:layout_width="@dimen/_200sdp"
     android:layout_height="wrap_content"
     android:background="@drawable/select_item"
     android:orientation="vertical"
     android:padding="@dimen/_5sdp">
 
     <RelativeLayout
-        android:layout_width="@dimen/_220sdp"
-        android:layout_height="@dimen/_120sdp">
+        android:layout_width="@dimen/_190sdp"
+        android:layout_height="@dimen/_110sdp">
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/image_video"
-            android:layout_width="@dimen/_220sdp"
-            android:layout_height="@dimen/_120sdp"
+            android:layout_width="@dimen/_190sdp"
+            android:layout_height="@dimen/_110sdp"
             android:scaleType="fitXY"
-            app:riv_corner_radius="@dimen/_5sdp" />
+            app:riv_corner_radius="@dimen/_3sdp" />
 
 
         <TextView
@@ -85,7 +85,7 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_12sdp" />
+                android:textSize="@dimen/_10sdp" />
 
             <TextView
                 android:id="@+id/artistTextView"
@@ -100,7 +100,7 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@color/colorSecondaryText1"
-                android:textSize="@dimen/_10ssp" />
+                android:textSize="@dimen/_8ssp" />
 
         </LinearLayout>
     </LinearLayout>

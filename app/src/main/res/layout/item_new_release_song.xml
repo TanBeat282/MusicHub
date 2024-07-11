@@ -11,14 +11,14 @@
     tools:ignore="RtlSymmetry">
 
     <RelativeLayout
-        android:layout_width="@dimen/_45sdp"
-        android:layout_height="@dimen/_45sdp">
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp">
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/thumbImageView"
-            android:layout_width="@dimen/_45sdp"
-            android:layout_height="@dimen/_45sdp"
-            app:riv_corner_radius="@dimen/_5sdp" />
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            app:riv_corner_radius="@dimen/_3sdp" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/aniPlay"
@@ -58,7 +58,7 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_14ssp" />
+                android:textSize="@dimen/_12ssp" />
         </LinearLayout>
 
         <TextView
@@ -73,7 +73,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textColor="@color/colorSecondaryText1"
-            android:textSize="@dimen/_12ssp" />
+            android:textSize="@dimen/_10ssp" />
 
         <TextView
             android:id="@+id/txt_time_release_date"

@@ -31,7 +31,7 @@ import com.tandev.musichub.service.MyService;
 
 import java.util.ArrayList;
 
-public class SongAllMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements PlayingStatusUpdater {
+public class SongLoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements PlayingStatusUpdater {
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_LOADING = 2;
     private ArrayList<Items> songList;
@@ -63,7 +63,7 @@ public class SongAllMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
-    public SongAllMoreAdapter(ArrayList<Items> songList, Activity activity, Context context) {
+    public SongLoadMoreAdapter(ArrayList<Items> songList, Activity activity, Context context) {
         this.songList = songList;
         this.activity = activity;
         this.context = context;

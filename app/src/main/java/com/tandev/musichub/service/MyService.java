@@ -62,7 +62,7 @@ public class MyService extends Service {
     private String currentSongId = "";
     private ArrayList<Items> mSongList;
     private int mPositionSong = -1;
-    private boolean isNextMusicLoading = false;
+
     private SharedPreferencesManager sharedPreferencesManager;
     private final Handler seekBarHandler = new Handler();
     private final Handler stopServiceHandler = new Handler();
@@ -72,6 +72,22 @@ public class MyService extends Service {
     public void onCreate() {
         super.onCreate();
         sharedPreferencesManager = new SharedPreferencesManager(getApplicationContext());
+        mediaPlayer = new MediaPlayer();
+
+        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build());
+
+        mediaPlayer.setOnCompletionListener(mp -> {
+            // Kiểm tra nếu thời gian hiện tại gần thời gian kết thúc bài hát
+            if (mediaPlayer != null && mediaPlayer.getDuration() > 0 && mediaPlayer.getCurrentPosition() >= mediaPlayer.getDuration() - 100) {
+                nextMusic();
+            }
+        });
+        mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
+            sendBufferingUpdate(percent);
+        });
     }
 
     @Nullable
@@ -128,12 +144,9 @@ public class MyService extends Service {
             }
         }
 
-        int actionMusic = intent.getIntExtra("action_music_service", 0);
-        handleActionMusic(actionMusic);
-
-        String action = intent.getAction();
-        if ("ACTION_OPEN_EQUALIZER".equals(action)) {
-            openEqualizer();
+        if (intent.hasExtra("action_music_service")) {
+            int actionMusic = intent.getIntExtra("action_music_service", 0);
+            handleActionMusic(actionMusic);
         }
     }
 
@@ -162,58 +175,16 @@ public class MyService extends Service {
         getUrlAudioHelper.getSongAudio(song.getEncodeId(), new GetUrlAudioHelper.SongAudioCallback() {
             @Override
             public void onSuccess(SongAudio songAudio) {
-
-                if (mediaPlayer == null) {
-                    mediaPlayer = new MediaPlayer();
-
-                    // Set audio attributes for MediaPlayer
-                    mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build());
-                    // Đăng ký listener khi bài hát phát xong
-                    mediaPlayer.setOnCompletionListener(mp -> {
-                        if (!isNextMusicLoading) {
-                            isNextMusicLoading = true;
-                            nextMusic();
-                        }
-                    });
-
-                }
-
                 if (sharedPreferencesManager.restoreIsRepeatOneState()) {
-                    try {
-                        mediaPlayer.reset();
-                        mediaPlayer.setDataSource(sharedPreferencesManager.restoreQualityAudioState() == 1 ? songAudio.getData().getHigh() : sharedPreferencesManager.restoreQualityAudioState() == 2 ? songAudio.getData().getLossless() : songAudio.getData().getLow());
-                        mediaPlayer.prepareAsync();
-                        mediaPlayer.setOnPreparedListener(mp -> {
-
-                            mediaPlayer.start();
-                            isPlaying = true;
-                            isNextMusicLoading = false;
-                            currentSongId = song.getEncodeId();
-                            sendActionToActivity(ACTION_START);
-                            startUpdatingSeekBar();
-
-                            sharedPreferencesManager.saveSongState(song);
-                            sharedPreferencesManager.saveIsPlayState(true);
-                            sharedPreferencesManager.saveActionState(MyService.ACTION_START);
-                            sharedPreferencesManager.saveSongArrayListHistory(song);
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    if (!currentSongId.equals(song.getEncodeId())) {
+                    if (songAudio.getData() != null) {
                         try {
                             mediaPlayer.reset();
-                            mediaPlayer.setDataSource(songAudio.getData().getLow());
+                            mediaPlayer.setDataSource(sharedPreferencesManager.restoreQualityAudioState() == 1 ? songAudio.getData().getHigh() : sharedPreferencesManager.restoreQualityAudioState() == 2 ? songAudio.getData().getLossless() : songAudio.getData().getLow());
                             mediaPlayer.prepareAsync();
                             mediaPlayer.setOnPreparedListener(mp -> {
 
                                 mediaPlayer.start();
                                 isPlaying = true;
-                                isNextMusicLoading = false;
                                 currentSongId = song.getEncodeId();
                                 sendActionToActivity(ACTION_START);
                                 startUpdatingSeekBar();
@@ -225,6 +196,41 @@ public class MyService extends Service {
                             });
                         } catch (IOException e) {
                             e.printStackTrace();
+                            sendIsSongPremium();
+                            nextMusic();
+                        }
+                    } else {
+                        sendIsSongPremium();
+                        nextMusic();
+                    }
+                } else {
+                    if (!currentSongId.equals(song.getEncodeId())) {
+                        if (songAudio.getData() != null) {
+                            try {
+                                mediaPlayer.reset();
+                                mediaPlayer.setDataSource(songAudio.getData().getLow());
+                                mediaPlayer.prepareAsync();
+                                mediaPlayer.setOnPreparedListener(mp -> {
+
+                                    mediaPlayer.start();
+                                    isPlaying = true;
+                                    currentSongId = song.getEncodeId();
+                                    sendActionToActivity(ACTION_START);
+                                    startUpdatingSeekBar();
+
+                                    sharedPreferencesManager.saveSongState(song);
+                                    sharedPreferencesManager.saveIsPlayState(true);
+                                    sharedPreferencesManager.saveActionState(MyService.ACTION_START);
+                                    sharedPreferencesManager.saveSongArrayListHistory(song);
+                                });
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                sendIsSongPremium();
+                                nextMusic();
+                            }
+                        } else {
+                            sendIsSongPremium();
+                            nextMusic();
                         }
                     } else {
                         sendExpandToActivity();
@@ -234,7 +240,8 @@ public class MyService extends Service {
 
             @Override
             public void onFailure(Throwable throwable) {
-
+                sendIsSongPremium();
+                nextMusic();
             }
         });
     }
@@ -263,6 +270,39 @@ public class MyService extends Service {
         }
     }
 
+    private void handleNextOrPreviousMusic(boolean isNext) {
+        if (sharedPreferencesManager.restoreIsRepeatOneState()) {
+            // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
+            startMusic(mSong);
+        } else {
+            if (sharedPreferencesManager.restoreIsShuffleState()) {
+                // Shuffle: Chọn một chỉ số ngẫu nhiên
+                Random random = new Random();
+                mPositionSong = random.nextInt(mSongList.size());
+            } else {
+                // Không Shuffle: Tiếp tục theo thứ tự
+                if (isNext) {
+                    mPositionSong++;
+                    if (mPositionSong >= mSongList.size()) {
+                        mPositionSong = 0;
+                    }
+                } else {
+                    mPositionSong--;
+                    if (mPositionSong < 0) {
+                        mPositionSong = mSongList.size() - 1;
+                    }
+                }
+            }
+
+            if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
+                mSong = mSongList.get(mPositionSong);
+                startMusic(mSong);
+                sendNotificationMedia(mSong, true);
+                saveSongListAndPosition(mSong, mPositionSong, mSongList);
+            }
+        }
+    }
+
     private void nextMusic() {
         if (mediaPlayer != null) {
             if (mediaPlayer.isPlaying()) {
@@ -270,57 +310,13 @@ public class MyService extends Service {
                 mediaPlayer.reset();
                 isPlaying = false;
             }
-
             // Xử lý theo trạng thái Repeat và Shuffle
-            if (sharedPreferencesManager.restoreIsRepeatOneState()) {
-                // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
-                startMusic(mSong);
-            } else {
-                if (sharedPreferencesManager.restoreIsShuffleState()) {
-                    // Shuffle: Chọn một chỉ số ngẫu nhiên
-                    Random random = new Random();
-                    mPositionSong = random.nextInt(mSongList.size());
-                } else {
-                    // Không Shuffle: Tiếp tục theo thứ tự
-                    mPositionSong++;
-                    if (mPositionSong >= mSongList.size()) {
-                        mPositionSong = 0;
-                    }
-                }
-
-                if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
-                    mSong = mSongList.get(mPositionSong);
-                    startMusic(mSong);
-                    sendNotificationMedia(mSong, true);
-                    saveSongListAndPosition(mSong, mPositionSong, mSongList);
-                }
-            }
+            handleNextOrPreviousMusic(true);
         } else {
+            // MediaPlayer null, khôi phục trạng thái và phát nhạc
             mSongList = sharedPreferencesManager.restoreSongArrayList();
             mPositionSong = sharedPreferencesManager.restoreSongPosition();
-            if (sharedPreferencesManager.restoreIsRepeatOneState()) {
-                // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
-                startMusic(mSong);
-            } else {
-                if (sharedPreferencesManager.restoreIsShuffleState()) {
-                    // Shuffle: Chọn một chỉ số ngẫu nhiên
-                    Random random = new Random();
-                    mPositionSong = random.nextInt(mSongList.size());
-                } else {
-                    // Không Shuffle: Tiếp tục theo thứ tự
-                    mPositionSong++;
-                    if (mPositionSong >= mSongList.size()) {
-                        mPositionSong = 0;
-                    }
-                }
-
-                if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
-                    mSong = mSongList.get(mPositionSong);
-                    startMusic(mSong);
-                    sendNotificationMedia(mSong, true);
-                    saveSongListAndPosition(mSong, mPositionSong, mSongList);
-                }
-            }
+            handleNextOrPreviousMusic(true);
         }
     }
 
@@ -331,58 +327,15 @@ public class MyService extends Service {
                 mediaPlayer.reset();
                 isPlaying = false;
             }
-
             // Xử lý theo trạng thái Repeat và Shuffle
-            if (sharedPreferencesManager.restoreIsRepeatOneState()) {
-                // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
-                startMusic(mSong);
-            } else {
-                if (sharedPreferencesManager.restoreIsShuffleState()) {
-                    // Shuffle: Chọn một chỉ số ngẫu nhiên
-                    Random random = new Random();
-                    mPositionSong = random.nextInt(mSongList.size());
-                } else {
-                    // Không Shuffle: Tiếp tục theo thứ tự
-                    mPositionSong--;
-                    if (mPositionSong < 0) {
-                        mPositionSong = mSongList.size() - 1;
-                    }
-                }
-
-                if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
-                    mSong = mSongList.get(mPositionSong);
-                    startMusic(mSong);
-                    sendNotificationMedia(mSong, true);
-                    saveSongListAndPosition(mSong, mPositionSong, mSongList);
-                }
-            }
+            handleNextOrPreviousMusic(false);
         } else {
+            // MediaPlayer null, khôi phục trạng thái và phát nhạc
             mSongList = sharedPreferencesManager.restoreSongArrayList();
             mPositionSong = sharedPreferencesManager.restoreSongPosition();
-            if (sharedPreferencesManager.restoreIsRepeatOneState()) {
-                // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
-                startMusic(mSong);
-            } else {
-                if (sharedPreferencesManager.restoreIsShuffleState()) {
-                    // Shuffle: Chọn một chỉ số ngẫu nhiên
-                    Random random = new Random();
-                    mPositionSong = random.nextInt(mSongList.size());
-                } else {
-                    // Không Shuffle: Tiếp tục theo thứ tự
-                    mPositionSong--;
-                    if (mPositionSong < 0) {
-                        mPositionSong = mSongList.size() - 1;
-                    }
-                }
-
-                if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
-                    mSong = mSongList.get(mPositionSong);
-                    startMusic(mSong);
-                    sendNotificationMedia(mSong, true);
-                    saveSongListAndPosition(mSong, mPositionSong, mSongList);
-                }
-            }
+            handleNextOrPreviousMusic(false);
         }
+
     }
 
 
@@ -438,7 +391,8 @@ public class MyService extends Service {
                                 .setLargeIcon(resource)
                                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                                         .setShowActionsInCompactView(0, 1, 2)
-                                        .setMediaSession(mediaSessionCompat.getSessionToken()));
+                                        .setMediaSession(mediaSessionCompat.getSessionToken()))
+                                .setPriority(NotificationCompat.PRIORITY_LOW);  // Thay đổi priority
 
                         // Tạo Intent và đính kèm dữ liệu
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -447,14 +401,12 @@ public class MyService extends Service {
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
                         if (isPlaying) {
-                            // Cập nhật trạng thái phát nhạc và hiển thị các nút tương ứng
                             notificationBuilder
                                     .addAction(R.drawable.baseline_skip_previous_24, "Previous", getPendingIntent(getApplicationContext(), ACTION_PREVIOUS)) // #0
                                     .addAction(R.drawable.baseline_pause_24, "Pause", getPendingIntent(getApplicationContext(), ACTION_PAUSE)) // #1
                                     .addAction(R.drawable.baseline_skip_next_24, "Next", getPendingIntent(getApplicationContext(), ACTION_NEXT)); // #2
                             notificationBuilder.setContentIntent(pendingIntent);
                         } else {
-                            // Cập nhật trạng thái dừng và hiển thị nút play
                             notificationBuilder
                                     .addAction(R.drawable.baseline_skip_previous_24, "Previous", getPendingIntent(getApplicationContext(), ACTION_PREVIOUS)) // #0
                                     .addAction(R.drawable.baseline_play_arrow_24, "Play", getPendingIntent(getApplicationContext(), ACTION_RESUME)) // #1
@@ -471,6 +423,7 @@ public class MyService extends Service {
                     }
                 });
     }
+
 
     private PendingIntent getPendingIntent(Context context, int action) {
         Intent intent = new Intent(this, MyReceiver.class);
@@ -490,6 +443,9 @@ public class MyService extends Service {
                     .listener(new RequestListener<Bitmap>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
+                            int blackColor = ContextCompat.getColor(getApplicationContext(), R.color.black);
+                            int grayColor = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryText);
+                            sharedPreferencesManager.saveColorBackgroundState(blackColor, grayColor);
                             return false;
                         }
 
@@ -515,38 +471,17 @@ public class MyService extends Service {
         }
     }
 
-    private void openEqualizer() {
-        if (mediaPlayer != null) {
-            int audioSessionId = mediaPlayer.getAudioSessionId();
-            if (audioSessionId != AudioEffect.ERROR_BAD_VALUE) {
-                Intent intent = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-                intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId);
-                intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getPackageName());
-                intent.putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // Thêm cờ này để mở hoạt động từ Service
-                startActivity(intent);
-            } else {
-                // Thiết bị không hỗ trợ Equalizer
-                Toast.makeText(this, "Equalizer không được hỗ trợ trên thiết bị này", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            // MediaPlayer chưa được khởi tạo
-            Toast.makeText(this, "Trình phát nhạc chưa được khởi tạo", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
-            isPlaying = false;
-
         }
+        isPlaying = false;
         stopUpdatingSeekBar();
     }
+
 
     private void startUpdatingSeekBar() {
         seekBarHandler.removeCallbacks(updateSeekBar);
@@ -555,14 +490,6 @@ public class MyService extends Service {
 
     private void stopUpdatingSeekBar() {
         seekBarHandler.removeCallbacks(updateSeekBar);
-    }
-
-    private void sendSeekBarUpdate(int currentTime, int totalTime) {
-        Intent intent = new Intent("send_seekbar_update");
-        intent.putExtra("current_time", currentTime);
-        intent.putExtra("total_time", totalTime);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-
     }
 
     private final Runnable updateSeekBar = new Runnable() {
@@ -594,9 +521,30 @@ public class MyService extends Service {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
+    private void sendSeekBarUpdate(int currentTime, int totalTime) {
+        Intent intent = new Intent("send_seekbar_update");
+        intent.putExtra("current_time", currentTime);
+        intent.putExtra("total_time", totalTime);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+    }
+
     private void sendExpandToActivity() {
         Intent intent = new Intent("send_expand_to_activity");
         intent.putExtra("is_expand", true);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
+
+    private void sendBufferingUpdate(int percent) {
+        Intent intent = new Intent("send_load_music_update");
+        intent.putExtra("buffering", percent);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private void sendIsSongPremium() {
+        Intent intent = new Intent("send_is_song_premium");
+        intent.putExtra("is_song_premium", true);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
 }

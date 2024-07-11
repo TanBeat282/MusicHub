@@ -9,5 +9,5 @@
         android:id="@+id/thumbImageView"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_78sdp"
-        app:riv_corner_radius="@dimen/_5sdp" />
+        app:riv_corner_radius="@dimen/_3sdp" />
 </RelativeLayout>

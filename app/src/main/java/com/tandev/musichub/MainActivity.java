@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.slider.Slider;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
@@ -87,13 +89,8 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout linear_info;
     private TextView txt_title_song, txt_artist_song;
 
-    private LinearLayout linear_button;
-    private TextView txt_view_audio, txt_like, txt_comment, txt_download_audio;
-    private LinearLayout btn_down_audio;
-    private ImageView img_download_audio;
-
-    private LinearLayout linear_controller;
     private SeekBar seek_bar;
+    private LinearLayout linear_controller;
     private TextView txt_current_time, txt_total_time;
     private LottieAnimationView lottie_play_pause;
     private ImageButton img_btn_next, img_btn_repeat, img_btn_previous, img_btn_shuffle;
@@ -131,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                         getColorBackground();
                     }
+
                 }
 
             }
@@ -157,6 +155,30 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 boolean is_expand = intent.getBooleanExtra("is_expand", false);
                 showBottomSheetNowPlaying(is_expand);
+            }
+        };
+    }
+
+    public BroadcastReceiver progressIndicatorReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int percent = intent.getIntExtra("buffering", 0);
+
+            }
+        };
+    }
+
+    public BroadcastReceiver isSongPremiumReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean is_song_premium = intent.getBooleanExtra("is_song_premium", false);
+                if (is_song_premium) {
+                    Toast.makeText(MainActivity.this, "Đã bỏ qua bài hát premium!", Toast.LENGTH_SHORT).show();
+
+                }
+
             }
         };
     }
@@ -391,19 +413,11 @@ public class MainActivity extends AppCompatActivity {
         txt_artist_song = relative_player.findViewById(R.id.txt_artist_song);
         txt_artist_song.setSelected(true);
 
-        //button
-        linear_button = relative_player.findViewById(R.id.linear_button);
-        txt_view_audio = relative_player.findViewById(R.id.txt_view_audio);
-        txt_like = relative_player.findViewById(R.id.txt_like);
-        txt_comment = relative_player.findViewById(R.id.txt_comment);
-
-        btn_down_audio = relative_player.findViewById(R.id.btn_down_audio);
-        txt_download_audio = relative_player.findViewById(R.id.txt_download_audio);
-        img_download_audio = relative_player.findViewById(R.id.img_download_audio);
+        //
+        seek_bar = relative_player.findViewById(R.id.seek_bar);
 
         //controller
         linear_controller = relative_player.findViewById(R.id.linear_controller);
-        seek_bar = relative_player.findViewById(R.id.seek_bar);
         txt_current_time = relative_player.findViewById(R.id.txt_current_time);
         txt_total_time = relative_player.findViewById(R.id.txt_total_time);
         lottie_play_pause = relative_player.findViewById(R.id.lottie_play_pause);
@@ -435,7 +449,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
         if (!Helper.isMyServiceRunning(this, MyService.class)) {
             isPlaying = false;
         }
@@ -462,10 +475,6 @@ public class MainActivity extends AppCompatActivity {
 
         txt_title_song.setText(songDetail.getData().getTitle());
         txt_artist_song.setText(songDetail.getData().getArtistsNames());
-
-        txt_view_audio.setText(Helper.convertToIntString(songDetail.getData().getListen()));
-        txt_like.setText(Helper.convertToIntString(songDetail.getData().getLike()));
-        txt_comment.setText(Helper.convertToIntString(songDetail.getData().getComment()));
 
         txt_current_time.setText("00:00");
         txt_total_time.setText(Helper.convertDurationToMinutesAndSeconds(songDetail.getData().getDuration()));
@@ -695,12 +704,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateSeekBar(int currentTime, int total_time) {
-        seek_bar.setMax(total_time);
-        seek_bar.setProgress(currentTime);
+        seek_bar.setMax(totalTime);
         seek_bar.setProgress(currentTime);
         txt_current_time.setText(formatTime(currentTime));
-        txt_total_time.setText(formatTime((total_time)));
     }
+
 
     private String formatTime(int timeInMillis) {
         String formattedTime;
@@ -804,6 +812,9 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(createBroadcastReceiver(), new IntentFilter("send_data_to_activity"));
         LocalBroadcastManager.getInstance(this).registerReceiver(createSeekBarUpdateReceiver(), new IntentFilter("send_seekbar_update"));
         LocalBroadcastManager.getInstance(this).registerReceiver(createExpandReceiver(), new IntentFilter("send_expand_to_activity"));
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(progressIndicatorReceiver(), new IntentFilter("send_load_music_update"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(isSongPremiumReceiver(), new IntentFilter("send_is_song_premium"));
     }
 
     @Override
@@ -812,5 +823,7 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(createBroadcastReceiver());
         LocalBroadcastManager.getInstance(this).unregisterReceiver(createSeekBarUpdateReceiver());
         LocalBroadcastManager.getInstance(this).unregisterReceiver(createExpandReceiver());
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(progressIndicatorReceiver());
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(isSongPremiumReceiver());
     }
 }

@@ -27,6 +27,7 @@ import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.helper.ui.PlayingStatusUpdater;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.tandev.musichub.service.MyService;
 
 import java.util.ArrayList;
 
@@ -121,15 +122,14 @@ public class NewReleaseSongAdapter extends RecyclerView.Adapter<NewReleaseSongAd
             if (song.getStreamingStatus() == 2) {
                 Toast.makeText(context, "Không thể phát bài hát Premium!", Toast.LENGTH_SHORT).show();
             } else {
-//                Intent intent = new Intent(context, PlayNowActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("song", song);
-//                bundle.putInt("position_song", position);
-//                bundle.putSerializable("song_list", songList);
-//                bundle.putInt("title_now_playing", 0);
-//                intent.putExtras(bundle);
-//
-//                context.startActivity(intent);
+                Intent intent = new Intent(context, MyService.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("object_song", song);
+                bundle.putInt("position_song", position);
+                bundle.putSerializable("song_list", songList);
+                intent.putExtras(bundle);
+
+                context.startService(intent);
             }
         });
 

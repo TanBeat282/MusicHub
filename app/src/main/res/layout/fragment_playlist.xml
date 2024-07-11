@@ -11,17 +11,13 @@
     <ImageView
         android:id="@+id/imageBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="-150dp"
-        android:layout_marginTop="-50dp"
-        android:layout_marginRight="-100dp"
-        android:layout_marginBottom="-50dp"
-        android:src="@color/black" />
+        android:layout_height="match_parent" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/tool_bar"
         android:visibility="gone">
 
         <RelativeLayout
@@ -33,7 +29,7 @@
                 android:layout_width="@dimen/_200sdp"
                 android:layout_height="@dimen/_200sdp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/_100sdp"
+                android:layout_marginTop="@dimen/_50sdp"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -44,7 +40,7 @@
                     android:scaleType="centerCrop"
                     android:src="@color/white"
                     android:visibility="gone"
-                    app:riv_corner_radius="@dimen/_10sdp" />
+                    app:riv_corner_radius="@dimen/_5sdp" />
 
                 <ProgressBar
                     android:id="@+id/progress_image"
@@ -175,7 +171,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/linear_button"
-                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginHorizontal="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:gravity="center">
 
@@ -186,6 +182,8 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/roboto"
                     android:textColor="@color/white"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     android:textSize="@dimen/_12ssp" />
             </LinearLayout>
 

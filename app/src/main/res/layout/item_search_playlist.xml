@@ -9,9 +9,9 @@
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/thumbImageView"
-        android:layout_width="@dimen/_45sdp"
-        android:layout_height="@dimen/_45sdp"
-        app:riv_corner_radius="@dimen/_5sdp" />
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        app:riv_corner_radius="@dimen/_3sdp" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -34,7 +34,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textSize="@dimen/_14ssp" />
+            android:textSize="@dimen/_12ssp" />
 
         <TextView
             android:id="@+id/artistTextView"
@@ -48,7 +48,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textColor="@color/colorSecondaryText1"
-            android:textSize="@dimen/_12ssp" />
+            android:textSize="@dimen/_10ssp" />
 
     </LinearLayout>
 

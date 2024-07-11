@@ -12,7 +12,7 @@
     <LinearLayout
         android:id="@+id/btn_more"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_45sdp"
+        android:layout_height="@dimen/_40sdp"
         android:gravity="center">
 
         <TextView

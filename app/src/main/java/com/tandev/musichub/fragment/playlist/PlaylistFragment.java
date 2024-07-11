@@ -1,15 +1,18 @@
 package com.tandev.musichub.fragment.playlist;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
+import android.graphics.Bitmap;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,28 +27,32 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.artist.ArtistsMoreAdapter;
 import com.tandev.musichub.adapter.playlist.PlaylistMoreAdapter;
-import com.tandev.musichub.adapter.song.SongAllAdapter;
+import com.tandev.musichub.adapter.song.SongMoreAllAdapter;
 import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
-import com.tandev.musichub.helper.ui.BlurAndBlackOverlayTransformation;
+import com.tandev.musichub.api.type_adapter_Factory.section_bottom.SectionBottomTypeAdapter;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.tandev.musichub.model.playlist.Playlist;
-import com.tandev.musichub.model.sectionBottom.SectionBottom;
-import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
+import com.tandev.musichub.model.section_bottom.DataSectionBottom;
+import com.tandev.musichub.model.section_bottom.DataSectionBottomArtist;
+import com.tandev.musichub.model.section_bottom.DataSectionBottomPlaylist;
+import com.tandev.musichub.model.section_bottom.SectionBottom;
 import com.tandev.musichub.view_model.playlist.PlaylistViewModel;
 
-import org.json.JSONObject;
-
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -72,7 +79,7 @@ public class PlaylistFragment extends Fragment {
     private TextView txt_song_and_time;
     private TextView txt_content_playlist;
     private ArrayList<Items> itemsArrayList;
-    private SongAllAdapter songAllAdapter;
+    private SongMoreAllAdapter songMoreAllAdapter;
     private NestedScrollView nested_scroll;
     private RelativeLayout relative_loading;
     private RecyclerView rv_playlist;
@@ -182,18 +189,14 @@ public class PlaylistFragment extends Fragment {
                     // Ẩn TextView khi người dùng cuộn trở lại đầu trang
                     txt_title_toolbar.setText("");
                     relative_header.setBackgroundResource(android.R.color.transparent);
-                    // Make the content appear under the status bar
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                        requireActivity().getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
-                    }
-
                 } else if (scrollY >= 800) {
                     // Hiển thị TextView khi người dùng cuộn xuống khỏi đầu trang
-
-                    txt_title_toolbar.setText(playlistViewModel.getPlaylistMutableLiveData().getValue().getData().getTitle());
-                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
-                    Helper.changeStatusBarColor(requireActivity(), R.color.gray);
+                    if (playlistViewModel.getPlaylistMutableLiveData().getValue() == null) {
+                        txt_title_toolbar.setText("");
+                    } else {
+                        txt_title_toolbar.setText(playlistViewModel.getPlaylistMutableLiveData().getValue().getData().getTitle());
+                    }
+                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.transparent));
                 }
             }
         });
@@ -203,8 +206,8 @@ public class PlaylistFragment extends Fragment {
     private void initAdapter() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_playlist.setLayoutManager(layoutManager);
-        songAllAdapter = new SongAllAdapter(itemsArrayList, requireActivity(), requireContext());
-        rv_playlist.setAdapter(songAllAdapter);
+        songMoreAllAdapter = new SongMoreAllAdapter(itemsArrayList, requireActivity(), requireContext());
+        rv_playlist.setAdapter(songMoreAllAdapter);
 
         LinearLayoutManager layoutManagerSingle = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
         rv_single.setLayoutManager(layoutManagerSingle);
@@ -275,13 +278,8 @@ public class PlaylistFragment extends Fragment {
     }
 
     private void updateUI(Playlist playlist) {
-        ArrayList<Items> arrayList = playlist.getData().getSong().getItems();
-        if (!arrayList.isEmpty()) {
-            requireActivity().runOnUiThread(() -> {
-                itemsArrayList = arrayList;
-                songAllAdapter.setFilterList(arrayList);
-            });
-        }
+
+        loadImage(playlist.getData().getThumbnailM());
 
         img_playlist.setVisibility(View.VISIBLE);
         progress_image.setVisibility(View.GONE);
@@ -291,18 +289,15 @@ public class PlaylistFragment extends Fragment {
 
         txt_song_and_time.setText(convertLongToString(playlist.getData().getSong().getItems().size(), playlist.getData().getSong().getTotalDuration()));
         txt_content_playlist.setText(playlist.getData().getDescription());
-        // Sử dụng Glide để tải và áp dụng hiệu ứng mờ
-        Glide.with(requireContext())
-                .load(playlist.getData().getThumbnailM())
-                .placeholder(R.color.black)
-                .transform(new CenterCrop(), new BlurAndBlackOverlayTransformation(requireContext(), 25, 220)) // 25 là mức độ mờ, 150 là độ mờ của lớp phủ đen
-                .into(imageBackground);
 
-        //avatar
-        Glide.with(requireContext())
-                .load(playlist.getData().getThumbnailM())
-                .placeholder(R.drawable.holder)
-                .into(img_playlist);
+
+        ArrayList<Items> arrayList = playlist.getData().getSong().getItems();
+        if (!arrayList.isEmpty()) {
+            requireActivity().runOnUiThread(() -> {
+                itemsArrayList = arrayList;
+                songMoreAllAdapter.setFilterList(arrayList);
+            });
+        }
 
         relative_loading.setVisibility(View.GONE);
         nested_scroll.setVisibility(View.VISIBLE);
@@ -320,32 +315,21 @@ public class PlaylistFragment extends Fragment {
                         @Override
                         public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                             String requestUrl = call.request().url().toString();
-                            Log.d(">>>>>>>>>>>>>>>>>>>", " - " + requestUrl);
+                            Log.d(">>>>>>>>>>>>>>>>>>>", "getSectionBottom " + requestUrl);
                             if (response.isSuccessful()) {
                                 try {
                                     assert response.body() != null;
                                     String jsonData = response.body().string();
-                                    JSONObject jsonObject = new JSONObject(jsonData);
-                                    SectionBottom sectionBottom = new SectionBottom();
-                                    sectionBottom.parseFromJson(jsonObject);
+                                    GsonBuilder gsonBuilder = new GsonBuilder();
+                                    gsonBuilder.registerTypeAdapter(DataSectionBottom.class, new SectionBottomTypeAdapter());
+                                    Gson gson = gsonBuilder.create();
 
-                                    requireActivity().runOnUiThread(() -> {
-                                        if (sectionBottom.getData() != null && sectionBottom.getData().getArtist() != null && sectionBottom.getData().getPlaylist() != null) {
-                                            relative_single.setVisibility(View.VISIBLE);
-                                            relative_playlist.setVisibility(View.VISIBLE);
-                                        } else {
-                                            relative_single.setVisibility(View.GONE);
-                                            relative_playlist.setVisibility(View.GONE);
-                                        }
-                                        txt_title_single.setText(sectionBottom.getData().getArtist().getTitle());
-                                        txt_title_playlist_like.setText(sectionBottom.getData().getPlaylist().getTitle());
+                                    SectionBottom sectionBottom = gson.fromJson(jsonData, SectionBottom.class);
 
-                                        artistsArrayList = sectionBottom.getData().getArtist().getItems();
-                                        artistsMoreAdapter.setFilterList(artistsArrayList);
+                                    if (sectionBottom != null && sectionBottom.getData() != null) {
+                                        updateUI(sectionBottom);
+                                    }
 
-                                        dataPlaylistArrayList = sectionBottom.getData().getPlaylist().getItems();
-                                        playlistMoreAdapter.setFilterList(dataPlaylistArrayList);
-                                    });
                                 } catch (Exception e) {
                                     Log.e("TAG", "Error: " + e.getMessage(), e);
                                 }
@@ -369,6 +353,85 @@ public class PlaylistFragment extends Fragment {
                 Log.e("TAG", "Service creation error: " + e.getMessage(), e);
             }
         });
+    }
+
+    private void updateUI(SectionBottom sectionBottom) {
+        ArrayList<DataSectionBottom> items = sectionBottom.getData();
+        for (DataSectionBottom item : items) {
+            if (item instanceof DataSectionBottomArtist) {
+                DataSectionBottomArtist dataSectionBottomArtist = (DataSectionBottomArtist) item;
+
+                txt_title_single.setText(dataSectionBottomArtist.getTitle());
+                artistsArrayList = dataSectionBottomArtist.getItems();
+            } else if (item instanceof DataSectionBottomPlaylist) {
+                DataSectionBottomPlaylist dataSectionBottomPlaylist = (DataSectionBottomPlaylist) item;
+
+                txt_title_playlist_like.setText(dataSectionBottomPlaylist.getTitle());
+                dataPlaylistArrayList = dataSectionBottomPlaylist.getItems();
+            }
+        }
+        playlistMoreAdapter.setFilterList(dataPlaylistArrayList);
+        artistsMoreAdapter.setFilterList(artistsArrayList);
+        relative_single.setVisibility(View.VISIBLE);
+        relative_playlist.setVisibility(View.VISIBLE);
+    }
+
+    private void loadImage(String url) {
+        Glide.with(this)
+                .asBitmap()
+                .load(url)
+                .placeholder(R.drawable.holder_video)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .transform(new BitmapTransformation() {
+                    @Override
+                    protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+                        Palette p = Palette.from(toTransform).generate();
+                        int defaultColor = 0x000000;
+                        int startColor = p.getDarkVibrantColor(defaultColor);
+
+                        Log.d("Check Start Color", "transform: " + startColor);
+
+                        if (startColor == defaultColor) {
+                            startColor = p.getDarkMutedColor(defaultColor);
+                            if (startColor == defaultColor) {
+                                startColor = p.getVibrantColor(defaultColor);
+                                if (startColor == defaultColor) {
+                                    startColor = p.getMutedColor(defaultColor);
+                                    if (startColor == defaultColor) {
+                                        startColor = p.getLightVibrantColor(defaultColor);
+                                        if (startColor == defaultColor) {
+                                            startColor = p.getLightMutedColor(defaultColor);
+                                        }
+                                    }
+                                }
+                            }
+                            Log.d("Check Start Color", "transform: " + startColor);
+                        }
+
+                        int endColor = getResources().getColor(R.color.gray, null);
+                        startColor = ColorUtils.setAlphaComponent(startColor, 150);
+                        Log.d("Check End Color", "transform: " + endColor);
+
+                        GradientDrawable gd = new GradientDrawable(
+                                GradientDrawable.Orientation.TOP_BOTTOM,
+                                new int[]{startColor, endColor}
+                        );
+                        gd.setCornerRadius(0f);
+                        gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+                        gd.setGradientRadius(0.2f);
+
+                        requireActivity().runOnUiThread(() -> imageBackground.setBackground(gd));
+
+                        return toTransform;
+                    }
+
+                    @Override
+                    public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+                        messageDigest.update("paletteTransformer".getBytes());
+                    }
+                })
+                .into(img_playlist);
     }
 
     private String convertLongToString(int size, long time) {

@@ -1,15 +1,18 @@
 package com.tandev.musichub.fragment.album;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
+import android.graphics.Bitmap;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,29 +21,39 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.R;
+import com.tandev.musichub.adapter.album.AlbumSectionBottomAdapter;
 import com.tandev.musichub.adapter.artist.SelectArtistAdapter;
-import com.tandev.musichub.adapter.song.SongAllAdapter;
+import com.tandev.musichub.adapter.song.SongMoreAllAdapter;
 import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
-import com.tandev.musichub.helper.ui.BlurAndBlackOverlayTransformation;
+import com.tandev.musichub.api.type_adapter_Factory.section_bottom.SectionBottomTypeAdapter;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.playlist.Playlist;
+import com.tandev.musichub.model.section_bottom.DataSectionBottom;
+import com.tandev.musichub.model.section_bottom.SectionBottom;
 import com.tandev.musichub.view_model.album.AlbumViewModel;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,28 +61,39 @@ import retrofit2.Response;
 public class AlbumFragment extends Fragment {
     private AlbumViewModel albumViewModel;
 
-    private NestedScrollView nested_scroll_view;
+    //tool bar
+    private View tool_bar;
     private RelativeLayout relative_header;
+    private TextView txt_title_toolbar;
     private ImageView img_back;
-    private TextView txt_name_artist;
-    private TextView txt_view;
+
+    private NestedScrollView nested_scroll_view;
     private TextView txt_content_playlist;
     private ImageView imageBackground;
     private RoundedImageView img_playlist;
     private ProgressBar progress_image;
-    private TextView txt_title_playlist;
+    private TextView txt_title_album;
     private TextView txt_user_name;
     private TextView txt_song_and_time;
 
     private ArrayList<Items> itemsArrayList;
-    private SongAllAdapter songAllAdapter;
-    private RecyclerView rv_album;
+    private SongMoreAllAdapter songMoreAllAdapter;
+    private RecyclerView rv_song;
 
     private TextView txt_releaseDate, txt_count_song, txt_time_song, txt_distributor;
 
-    private RecyclerView rv_artist;
+    private View view_artist, view_playlist;
+
+    private LinearLayout linear_artist;
+    private TextView txt_title_artist;
+    private LinearLayout linear_more_artist;
+    private RecyclerView rv_artist_horizontal;
     private SelectArtistAdapter selectArtistAdapter;
     private ArrayList<Artists> artistsArrayList;
+
+    private RecyclerView rv_playlist;
+    private AlbumSectionBottomAdapter albumSectionBottomAdapter;
+    private ArrayList<DataSectionBottom> dataSectionBottoms;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -112,34 +136,43 @@ public class AlbumFragment extends Fragment {
         if (getArguments() != null) {
             String album_endCodeId = getArguments().getString("album_endCodeId");
             getAlbum(album_endCodeId);
+            getSectionBottom(album_endCodeId);
         }
     }
 
     private void initView(View view) {
+        tool_bar = view.findViewById(R.id.tool_bar);
+        relative_header = tool_bar.findViewById(R.id.relative_header);
+        img_back = tool_bar.findViewById(R.id.img_back);
+        txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);
+
         imageBackground = view.findViewById(R.id.imageBackground);
-        relative_header = view.findViewById(R.id.relative_header);
-        img_back = view.findViewById(R.id.img_back);
         nested_scroll_view = view.findViewById(R.id.nested_scroll_view);
-        txt_name_artist = view.findViewById(R.id.txt_name_artist);
         txt_content_playlist = view.findViewById(R.id.txt_content_playlist);
         txt_content_playlist.setSelected(true);
-        txt_view = view.findViewById(R.id.txt_view);
 
         img_playlist = view.findViewById(R.id.img_playlist);
         progress_image = view.findViewById(R.id.progress_image);
-        txt_title_playlist = view.findViewById(R.id.txt_title_playlist);
-        txt_title_playlist.setSelected(true);
+        txt_title_album = view.findViewById(R.id.txt_title_album);
+        txt_title_album.setSelected(true);
         txt_user_name = view.findViewById(R.id.txt_user_name);
         txt_song_and_time = view.findViewById(R.id.txt_song_and_time);
 
-        rv_album = view.findViewById(R.id.rv_album);
+        rv_song = view.findViewById(R.id.rv_song);
 
         txt_releaseDate = view.findViewById(R.id.txt_releaseDate);
         txt_count_song = view.findViewById(R.id.txt_count_song);
         txt_time_song = view.findViewById(R.id.txt_time_song);
         txt_distributor = view.findViewById(R.id.txt_distributor);
 
-        rv_artist = view.findViewById(R.id.rv_artist);
+        view_artist = view.findViewById(R.id.view_artist);
+        linear_artist = view_artist.findViewById(R.id.linear_artist);
+        txt_title_artist = view_artist.findViewById(R.id.txt_title_artist);
+        linear_more_artist = view_artist.findViewById(R.id.linear_more);
+        rv_artist_horizontal = view_artist.findViewById(R.id.rv_artist_horizontal);
+
+        rv_playlist = view.findViewById(R.id.rv_playlist);
+
     }
 
     private void configView() {
@@ -156,22 +189,16 @@ public class AlbumFragment extends Fragment {
                 // Kiểm tra nếu người dùng đã cuộn đến đầu trang
                 if (scrollY <= 600) {
                     // Ẩn TextView khi người dùng cuộn trở lại đầu trang
-                    txt_name_artist.setVisibility(View.GONE);
-                    txt_view.setVisibility(View.VISIBLE);
+                    txt_title_toolbar.setText("");
                     relative_header.setBackgroundResource(android.R.color.transparent);
-                    // Make the content appear under the status bar
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                        requireActivity().getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
-                    }
-
                 } else if (scrollY >= 800) {
                     // Hiển thị TextView khi người dùng cuộn xuống khỏi đầu trang
-                    txt_name_artist.setVisibility(View.VISIBLE);
-                    txt_view.setVisibility(View.GONE);
-                    txt_name_artist.setText(albumViewModel.getPlaylistMutableLiveData().getValue().getData().getTitle());
-                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
-                    Helper.changeStatusBarColor(requireActivity(), R.color.gray);
+                    if (albumViewModel.getPlaylistMutableLiveData().getValue() == null) {
+                        txt_title_toolbar.setText("");
+                    } else {
+                        txt_title_toolbar.setText(albumViewModel.getPlaylistMutableLiveData().getValue().getData().getTitle());
+                    }
+                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.transparent));
                 }
             }
         });
@@ -180,16 +207,20 @@ public class AlbumFragment extends Fragment {
     private void initAdapter() {
         itemsArrayList = new ArrayList<>();
         artistsArrayList = new ArrayList<>();
+        dataSectionBottoms = new ArrayList<>();
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
-        rv_album.setLayoutManager(layoutManager);
-        songAllAdapter = new SongAllAdapter(itemsArrayList, requireActivity(), requireContext());
-        rv_album.setAdapter(songAllAdapter);
+        rv_song.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        songMoreAllAdapter = new SongMoreAllAdapter(itemsArrayList, requireActivity(), requireContext());
+        rv_song.setAdapter(songMoreAllAdapter);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
-        rv_artist.setLayoutManager(linearLayoutManager);
+        rv_artist_horizontal.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         selectArtistAdapter = new SelectArtistAdapter(artistsArrayList, requireActivity(), requireContext());
-        rv_artist.setAdapter(selectArtistAdapter);
+        rv_artist_horizontal.setAdapter(selectArtistAdapter);
+
+        rv_playlist.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        albumSectionBottomAdapter = new AlbumSectionBottomAdapter(dataSectionBottoms, requireActivity(), requireContext());
+        rv_playlist.setAdapter(albumSectionBottomAdapter);
+
     }
 
     private void onClick() {
@@ -243,41 +274,89 @@ public class AlbumFragment extends Fragment {
         });
     }
 
+    private void getSectionBottom(String encodeId) {
+        ApiServiceFactory.createServiceAsync(new ApiServiceFactory.ApiServiceCallback() {
+            @Override
+            public void onServiceCreated(ApiService service) {
+                try {
+                    SongCategories songCategories = new SongCategories();
+                    Map<String, String> map = songCategories.getSectionBottom(encodeId);
+                    Call<ResponseBody> call = service.SECTION_BOTTOM_CALL(encodeId, map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
+                    call.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            Log.d(">>>>>>>>>>>>>>>>>>>", "getSectionBottom " + call.request().url());
+                            if (response.isSuccessful()) {
+                                try {
+                                    assert response.body() != null;
+                                    String jsonData = response.body().string();
+                                    GsonBuilder gsonBuilder = new GsonBuilder();
+                                    gsonBuilder.registerTypeAdapter(DataSectionBottom.class, new SectionBottomTypeAdapter());
+                                    Gson gson = gsonBuilder.create();
+
+                                    SectionBottom sectionBottom = gson.fromJson(jsonData, SectionBottom.class);
+
+                                    if (sectionBottom != null && sectionBottom.getData() != null) {
+                                        updateUISectionBottom(sectionBottom);
+                                    }
+
+                                } catch (Exception e) {
+                                    Log.e("TAG", "Error: " + e.getMessage(), e);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+
+                        }
+                    });
+                } catch (Exception e) {
+                    Log.e("TAG", "Error: " + e.getMessage(), e);
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e("TAG", "Service creation error: " + e.getMessage(), e);
+            }
+        });
+    }
+
     @SuppressLint("SetTextI18n")
     private void updateUI(Playlist playlist) {
         ArrayList<Items> arrayList = playlist.getData().getSong().getItems();
 
-        // Sử dụng Glide để tải và áp dụng hiệu ứng mờ
-        Glide.with(requireContext())
-                .load(playlist.getData().getThumbnailM())
-                .placeholder(R.color.black)
-                .transform(new CenterCrop(), new BlurAndBlackOverlayTransformation(requireContext(), 25, 220)) // 25 là mức độ mờ, 150 là độ mờ của lớp phủ đen
-                .into(imageBackground);
-
-        Glide.with(requireContext())
-                .load(playlist.getData().getThumbnailM())
-                .placeholder(R.drawable.holder)
-                .into(img_playlist);
+        loadImage(playlist.getData().getThumbnailM());
 
         img_playlist.setVisibility(View.VISIBLE);
         progress_image.setVisibility(View.GONE);
 
-        txt_title_playlist.setText(playlist.getData().getTitle());
+        txt_title_album.setText(playlist.getData().getTitle());
         txt_user_name.setText(playlist.getData().getArtistsNames());
 
         txt_song_and_time.setText("Album · 2024");
         txt_content_playlist.setText(playlist.getData().getDescription());
 
-        itemsArrayList = arrayList;
-        songAllAdapter.setFilterList(arrayList);
-
         txt_releaseDate.setText(playlist.getData().getReleaseDate());
         txt_count_song.setText(arrayList.size() + " bài hát, ");
         txt_time_song.setText(convertLongToString(playlist.getData().getSong().getTotalDuration()));
         txt_distributor.setText(playlist.getData().getDistributor());
-        artistsArrayList = playlist.getData().getArtists();
 
-        selectArtistAdapter.setFilterList(playlist.getData().getArtists());
+        itemsArrayList = arrayList;
+        songMoreAllAdapter.setFilterList(arrayList);
+
+        txt_title_artist.setText("Nghệ sĩ tham gia");
+        linear_more_artist.setVisibility(View.GONE);
+
+        artistsArrayList = playlist.getData().getArtists();
+        selectArtistAdapter.setFilterList(artistsArrayList);
+    }
+
+    private void updateUISectionBottom(SectionBottom sectionBottom) {
+        dataSectionBottoms = sectionBottom.getData();
+
+        albumSectionBottomAdapter.setFilterList(dataSectionBottoms);
     }
 
     private String convertLongToString(long time) {
@@ -286,4 +365,63 @@ public class AlbumFragment extends Fragment {
 
         return gio == 0 ? phut + " phút" : gio + " giờ " + phut + " phút";
     }
+
+    private void loadImage(String url) {
+        Glide.with(this)
+                .asBitmap()
+                .load(url)
+                .placeholder(R.drawable.holder_video)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .transform(new BitmapTransformation() {
+                    @Override
+                    protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+                        Palette p = Palette.from(toTransform).generate();
+                        int defaultColor = 0x000000;
+                        int startColor = p.getDarkVibrantColor(defaultColor);
+
+                        Log.d("Check Start Color", "transform: " + startColor);
+
+                        if (startColor == defaultColor) {
+                            startColor = p.getDarkMutedColor(defaultColor);
+                            if (startColor == defaultColor) {
+                                startColor = p.getVibrantColor(defaultColor);
+                                if (startColor == defaultColor) {
+                                    startColor = p.getMutedColor(defaultColor);
+                                    if (startColor == defaultColor) {
+                                        startColor = p.getLightVibrantColor(defaultColor);
+                                        if (startColor == defaultColor) {
+                                            startColor = p.getLightMutedColor(defaultColor);
+                                        }
+                                    }
+                                }
+                            }
+                            Log.d("Check Start Color", "transform: " + startColor);
+                        }
+
+                        int endColor = getResources().getColor(R.color.gray, null);
+                        startColor = ColorUtils.setAlphaComponent(startColor, 150);
+                        Log.d("Check End Color", "transform: " + endColor);
+
+                        GradientDrawable gd = new GradientDrawable(
+                                GradientDrawable.Orientation.TOP_BOTTOM,
+                                new int[]{startColor, endColor}
+                        );
+                        gd.setCornerRadius(0f);
+                        gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+                        gd.setGradientRadius(0.2f);
+
+                        requireActivity().runOnUiThread(() -> imageBackground.setBackground(gd));
+
+                        return toTransform;
+                    }
+
+                    @Override
+                    public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+                        messageDigest.update("paletteTransformer".getBytes());
+                    }
+                })
+                .into(img_playlist);
+    }
+
 }

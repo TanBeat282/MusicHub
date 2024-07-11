@@ -83,10 +83,6 @@ public class NewReleaseAlbumFragment extends Fragment {
                 getNewReleaseAlbum();
             }
         });
-
-        if (newReleaseAlbumViewModel.getNewReleaseAlbumMutableLiveData().getValue() == null) {
-            getNewReleaseAlbum();
-        }
     }
 
     private void initViews(View view) {
@@ -160,6 +156,15 @@ public class NewReleaseAlbumFragment extends Fragment {
             relative_loading.setVisibility(View.GONE);
         } else {
             Log.d("TAG", "Items list is empty");
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (newReleaseAlbumViewModel.getNewReleaseAlbumMutableLiveData().getValue() == null ||
+                newReleaseAlbumViewModel.getNewReleaseAlbumMutableLiveData().getValue().getData().isEmpty()) {
+            getNewReleaseAlbum();
         }
     }
 }

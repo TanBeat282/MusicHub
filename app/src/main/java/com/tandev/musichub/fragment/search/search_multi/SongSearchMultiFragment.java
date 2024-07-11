@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.song.PaginationScrollListener;
-import com.tandev.musichub.adapter.song.SongAllMoreAdapter;
+import com.tandev.musichub.adapter.song.SongLoadMoreAdapter;
 import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SearchCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
@@ -54,7 +54,7 @@ public class SongSearchMultiFragment extends Fragment {
     private RecyclerView rv_search_song;
     private RelativeLayout linear_empty_search;
     private ArrayList<Items> itemsArrayList = new ArrayList<>();
-    private SongAllMoreAdapter songAllMoreAdapter;
+    private SongLoadMoreAdapter songLoadMoreAdapter;
     private boolean isLoading;
     private boolean isLastPage;
     private int currentPage = 1;
@@ -134,8 +134,8 @@ public class SongSearchMultiFragment extends Fragment {
     private void initAdapter() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_search_song.setLayoutManager(linearLayoutManager);
-        songAllMoreAdapter = new SongAllMoreAdapter(itemsArrayList, requireActivity(), requireContext());
-        rv_search_song.setAdapter(songAllMoreAdapter);
+        songLoadMoreAdapter = new SongLoadMoreAdapter(itemsArrayList, requireActivity(), requireContext());
+        rv_search_song.setAdapter(songLoadMoreAdapter);
 
         rv_search_song.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
             @Override
@@ -261,10 +261,10 @@ public class SongSearchMultiFragment extends Fragment {
         itemsArrayList.clear(); // Clear existing items
         itemsArrayList.addAll(searchSong.getData().getItems());
         totalPages = calculateTotalPages(searchSong.getData().getTotal());
-        songAllMoreAdapter.setFilterList(itemsArrayList);
+        songLoadMoreAdapter.setFilterList(itemsArrayList);
 
         if (currentPage < totalPages) {
-            songAllMoreAdapter.addFooterLoading();
+            songLoadMoreAdapter.addFooterLoading();
         } else {
             isLastPage = true;
         }
@@ -276,11 +276,11 @@ public class SongSearchMultiFragment extends Fragment {
     private void updateUIMore(SearchSong searchSong) {
         ArrayList<Items> newItems = searchSong.getData().getItems();
         itemsArrayList.addAll(newItems); // Add new items to existing list
-        songAllMoreAdapter.notifyDataSetChanged();
+        songLoadMoreAdapter.notifyDataSetChanged();
 
         isLoading = false;
         if (currentPage < totalPages) {
-            songAllMoreAdapter.addFooterLoading();
+            songLoadMoreAdapter.addFooterLoading();
         } else {
             isLastPage = true;
         }

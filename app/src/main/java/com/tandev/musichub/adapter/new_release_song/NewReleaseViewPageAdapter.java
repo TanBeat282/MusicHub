@@ -4,15 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.tandev.musichub.fragment.new_release.album.NewReleaseAlbumFragment;
 import com.tandev.musichub.fragment.new_release.song.NewReleaseSongFragment;
 
 
-public class NewReleaseViewPageAdapter extends FragmentPagerAdapter {
+public class NewReleaseViewPageAdapter extends FragmentStatePagerAdapter {
 
-    public NewReleaseViewPageAdapter(@NonNull FragmentManager fm, int behavior) {
-        super(fm, behavior);
+    public NewReleaseViewPageAdapter(@NonNull FragmentManager fm) {
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
     }
 
     @NonNull
@@ -44,5 +45,4 @@ public class NewReleaseViewPageAdapter extends FragmentPagerAdapter {
         }
         return title;
     }
-
 }

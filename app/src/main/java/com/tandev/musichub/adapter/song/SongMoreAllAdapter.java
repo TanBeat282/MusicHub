@@ -30,31 +30,19 @@ import com.tandev.musichub.service.MyService;
 
 import java.util.ArrayList;
 
-public class SongMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements PlayingStatusUpdater {
-    private static final int VIEW_TYPE_SONG = 0;
-    private static final int VIEW_TYPE_BUTTON = 1;
-
+public class SongMoreAllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements PlayingStatusUpdater {
     private ArrayList<Items> songList;
     private final Context context;
     private final Activity activity;
     private int selectedPosition = -1;
-    private int typeOnClicked = -1;
-    // 0 -> New Release
-    // 1 -> BXH New Release
-    // 2 -> BXH
-    // 3 -> Artist -> Bai hat noi bat
+    private boolean isExpanded = false;
 
-
-    public SongMoreAdapter(ArrayList<Items> songList, int typeOnClicked, Activity activity, Context context) {
-        this.songList = songList;
-        this.typeOnClicked = typeOnClicked;
-        this.activity = activity;
-        this.context = context;
-    }
+    private static final int ITEM_TYPE_SONG = 0;
+    private static final int ITEM_TYPE_MORE = 1;
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setFilterList(ArrayList<Items> fillterList) {
-        this.songList = fillterList;
+    public void setFilterList(ArrayList<Items> filterList) {
+        this.songList = filterList;
         notifyDataSetChanged();
     }
 
@@ -68,9 +56,6 @@ public class SongMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     selectedPosition = i;
                     notifyDataSetChanged();
                     return;
-                } else {
-                    selectedPosition = -1;
-                    notifyDataSetChanged();
                 }
             }
         }
@@ -78,47 +63,54 @@ public class SongMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
+    public SongMoreAllAdapter(ArrayList<Items> songList, Activity activity, Context context) {
+        this.songList = songList;
+        this.activity = activity;
+        this.context = context;
+    }
+
     @Override
     public int getItemViewType(int position) {
-        if (songList.size() > 5 && position == 5) {
-            return VIEW_TYPE_BUTTON;
-        } else {
-            return VIEW_TYPE_SONG;
+        if (!isExpanded && songList.size() > 5 && position == 5) {
+            return ITEM_TYPE_MORE;
         }
+        return ITEM_TYPE_SONG;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_SONG) {
+        if (viewType == ITEM_TYPE_MORE) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song_more, parent, false);
+            return new MoreViewHolder(view);
+        } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song, parent, false);
             return new SongViewHolder(view);
-        } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song_more, parent, false);
-            return new ButtonViewHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        if (getItemViewType(position) == VIEW_TYPE_SONG) {
+        if (holder instanceof MoreViewHolder) {
+            ((MoreViewHolder) holder).bind();
+        } else if (holder instanceof SongViewHolder) {
+            SongViewHolder songHolder = (SongViewHolder) holder;
             Items song = songList.get(position);
-            SongViewHolder songViewHolder = (SongViewHolder) holder;
 
-            songViewHolder.nameTextView.setText(song.getTitle());
-            songViewHolder.artistTextView.setText(song.getArtistsNames());
+            songHolder.nameTextView.setText(song.getTitle());
+            songHolder.artistTextView.setText(song.getArtistsNames());
             Glide.with(context)
-                    .load(song.getThumbnailM())
+                    .load(song.getThumbnailM())  // Tải ảnh thumbnail từ liên kết
                     .placeholder(R.drawable.holder)
-                    .into(songViewHolder.thumbImageView);
+                    .into(songHolder.thumbImageView);  // Hiển thị thumbnail lên ImageView
 
             if (selectedPosition == position) {
                 int colorSpotify = ContextCompat.getColor(context, R.color.colorSpotify);
-                songViewHolder.nameTextView.setTextColor(colorSpotify);
-                songViewHolder.aniPlay.setVisibility(View.VISIBLE);
+                songHolder.nameTextView.setTextColor(colorSpotify);
+                songHolder.aniPlay.setVisibility(View.VISIBLE);
             } else {
-                songViewHolder.nameTextView.setTextColor(Color.WHITE);
-                songViewHolder.aniPlay.setVisibility(View.GONE);
+                songHolder.nameTextView.setTextColor(Color.WHITE);
+                songHolder.aniPlay.setVisibility(View.GONE);
             }
             int premiumColor;
             if (song.getStreamingStatus() == 2) {
@@ -126,20 +118,15 @@ public class SongMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             } else {
                 premiumColor = ContextCompat.getColor(context, R.color.white);
             }
-            songViewHolder.nameTextView.setTextColor(premiumColor);
+            songHolder.nameTextView.setTextColor(premiumColor);
 
-            songViewHolder.btn_more.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showBottomSheetInfo(song);
-                }
-            });
-            holder.itemView.setOnLongClickListener(view -> {
+            songHolder.btn_more.setOnClickListener(view -> showBottomSheetInfo(song));
+            songHolder.itemView.setOnLongClickListener(view -> {
                 showBottomSheetInfo(song);
                 return false;
             });
 
-            holder.itemView.setOnClickListener(v -> {
+            songHolder.itemView.setOnClickListener(v -> {
                 if (song.getStreamingStatus() == 2) {
                     Toast.makeText(context, "Không thể phát bài hát Premium!", Toast.LENGTH_SHORT).show();
                 } else {
@@ -153,22 +140,16 @@ public class SongMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     context.startService(intent);
                 }
             });
-        } else {
-            // Bind data for button item
-            ButtonViewHolder buttonViewHolder = (ButtonViewHolder) holder;
-            // Handle button click event
-            buttonViewHolder.btn_more.setOnClickListener(v -> {
-                // Handle "More" button click event
-            });
         }
     }
 
     @Override
     public int getItemCount() {
-        if (songList == null || songList.isEmpty()) {
-            return 0;
+        if (!isExpanded && songList.size() > 5) {
+            return 6; // 5 items + 1 "more" item
+        } else {
+            return songList.size();
         }
-        return songList.size() > 5 ? 6 : songList.size(); // Showing 5 items + 1 "More" button or all items if less than 5
     }
 
     public static class SongViewHolder extends RecyclerView.ViewHolder {
@@ -178,7 +159,7 @@ public class SongMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public LottieAnimationView aniPlay;
         public ImageView btn_more;
 
-        public SongViewHolder(@NonNull View itemView) {
+        public SongViewHolder(View itemView) {
             super(itemView);
             thumbImageView = itemView.findViewById(R.id.thumbImageView);
             artistTextView = itemView.findViewById(R.id.artistTextView);
@@ -190,19 +171,25 @@ public class SongMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public static class ButtonViewHolder extends RecyclerView.ViewHolder {
-        private LinearLayout btn_more;
+    public class MoreViewHolder extends RecyclerView.ViewHolder {
+        private final LinearLayout btn_more;
 
-        public ButtonViewHolder(@NonNull View itemView) {
+        public MoreViewHolder(View itemView) {
             super(itemView);
             btn_more = itemView.findViewById(R.id.btn_more);
         }
 
+        @SuppressLint("NotifyDataSetChanged")
+        public void bind() {
+            btn_more.setOnClickListener(v -> {
+                isExpanded = true;
+                notifyDataSetChanged();
+            });
+        }
     }
 
     private void showBottomSheetInfo(Items items) {
         BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items);
         bottomSheetOptionSong.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetOptionSong.getTag());
     }
-
 }

@@ -1,13 +1,12 @@
-package com.tandev.musichub.model.sectionBottom;
+package com.tandev.musichub.model.section_bottom;
 
-import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.playlist.DataPlaylist;
-import com.tandev.musichub.model.playlist.Playlist;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class DataSectionBottomPlaylist implements Serializable {
+public class DataSectionBottomPlaylist implements DataSectionBottom, Serializable {
+    private static final long serialVersionUID = 1L;
     private String sectionType;
     private String viewType;
     private String title;

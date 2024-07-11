@@ -10,6 +10,6 @@
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        app:riv_corner_radius="@dimen/_5sdp" />
+        app:riv_corner_radius="@dimen/_3sdp" />
 
 </LinearLayout>

@@ -21,4 +21,5 @@
     <color name="gray">#1D1D1D</color>
     <color name="yellow">#ffff00</color>
     <color name="transparent">#80000000</color>
+    <color name="md_theme_dark_background">#0B0A0A</color>
 </resources>

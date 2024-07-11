@@ -170,19 +170,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_5sdp"
                 android:background="@drawable/select_onclick"
                 android:padding="@dimen/_5sdp"
                 android:src="@drawable/mic_24px"
                 app:tint="@color/white" />
-
-            <ImageView
-                android:id="@+id/img_more"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/select_onclick"
-                android:padding="@dimen/_5sdp"
-                android:src="@drawable/baseline_more_vert_24" />
         </LinearLayout>
 
     </RelativeLayout>

@@ -573,6 +573,8 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         if (inputMethodManager != null) {
             inputMethodManager.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
         }
+        saveSearchHistory(keyword);
+        searchView.setQuery(keyword, true);
     }
 
     @Override
@@ -611,6 +613,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
             if (resultCode == RESULT_OK && null != data) {
                 ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 if (result != null && !result.isEmpty()) {
+                    saveSearchHistory(result.get(0));
                     searchView.setQuery(result.get(0), true);
                 }
             }

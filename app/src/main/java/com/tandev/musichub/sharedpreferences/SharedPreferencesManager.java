@@ -183,6 +183,22 @@ public class SharedPreferencesManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear().apply();
     }
+    // Delete a specific DataSearchRecommend by keyword
+    public void deleteSearchHistoryItem(DataSearchRecommend dataSearchRecommend) {
+        ArrayList<DataSearchRecommend> searchHistory = restoreSearchHistory();
+
+        // Xóa mục khỏi danh sách nếu có
+        searchHistory.remove(dataSearchRecommend);
+
+        // Lưu danh sách lịch sử tìm kiếm đã cập nhật vào SharedPreferences
+        Gson gson = new Gson();
+        String searchHistoryJson = gson.toJson(searchHistory);
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("searchHistory", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("search_history", searchHistoryJson);
+        editor.apply();
+    }
 
 
 

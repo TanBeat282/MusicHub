@@ -18,6 +18,7 @@ lottie = "6.4.0"
 material = "1.12.0"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
+material3 = "1.2.1"
 media = "1.7.0"
 media3ExoplayerDash = "1.3.1"
 okhttp = "4.12.0"
@@ -53,6 +54,7 @@ lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 media = { module = "androidx.media:media", version.ref = "media" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3ExoplayerDash" }
 media3-exoplayer-dash = { module = "androidx.media3:media3-exoplayer-dash", version.ref = "media3ExoplayerDash" }

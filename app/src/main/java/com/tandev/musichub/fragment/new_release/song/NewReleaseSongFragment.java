@@ -82,10 +82,6 @@ public class NewReleaseSongFragment extends Fragment {
                 getNewReleaseSong();
             }
         });
-
-        if (newReleaseSongViewModel.getNewReleaseSongMutableLiveData().getValue() == null) {
-            getNewReleaseSong();
-        }
     }
 
     private void initViews(View view) {
@@ -145,7 +141,7 @@ public class NewReleaseSongFragment extends Fragment {
 
                         @Override
                         public void onFailure(@NonNull Call<NewReleaseSong> call, @NonNull Throwable throwable) {
-
+                            Log.d("TAG", "Failed to retrieve data: " + call.request());
                         }
                     });
                 } catch (Exception e) {
@@ -233,7 +229,10 @@ public class NewReleaseSongFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        getNewReleaseSong();
+        if (newReleaseSongViewModel.getNewReleaseSongMutableLiveData().getValue() == null ||
+                newReleaseSongViewModel.getNewReleaseSongMutableLiveData().getValue().getData().isEmpty()) {
+            getNewReleaseSong();
+        }
     }
 
     @Override

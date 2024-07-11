@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 //import com.tandev.musichub.fragment.WeekChart.KpopFragment;
 //import com.tandev.musichub.fragment.WeekChart.UsUkFragment;
 //import com.tandev.musichub.fragment.WeekChart.VnFragment;
@@ -12,7 +13,7 @@ import com.tandev.musichub.fragment.week_chart.usuk.UsUkFragment;
 import com.tandev.musichub.fragment.week_chart.vn.VnFragment;
 import com.tandev.musichub.model.chart.home.home_new.week_chart.HomeDataItemWeekChartItem;
 
-public class WeekChartViewPageAdapter extends FragmentPagerAdapter {
+public class WeekChartViewPageAdapter extends FragmentStatePagerAdapter {
     private HomeDataItemWeekChartItem homeDataItemWeekChartItem;
     private int weekChartPosition;
 

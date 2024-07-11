@@ -1,13 +1,6 @@
 package com.tandev.musichub;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Outline;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewOutlineProvider;
@@ -17,9 +10,6 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
-import com.tandev.musichub.helper.ui.BlurTransformation;
 
 public class MainActivity2 extends AppCompatActivity {
 
@@ -33,13 +23,6 @@ public class MainActivity2 extends AppCompatActivity {
         ImageView backgroundImageView = findViewById(R.id.backgroundImageView);
         ImageView foregroundImageView = findViewById(R.id.foregroundImageView);
         FrameLayout foregroundContainer = findViewById(R.id.foregroundContainer);
-
-        // Load and blur the background image
-        Glide.with(this)
-                .asBitmap()
-                .load(IMAGE_URL)
-                .transform(new BlurTransformation(this, 25)) // Adjust blur radius as needed
-                .into(backgroundImageView);
 
         // Load the foreground image
         Glide.with(this)
