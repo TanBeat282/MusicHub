@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Items implements Serializable {
     private String encodeId;
@@ -271,5 +272,17 @@ public class Items implements Serializable {
 
     public static Items fromJson(String json) {
         return new Gson().fromJson(json, Items.class);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Items items = (Items) o;
+        return Objects.equals(encodeId, items.encodeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(encodeId);
     }
 }

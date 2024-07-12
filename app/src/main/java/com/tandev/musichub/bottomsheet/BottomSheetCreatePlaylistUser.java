@@ -15,16 +15,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.fragment.profile.ProfileFragment;
-import com.tandev.musichub.fragment.search.SearchFragment;
 import com.tandev.musichub.helper.ui.Helper;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 
-public class BottomSheetProfile extends BottomSheetDialogFragment {
+public class BottomSheetCreatePlaylistUser extends BottomSheetDialogFragment {
     private final Context context;
     private final Activity activity;
     private BottomSheetDialog bottomSheetDialog;
@@ -32,7 +31,7 @@ public class BottomSheetProfile extends BottomSheetDialogFragment {
 
     private LinearLayout linear_profile, linear_setting, linear_send_error, linear_info_app;
 
-    public BottomSheetProfile(Context context, Activity activity) {
+    public BottomSheetCreatePlaylistUser(Context context, Activity activity) {
         this.context = context;
         this.activity = activity;
     }

@@ -236,7 +236,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_share"
+                        android:src="@drawable/queue_music_24px"
                         app:tint="@color/white" />
                 </LinearLayout>
 
@@ -244,7 +244,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:text="Chia sẻ"
+                    android:gravity="center"
+                    android:text="Thêm vào playlist"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_12ssp" />
             </LinearLayout>
@@ -279,6 +280,7 @@
                     android:textColor="@color/white"
                     android:textSize="@dimen/_14ssp" />
             </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/linear_album"

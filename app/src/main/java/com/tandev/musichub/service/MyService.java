@@ -60,8 +60,6 @@ public class MyService extends Service {
     private boolean isPlaying = false;
     private Items mSong;
     private String currentSongId = "";
-    private ArrayList<Items> mSongList;
-    private int mPositionSong = -1;
 
     private SharedPreferencesManager sharedPreferencesManager;
     private final Handler seekBarHandler = new Handler();
@@ -107,13 +105,10 @@ public class MyService extends Service {
         if (bundle != null) {
             Items song = (Items) bundle.getSerializable("object_song");
             int positionSong = bundle.getInt("position_song");
-            if (bundle.containsKey("song_list")) {
-                mSongList = (ArrayList<Items>) bundle.getSerializable("song_list");
-            }
+            ArrayList<Items> mSongList = (ArrayList<Items>) bundle.getSerializable("song_list");
 
             if (song != null) {
                 mSong = song;
-                mPositionSong = positionSong;
                 startMusic(song);
                 sendNotificationMedia(song, true);
                 saveSongListAndPosition(mSong, positionSong, mSongList);
@@ -127,9 +122,6 @@ public class MyService extends Service {
 
             // Đảm bảo rằng MediaPlayer đã được khởi tạo
             if (mediaPlayer == null) {
-                // Lấy bài hát và phát nhạc trước khi seek
-                mSongList = sharedPreferencesManager.restoreSongArrayList();
-                mPositionSong = sharedPreferencesManager.restoreSongPosition();
                 mSong = sharedPreferencesManager.restoreSongState();
                 startMusic(mSong);
             }
@@ -157,16 +149,10 @@ public class MyService extends Service {
     }
 
     private void getSongListAndPosition() {
-        ArrayList<Items> songs = sharedPreferencesManager.restoreSongArrayList();
-        int position = sharedPreferencesManager.restoreSongPosition();
         Items song = sharedPreferencesManager.restoreSongState();
-
-        mSongList = songs;
         mSong = song;
-        mPositionSong = position;
         startMusic(song);
         sendNotificationMedia(song, true);
-        saveSongListAndPosition(mSong, position, mSongList);
     }
 
     private void startMusic(Items song) {
@@ -195,7 +181,6 @@ public class MyService extends Service {
                                 sharedPreferencesManager.saveSongArrayListHistory(song);
                             });
                         } catch (IOException e) {
-                            e.printStackTrace();
                             sendIsSongPremium();
                             nextMusic();
                         }
@@ -224,7 +209,6 @@ public class MyService extends Service {
                                     sharedPreferencesManager.saveSongArrayListHistory(song);
                                 });
                             } catch (IOException e) {
-                                e.printStackTrace();
                                 sendIsSongPremium();
                                 nextMusic();
                             }
@@ -275,30 +259,31 @@ public class MyService extends Service {
             // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
             startMusic(mSong);
         } else {
+            int mPositionSong = -1;
             if (sharedPreferencesManager.restoreIsShuffleState()) {
                 // Shuffle: Chọn một chỉ số ngẫu nhiên
                 Random random = new Random();
-                mPositionSong = random.nextInt(mSongList.size());
+                mPositionSong = random.nextInt(sharedPreferencesManager.restoreSongArrayList().size());
             } else {
                 // Không Shuffle: Tiếp tục theo thứ tự
                 if (isNext) {
-                    mPositionSong++;
-                    if (mPositionSong >= mSongList.size()) {
+                    mPositionSong = sharedPreferencesManager.restoreSongPosition() + 1;
+                    if (mPositionSong >= sharedPreferencesManager.restoreSongArrayList().size()) {
                         mPositionSong = 0;
                     }
                 } else {
-                    mPositionSong--;
+                    mPositionSong = sharedPreferencesManager.restoreSongPosition() - 1;
                     if (mPositionSong < 0) {
-                        mPositionSong = mSongList.size() - 1;
+                        mPositionSong = sharedPreferencesManager.restoreSongArrayList().size() - 1;
                     }
                 }
             }
 
-            if (mPositionSong >= 0 && mPositionSong < mSongList.size()) {
-                mSong = mSongList.get(mPositionSong);
+            if (mPositionSong >= 0 && mPositionSong < sharedPreferencesManager.restoreSongArrayList().size()) {
+                mSong = sharedPreferencesManager.restoreSongArrayList().get(mPositionSong);
                 startMusic(mSong);
                 sendNotificationMedia(mSong, true);
-                saveSongListAndPosition(mSong, mPositionSong, mSongList);
+                saveSongListAndPosition(mSong, mPositionSong, sharedPreferencesManager.restoreSongArrayList());
             }
         }
     }
@@ -313,9 +298,6 @@ public class MyService extends Service {
             // Xử lý theo trạng thái Repeat và Shuffle
             handleNextOrPreviousMusic(true);
         } else {
-            // MediaPlayer null, khôi phục trạng thái và phát nhạc
-            mSongList = sharedPreferencesManager.restoreSongArrayList();
-            mPositionSong = sharedPreferencesManager.restoreSongPosition();
             handleNextOrPreviousMusic(true);
         }
     }
@@ -330,9 +312,6 @@ public class MyService extends Service {
             // Xử lý theo trạng thái Repeat và Shuffle
             handleNextOrPreviousMusic(false);
         } else {
-            // MediaPlayer null, khôi phục trạng thái và phát nhạc
-            mSongList = sharedPreferencesManager.restoreSongArrayList();
-            mPositionSong = sharedPreferencesManager.restoreSongPosition();
             handleNextOrPreviousMusic(false);
         }
 

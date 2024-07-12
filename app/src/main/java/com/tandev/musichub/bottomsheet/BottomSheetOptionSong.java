@@ -38,6 +38,7 @@ import com.tandev.musichub.model.song.SongAudio;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 
 import java.util.List;
 
@@ -56,12 +57,14 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment implements 
     private long downloadID;
 
     private PermissionUtils permissionUtils;
+    private SharedPreferencesManager sharedPreferencesManager;
 
     public BottomSheetOptionSong(Context context, Activity activity, Items items) {
         this.context = context;
         this.activity = activity;
         this.items = items;
         this.permissionUtils = new PermissionUtils(context, this);
+        this.sharedPreferencesManager = new SharedPreferencesManager(context);
     }
 
 
@@ -92,7 +95,29 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment implements 
         LinearLayout linear_album = bottomSheetDialog.findViewById(R.id.linear_album);
         LinearLayout linear_artist = bottomSheetDialog.findViewById(R.id.linear_artist);
 
-        assert linear_download != null;
+        linear_play_cont.setOnClickListener(view14 -> {
+            if (items.getStreamingStatus() == 2) {
+                Toast.makeText(context, "Không thể phát bài hát Premium tiếp theo!", Toast.LENGTH_SHORT).show();
+            } else {
+                sharedPreferencesManager.addSongAfterCurrentPlaying(items);
+                Toast.makeText(context, "Đã thêm bài hát vào phát tiếp theo!", Toast.LENGTH_SHORT).show();
+                bottomSheetDialog.dismiss();
+            }
+        });
+        linear_playlist_add.setOnClickListener(view13 -> {
+            if (items.getStreamingStatus() == 2) {
+                Toast.makeText(context, "Không thể thêm bài hát Premium vào danh sách phát!", Toast.LENGTH_SHORT).show();
+            } else {
+                sharedPreferencesManager.addSongToEndOfArrayList(items);
+                Toast.makeText(context, "Đã thêm bài hát vào danh sách phát!", Toast.LENGTH_SHORT).show();
+                bottomSheetDialog.dismiss();
+            }
+        });
+        linear_share.setOnClickListener(view15 -> {
+            BottomSheetSelectPlaylistUser bottomSheetSelectPlaylistUser = new BottomSheetSelectPlaylistUser(context, activity, items);
+            bottomSheetSelectPlaylistUser.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetSelectPlaylistUser.getTag());
+            bottomSheetDialog.dismiss();
+        });
         linear_download.setOnClickListener(v -> {
             if (CheckIsFile.isFileDownloaded(items.getTitle() + " - " + items.getArtistsNames() + ".mp3")) {
                 if (CheckIsFile.deleteFileIfExists(items.getTitle() + " - " + items.getArtistsNames() + ".mp3")) {

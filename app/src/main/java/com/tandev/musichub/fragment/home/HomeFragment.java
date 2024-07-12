@@ -351,11 +351,8 @@ public class HomeFragment extends Fragment {
             }
         });
         img_account.setOnClickListener(view -> {
-//            BottomSheetProfile bottomSheetProfile = new BottomSheetProfile(requireContext(), requireActivity());
-//            bottomSheetProfile.show(requireActivity().getSupportFragmentManager(), bottomSheetProfile.getTag());
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).replaceFragment(new ProfileFragment());
-            }
+            BottomSheetProfile bottomSheetProfile = new BottomSheetProfile(requireContext(), requireActivity());
+            bottomSheetProfile.show(requireActivity().getSupportFragmentManager(), bottomSheetProfile.getTag());
         });
         linear_new_release_song.setOnClickListener(view -> {
             if (getActivity() instanceof MainActivity) {
