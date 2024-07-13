@@ -1,6 +1,10 @@
 package com.tandev.musichub.fragment.history;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -9,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,7 +29,9 @@ import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.history.HistoryAdapter;
 import com.tandev.musichub.helper.ui.Helper;
+import com.tandev.musichub.helper.ui.MusicHelper;
 import com.tandev.musichub.model.chart.chart_home.Items;
+import com.tandev.musichub.service.MyService;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 
 import java.util.ArrayList;
@@ -42,6 +49,25 @@ public class HistoryFragment extends Fragment {
     private ArrayList<Items> songListLichSuBaiHatNgheNhieu;
     private HistoryAdapter lichSuBaiHatNgheNhieuAdapter, lichSuBaiHatAdapter;
     private SharedPreferencesManager sharedPreferencesManager;
+    private MusicHelper musicHelper;
+
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle == null) {
+                return;
+            }
+           Items items = (Items) bundle.get("object_song");
+            int action = bundle.getInt("action_music");
+            if (items != null) {
+                if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS) {
+                    musicHelper.checkIsPlayingPlaylist(items, songListLichSuBaiHat, lichSuBaiHatAdapter);
+                    musicHelper.checkIsPlayingPlaylist(items, songListLichSuBaiHatNgheNhieu, lichSuBaiHatNgheNhieuAdapter);
+                }
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +87,7 @@ public class HistoryFragment extends Fragment {
         Helper.changeStatusBarColor(requireActivity(), R.color.black);
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+        musicHelper = new MusicHelper(requireContext(), sharedPreferencesManager);
 
         tool_bar = view.findViewById(R.id.tool_bar);
         relative_header = tool_bar.findViewById(R.id.relative_header);
@@ -146,6 +173,7 @@ public class HistoryFragment extends Fragment {
                 linear_nghe_nhieu.setVisibility(View.VISIBLE);
                 lichSuBaiHatNgheNhieuAdapter.setFilterList(songListLichSuBaiHatNgheNhieu);
                 lichSuBaiHatNgheNhieuAdapter.notifyDataSetChanged(); // Thông báo cho Adapter biết dữ liệu đã thay đổi
+                musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), songListLichSuBaiHatNgheNhieu, lichSuBaiHatNgheNhieuAdapter);
             }
 
             // Cập nhật Adapter cho danh sách lịch sử chung và kiểm tra bài hát đang phát
@@ -153,6 +181,7 @@ public class HistoryFragment extends Fragment {
             linear_no_data.setVisibility(View.GONE);
             lichSuBaiHatAdapter.setFilterList(songListLichSuBaiHat);
             lichSuBaiHatAdapter.notifyDataSetChanged(); // Thông báo cho Adapter biết dữ liệu đã thay đổi
+            musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), songListLichSuBaiHat, lichSuBaiHatAdapter);
         }
     }
 
@@ -162,5 +191,12 @@ public class HistoryFragment extends Fragment {
         songListLichSuBaiHat.clear();
         songListLichSuBaiHatNgheNhieu.clear();
         getSongHistory();
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(broadcastReceiver, new IntentFilter("send_data_to_activity"));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(broadcastReceiver);
     }
 }

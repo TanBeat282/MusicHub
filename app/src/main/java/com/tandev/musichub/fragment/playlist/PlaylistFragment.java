@@ -1,6 +1,10 @@
 package com.tandev.musichub.fragment.playlist;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -12,6 +16,7 @@ import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -42,6 +48,7 @@ import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.api.type_adapter_Factory.section_bottom.SectionBottomTypeAdapter;
 import com.tandev.musichub.helper.ui.Helper;
+import com.tandev.musichub.helper.ui.MusicHelper;
 import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.playlist.DataPlaylist;
@@ -50,7 +57,10 @@ import com.tandev.musichub.model.section_bottom.DataSectionBottom;
 import com.tandev.musichub.model.section_bottom.DataSectionBottomArtist;
 import com.tandev.musichub.model.section_bottom.DataSectionBottomPlaylist;
 import com.tandev.musichub.model.section_bottom.SectionBottom;
+import com.tandev.musichub.service.MyService;
+import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 import com.tandev.musichub.view_model.playlist.PlaylistViewModel;
+import com.tandev.musichub.view_model.section_bottom.SectionBottomViewModel;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -63,6 +73,7 @@ import retrofit2.Response;
 
 public class PlaylistFragment extends Fragment {
     private PlaylistViewModel playlistViewModel;
+    private SectionBottomViewModel sectionBottomViewModel;
 
     private ImageView imageBackground;
 
@@ -84,6 +95,9 @@ public class PlaylistFragment extends Fragment {
     private RelativeLayout relative_loading;
     private RecyclerView rv_playlist;
     private LinearLayout btn_play_playlist;
+    private LinearLayout linear_save_playlist;
+    private TextView txt_check_playlist;
+    private ImageView img_check_playlist;
 
     private RelativeLayout relative_single, relative_playlist;
     private LinearLayout linear_playlist_like, linear_single;
@@ -94,10 +108,29 @@ public class PlaylistFragment extends Fragment {
     private ArrayList<DataPlaylist> dataPlaylistArrayList;
     private ArrayList<Artists> artistsArrayList;
 
+    private SharedPreferencesManager sharedPreferencesManager;
+    private MusicHelper musicHelper;
+
+    public BroadcastReceiver createBroadcastReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle bundle = intent.getExtras();
+                if (bundle == null) {
+                    return;
+                }
+                Items items = (Items) bundle.get("object_song");
+                musicHelper.checkIsPlayingPlaylist(items, itemsArrayList, songMoreAllAdapter);
+
+            }
+        };
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         playlistViewModel = new ViewModelProvider(this).get(PlaylistViewModel.class);
+        sectionBottomViewModel = new ViewModelProvider(this).get(SectionBottomViewModel.class);
     }
 
     @Override
@@ -110,6 +143,8 @@ public class PlaylistFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+        musicHelper = new MusicHelper(requireContext(), sharedPreferencesManager);
 
         initViews(view);
         initConFigViews();
@@ -124,19 +159,35 @@ public class PlaylistFragment extends Fragment {
             if (artistDetail != null) {
                 updateUI(artistDetail);
             } else {
-                getDataBundle();
+                getDataBundlePlaylist();
+            }
+        });
+        playlistViewModel.getSectionBottomMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUI(artistDetail);
+            } else {
+                getDataBundlePlaylist();
             }
         });
 
         if (playlistViewModel.getPlaylistMutableLiveData().getValue() == null) {
-            getDataBundle();
+            getDataBundlePlaylist();
+        }
+        if (playlistViewModel.getSectionBottomMutableLiveData().getValue() == null) {
+            getDataBundleSectionBottom();
         }
     }
 
-    private void getDataBundle() {
+    private void getDataBundlePlaylist() {
         if (getArguments() != null) {
             String endCodeId = getArguments().getString("encodeId");
             getPlaylist(endCodeId);
+        }
+    }
+
+    private void getDataBundleSectionBottom() {
+        if (getArguments() != null) {
+            String endCodeId = getArguments().getString("encodeId");
             getSectionBottom(endCodeId);
         }
     }
@@ -160,6 +211,9 @@ public class PlaylistFragment extends Fragment {
         txt_user_name = view.findViewById(R.id.txt_user_name);
         txt_song_and_time = view.findViewById(R.id.txt_song_and_time);
         btn_play_playlist = view.findViewById(R.id.btn_play_playlist);
+        linear_save_playlist = view.findViewById(R.id.linear_save_playlist);
+        img_check_playlist = view.findViewById(R.id.img_check_playlist);
+        txt_check_playlist = view.findViewById(R.id.txt_check_playlist);
         txt_content_playlist = view.findViewById(R.id.txt_content_playlist);
         rv_playlist = view.findViewById(R.id.rv_playlist);
 
@@ -226,6 +280,23 @@ public class PlaylistFragment extends Fragment {
                 getActivity().getSupportFragmentManager().popBackStack();
             }
         });
+        btn_play_playlist.setOnClickListener(view -> {
+            Intent intent = new Intent(requireContext(), MyService.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("object_song", itemsArrayList.get(0));
+            bundle.putInt("position_song", 0);
+            bundle.putSerializable("song_list", itemsArrayList);
+            intent.putExtras(bundle);
+
+            requireContext().startService(intent);
+        });
+        linear_save_playlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sharedPreferencesManager.savePlaylistUser(playlistViewModel.getPlaylistMutableLiveData().getValue().getData());
+                Toast.makeText(requireContext(), "Đã lưu playlist", Toast.LENGTH_SHORT).show();
+            }
+        });
         linear_single.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -290,13 +361,14 @@ public class PlaylistFragment extends Fragment {
         txt_song_and_time.setText(convertLongToString(playlist.getData().getSong().getItems().size(), playlist.getData().getSong().getTotalDuration()));
         txt_content_playlist.setText(playlist.getData().getDescription());
 
+        img_check_playlist.setImageResource(sharedPreferencesManager.isPlaylistExists(playlist.getData().getEncodeId())? R.drawable.playlist_add_check_24px: R.drawable.ic_playlist_add);
+        txt_check_playlist.setText(sharedPreferencesManager.isPlaylistExists(playlist.getData().getEncodeId())? "Đã Thêm": "Thêm");
 
         ArrayList<Items> arrayList = playlist.getData().getSong().getItems();
         if (!arrayList.isEmpty()) {
-            requireActivity().runOnUiThread(() -> {
-                itemsArrayList = arrayList;
-                songMoreAllAdapter.setFilterList(arrayList);
-            });
+            itemsArrayList = arrayList;
+            songMoreAllAdapter.setFilterList(arrayList);
+            musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), itemsArrayList, songMoreAllAdapter);
         }
 
         relative_loading.setVisibility(View.GONE);
@@ -327,7 +399,7 @@ public class PlaylistFragment extends Fragment {
                                     SectionBottom sectionBottom = gson.fromJson(jsonData, SectionBottom.class);
 
                                     if (sectionBottom != null && sectionBottom.getData() != null) {
-                                        updateUI(sectionBottom);
+                                        playlistViewModel.setSectionBottomMutableLiveData(sectionBottom);
                                     }
 
                                 } catch (Exception e) {
@@ -441,4 +513,15 @@ public class PlaylistFragment extends Fragment {
         return size + " bài hát · " + gio + " giờ " + phut + " phút";
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(createBroadcastReceiver(), new IntentFilter("send_data_to_activity"));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(createBroadcastReceiver());
+    }
 }

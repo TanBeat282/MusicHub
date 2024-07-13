@@ -1,6 +1,10 @@
 package com.tandev.musichub.fragment.playlist;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -11,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +47,7 @@ import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.api.type_adapter_Factory.section_bottom.SectionBottomTypeAdapter;
 import com.tandev.musichub.helper.ui.Helper;
+import com.tandev.musichub.helper.ui.MusicHelper;
 import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.playlist.DataPlaylist;
@@ -50,6 +56,7 @@ import com.tandev.musichub.model.section_bottom.DataSectionBottom;
 import com.tandev.musichub.model.section_bottom.DataSectionBottomArtist;
 import com.tandev.musichub.model.section_bottom.DataSectionBottomPlaylist;
 import com.tandev.musichub.model.section_bottom.SectionBottom;
+import com.tandev.musichub.service.MyService;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 
 import java.security.MessageDigest;
@@ -83,12 +90,30 @@ public class MyPlaylistFragment extends Fragment {
     private TextView txt_title_playlist;
     private TextView txt_user_name;
     private TextView txt_song_and_time;
+    private LinearLayout btn_play_playlist;
     private ArrayList<Items> itemsArrayList;
     private SongMoreAllAdapter songMoreAllAdapter;
 
     private RelativeLayout relative_loading;
     private RecyclerView rv_playlist;
     private SharedPreferencesManager sharedPreferencesManager;
+    private MusicHelper musicHelper;
+
+    public BroadcastReceiver createBroadcastReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle bundle = intent.getExtras();
+                if (bundle == null) {
+                    return;
+                }
+                Items items = (Items) bundle.get("object_song");
+                musicHelper.checkIsPlayingPlaylist(items, itemsArrayList, songMoreAllAdapter);
+
+            }
+        };
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,6 +131,8 @@ public class MyPlaylistFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+        musicHelper = new MusicHelper(requireContext(), sharedPreferencesManager);
+
         initViews(view);
         initConFigViews();
         initAdapter();
@@ -144,6 +171,7 @@ public class MyPlaylistFragment extends Fragment {
         txt_title_playlist.setSelected(true);
         txt_user_name = view.findViewById(R.id.txt_user_name);
         txt_song_and_time = view.findViewById(R.id.txt_song_and_time);
+        btn_play_playlist = view.findViewById(R.id.btn_play_playlist);
         rv_playlist = view.findViewById(R.id.rv_playlist);
     }
 
@@ -188,6 +216,16 @@ public class MyPlaylistFragment extends Fragment {
                 getActivity().getSupportFragmentManager().popBackStack();
             }
         });
+        btn_play_playlist.setOnClickListener(view -> {
+            Intent intent = new Intent(requireContext(), MyService.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("object_song", itemsArrayList.get(0));
+            bundle.putInt("position_song", 0);
+            bundle.putSerializable("song_list", itemsArrayList);
+            intent.putExtras(bundle);
+
+            requireContext().startService(intent);
+        });
     }
 
     private void getPlaylist(String encodeId) {
@@ -225,6 +263,7 @@ public class MyPlaylistFragment extends Fragment {
                 requireActivity().runOnUiThread(() -> {
                     itemsArrayList = arrayList;
                     songMoreAllAdapter.setFilterList(arrayList);
+                    musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), itemsArrayList, songMoreAllAdapter);
                 });
             }
         } else {
@@ -259,5 +298,17 @@ public class MyPlaylistFragment extends Fragment {
         int phut = (int) ((time % 3600) / 60);
 
         return size + " bài hát · " + gio + " giờ " + phut + " phút";
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(createBroadcastReceiver(), new IntentFilter("send_data_to_activity"));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(createBroadcastReceiver());
     }
 }

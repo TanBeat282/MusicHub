@@ -106,11 +106,10 @@ public class SongChartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     .into(songViewHolder.thumbImageView);
 
             if (selectedPosition == position) {
-                int colorSpotify = ContextCompat.getColor(context, R.color.colorSpotify);
-                songViewHolder.nameTextView.setTextColor(colorSpotify);
+                songViewHolder.itemView.setBackgroundResource(R.drawable.select_item_background);
                 songViewHolder.aniPlay.setVisibility(View.VISIBLE);
             } else {
-                songViewHolder.nameTextView.setTextColor(Color.WHITE);
+                songViewHolder.itemView.setBackgroundResource(R.drawable.select_item);
                 songViewHolder.aniPlay.setVisibility(View.GONE);
             }
             int premiumColor;

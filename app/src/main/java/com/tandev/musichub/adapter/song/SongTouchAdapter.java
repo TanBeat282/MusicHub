@@ -96,11 +96,10 @@ public class SongTouchAdapter extends RecyclerView.Adapter<SongTouchAdapter.View
                 .into(holder.thumbImageView);  // Hiển thị thumbnail lên ImageView
 
         if (selectedPosition == position) {
-            int colorSpotify = ContextCompat.getColor(context, R.color.colorSpotify);
-            holder.nameTextView.setTextColor(colorSpotify);
+            holder.itemView.setBackgroundResource(R.drawable.select_item_background);
             holder.aniPlay.setVisibility(View.VISIBLE);
         } else {
-            holder.nameTextView.setTextColor(Color.WHITE);
+            holder.itemView.setBackgroundResource(R.drawable.select_item);
             holder.aniPlay.setVisibility(View.GONE);
         }
         int premiumColor;

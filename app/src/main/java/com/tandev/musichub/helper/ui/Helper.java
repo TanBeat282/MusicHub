@@ -84,7 +84,7 @@ public class Helper {
 
 
     // convert time to text
-    public static String convertLongToTime(String timeInMillis) {
+    public static String convertLongToTime2(String timeInMillis) {
         long time = Long.parseLong(timeInMillis);
         Date date = new Date(time);
         Calendar calendar = Calendar.getInstance();
@@ -124,6 +124,28 @@ public class Helper {
         return text;
     }
 
+    public static String convertLongToTime(String timeInMillis) {
+        try {
+            long time = Long.parseLong(timeInMillis);
+
+            // Kiểm tra giá trị time để tránh lỗi thời gian Unix Epoch (năm 1970)
+            if (time <= 0) {
+                return "Invalid time";
+            }
+
+            Date date = new Date(time);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            // Định dạng lại ngày tháng năm
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            // Trả về kết quả
+            return sdf.format(date);
+        } catch (NumberFormatException e) {
+            return "Invalid input";
+        }
+    }
+
     //check type of url search recommend
     public static String getType(String url) {
         if (url.contains("/album/")) {
@@ -160,10 +182,20 @@ public class Helper {
         // Sử dụng String.format để đảm bảo phút và giây đều có 2 chữ số
         return String.format("%02d:%02d", minutes, seconds);
     }
+
     public static String normalizeString(String input) {
         String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         return pattern.matcher(normalized).replaceAll("").toLowerCase();
+    }
+
+    //check playlist user
+    public static boolean isPlaylistUser(String endCodeId) {
+        if (endCodeId == null) {
+            return false;
+        }
+        String regex = "^playlist\\d+$";
+        return endCodeId.matches(regex);
     }
 
 }

@@ -1,6 +1,10 @@
 package com.tandev.musichub.fragment.home;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tandev.musichub.MainActivity;
@@ -81,6 +87,7 @@ import com.tandev.musichub.model.hub.hub_home.nations.HubHomeNations;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.tandev.musichub.model.user_active_radio.DataUserActiveRadio;
 import com.tandev.musichub.model.user_active_radio.UserActiveRadio;
+import com.tandev.musichub.service.MyService;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 import com.tandev.musichub.view_model.home.HomeViewModel;
 import com.tandev.musichub.view_model.home.HubHomeViewModel;
@@ -172,6 +179,28 @@ public class HomeFragment extends Fragment {
     private RecyclerView rv_radio;
     private ArrayList<HomeDataItemRadioItem> homeDataItemRadioItemArrayList;
     private RadioMoreAdapter radioMoreAdapter;
+
+    public BroadcastReceiver createBroadcastReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle bundle = intent.getExtras();
+                if (bundle == null) {
+                    return;
+                }
+                Items items = (Items) bundle.get("object_song");
+                int action = bundle.getInt("action_music");
+
+                if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS) {
+                    musicHelper.checkIsPlayingPlaylist(items, new_release_songArrayList, new_release_songAdapter);
+                    musicHelper.checkIsPlayingPlaylist(items, bxh_new_release_songArrayList, bxh_new_release_songAdapter);
+                    musicHelper.checkIsPlayingPlaylist(items, bang_xep_hangArrayList, bang_xep_hangAdapter);
+
+                }
+
+            }
+        };
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -314,9 +343,11 @@ public class HomeFragment extends Fragment {
     private void initAdapter() {
         new_release_songAdapter = new SongMoreAdapter(new_release_songArrayList, 0, requireActivity(), requireContext());
         rv_new_release_song.setAdapter(new_release_songAdapter);
+        musicHelper.initAdapter(new_release_songAdapter);
 
         bxh_new_release_songAdapter = new SongMoreAdapter(bxh_new_release_songArrayList, 1, requireActivity(), requireContext());
         rv_bxh_new_release_song.setAdapter(bxh_new_release_songAdapter);
+        musicHelper.initAdapter(bxh_new_release_songAdapter);
 
         bang_xep_hangAdapter = new SongChartAdapter(bang_xep_hangArrayList, 2, requireActivity(), requireContext());
         rv_bang_xep_hang.setAdapter(bang_xep_hangAdapter);
@@ -564,6 +595,7 @@ public class HomeFragment extends Fragment {
                     homeDataItemNewRelease = (HomeDataItemNewRelease) item;
                     new_release_songArrayList = homeDataItemNewRelease.getItems().getAll();
                     new_release_songAdapter.setFilterList(new_release_songArrayList);
+                    musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), new_release_songArrayList, new_release_songAdapter);
                 }
             }
         } else {
@@ -622,6 +654,7 @@ public class HomeFragment extends Fragment {
                     HomeDataItemNewReleaseChart homeDataItemNewReleaseChart = (HomeDataItemNewReleaseChart) item;
                     bxh_new_release_songArrayList = homeDataItemNewReleaseChart.getItems();
                     bxh_new_release_songAdapter.setFilterList(homeDataItemNewReleaseChart.getItems());
+                    musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), bxh_new_release_songArrayList, bxh_new_release_songAdapter);
                 }
             }
         } else {
@@ -812,6 +845,7 @@ public class HomeFragment extends Fragment {
         super.onResume();
         bannerHandler.postDelayed(bannerRunnable, 3000);
         startRepeatingTask();
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(createBroadcastReceiver(), new IntentFilter("send_data_to_activity"));
     }
 
     @Override
@@ -825,5 +859,6 @@ public class HomeFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacks(mStatusChecker);
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(createBroadcastReceiver());
     }
 }

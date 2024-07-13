@@ -12,8 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_42sdp"
         android:layout_alignParentTop="true"
-        android:layout_marginHorizontal="@dimen/_10sdp"
-        android:fitsSystemWindows="true">
+        android:layout_marginHorizontal="@dimen/_10sdp">
 
         <ImageView
             android:id="@+id/img_icon_app"

@@ -102,7 +102,7 @@ public class NewReleaseSongAdapter extends RecyclerView.Adapter<NewReleaseSongAd
         }
         holder.nameTextView.setTextColor(premiumColor);
 
-        holder.txt_time_release_date.setText(Helper.convertLongToTime(song.getReleaseDate()));
+        holder.txt_time_release_date.setText(Helper.convertLongToTime2(song.getReleaseDate()));
 
         holder.btn_more.setOnClickListener(new View.OnClickListener() {
             @Override

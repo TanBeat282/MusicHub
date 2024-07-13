@@ -17,13 +17,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.song.SongAllAdapter;
 import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.constants.Constants;
+import com.tandev.musichub.helper.ui.Helper;
+import com.tandev.musichub.helper.uliti.GetUrlAudioHelper;
 import com.tandev.musichub.helper.uliti.log.LogUtil;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.new_release.NewReleaseSong;
@@ -45,8 +50,21 @@ public class RelateFragment extends Fragment {
     private ArrayList<Items> songArrayList;
     private SharedPreferencesManager sharedPreferencesManager;
 
+    private RoundedImageView thumbImageView;
+    private TextView nameTextView;
+    private TextView artistTextView;
+    private TextView txt_like;
+    private TextView txt_listen;
+    private TextView txt_album;
+    private TextView txt_composed;
+    private TextView txt_genre;
+    private TextView txt_release;
+    private TextView txt_provide;
+
+
     private RecyclerView rv_song_recommend;
     private SongAllAdapter songAllAdapter;
+    private GetUrlAudioHelper getUrlAudioHelper;
 
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -81,6 +99,18 @@ public class RelateFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+        getUrlAudioHelper = new GetUrlAudioHelper();
+
+        thumbImageView = view.findViewById(R.id.thumbImageView);
+        nameTextView = view.findViewById(R.id.nameTextView);
+        artistTextView = view.findViewById(R.id.artistTextView);
+        txt_like = view.findViewById(R.id.txt_like);
+        txt_listen = view.findViewById(R.id.txt_listen);
+        txt_album = view.findViewById(R.id.txt_album);
+        txt_composed = view.findViewById(R.id.txt_composed);
+        txt_genre = view.findViewById(R.id.txt_genre);
+        txt_release = view.findViewById(R.id.txt_release);
+        txt_provide = view.findViewById(R.id.txt_provide);
 
         rv_song_recommend = view.findViewById(R.id.rv_song_recommend);
         songArrayList = new ArrayList<>();
@@ -97,6 +127,7 @@ public class RelateFragment extends Fragment {
         songArrayList = sharedPreferencesManager.restoreSongArrayList();
         if (items != null && songArrayList != null) {
             getRelateSong(items.getEncodeId());
+            getSongDetail(items.getEncodeId());
         }
     }
 
@@ -138,12 +169,85 @@ public class RelateFragment extends Fragment {
         });
     }
 
+    private void getSongDetail(String encodeId) {
+        ApiServiceFactory.createServiceAsync(new ApiServiceFactory.ApiServiceCallback() {
+            @Override
+            public void onServiceCreated(ApiService service) {
+                try {
+                    SongCategories songCategories = new SongCategories();
+                    Map<String, String> map = songCategories.getDetail(encodeId);
+
+                    retrofit2.Call<SongDetail> call = service.SONG_DETAIL_CALL(encodeId, map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
+                    call.enqueue(new Callback<SongDetail>() {
+                        @Override
+                        public void onResponse(@NonNull Call<SongDetail> call, @NonNull Response<SongDetail> response) {
+                            LogUtil.d(Constants.TAG, "getSongDetail: " + call.request().url());
+                            if (response.isSuccessful()) {
+                                SongDetail songDetail = response.body();
+                                if (songDetail != null) {
+                                    setDataPLayer(songDetail);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<SongDetail> call, @NonNull Throwable throwable) {
+                            Log.e("TAG", "API call failed: " + throwable.getMessage(), throwable);
+                        }
+                    });
+                } catch (Exception e) {
+                    Log.e("TAG", "Error: " + e.getMessage(), e);
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e("TAG", "Service creation error: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    private void setDataPLayer(SongDetail songDetail) {
+        if (!(requireActivity()).isDestroyed()) {
+            Glide.with(requireActivity())
+                    .load(songDetail.getData().getThumbnailM())
+                    .into(thumbImageView);
+        }
+        nameTextView.setText(songDetail.getData().getTitle());
+        artistTextView.setText(songDetail.getData().getArtistsNames());
+        txt_like.setText(Helper.convertToIntString(songDetail.getData().getLike()));
+        txt_listen.setText(Helper.convertToIntString(songDetail.getData().getListen()));
+        txt_album.setText(songDetail.getData().getAlbum().getTitle() != null ? songDetail.getData().getAlbum().getTitle() : "");
+
+
+        if (songDetail.getData().getComposers() != null) {
+            String composers = "";
+            for (int i = 0; i < songDetail.getData().getComposers().size(); i++) {
+                composers += songDetail.getData().getComposers().get(i).getName() + ", ";
+            }
+            txt_composed.setText(composers);
+        } else {
+            txt_composed.setText("");
+        }
+        if (songDetail.getData().getGenreIds() != null) {
+            String genre = "";
+            for (int i = 0; i < songDetail.getData().getGenreIds().size(); i++) {
+                genre += songDetail.getData().getGenreIds().get(i) + ", ";
+            }
+            txt_genre.setText(genre);
+        }
+        txt_release.setText(songDetail.getData().getReleaseDate() != 0 ? Helper.convertLongToTime(String.valueOf(songDetail.getData().getReleaseDate())) : "");
+        txt_provide.setText(songDetail.getData().getDistributor() != null ? songDetail.getData().getDistributor() : "");
+    }
+
+
     private void updateUI(SongRecommend songRecommend) {
         if (songRecommend != null) {
             songArrayList = songRecommend.getData().getItems();
             songAllAdapter.setFilterList(songArrayList);
         }
     }
+
     @Override
     public void onResume() {
         super.onResume();

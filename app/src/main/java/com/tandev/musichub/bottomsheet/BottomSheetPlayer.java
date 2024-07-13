@@ -103,6 +103,19 @@ public class BottomSheetPlayer extends BottomSheetDialogFragment {
         this.activity = activity;
         this.tab_layout = tab_layout;
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (bottomSheetDialog != null) {
+            View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheetInternal != null) {
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheetInternal);
+                behavior.setHideable(true);
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED); // Mở toàn màn hình
+            }
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("SetTextI18n")

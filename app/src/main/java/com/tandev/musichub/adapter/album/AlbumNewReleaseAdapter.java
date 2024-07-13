@@ -61,7 +61,7 @@ public class AlbumNewReleaseAdapter extends RecyclerView.Adapter<AlbumNewRelease
                 .load(album.getThumbnail())
                 .placeholder(R.drawable.holder)
                 .into(holder.thumbImageView);
-        holder.txt_time_release_date.setText(Helper.convertLongToTime(String.valueOf(album.getReleasedAt())));
+        holder.txt_time_release_date.setText(Helper.convertLongToTime2(String.valueOf(album.getReleasedAt())));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

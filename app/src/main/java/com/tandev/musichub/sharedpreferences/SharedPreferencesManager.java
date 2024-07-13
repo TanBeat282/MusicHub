@@ -269,6 +269,20 @@ public class SharedPreferencesManager {
         Log.e("SharedPreferencesManager", "Failed to parse encodeId: " + newEncodeId);
         return newEncodeId;
     }
+    public boolean isPlaylistExists(String encodeId) {
+        ArrayList<DataPlaylist> dataPlaylistArrayList = restorePlaylistUser();
+
+        if (dataPlaylistArrayList != null) {
+            for (DataPlaylist dataPlaylist : dataPlaylistArrayList) {
+                if (dataPlaylist.getEncodeId().equals(encodeId)) {
+                    return true;  // Playlist tồn tại
+                }
+            }
+        }
+
+        return false;  // Playlist không tồn tại
+    }
+
 
     public void savePlaylistUser(DataPlaylist dataPlaylist) {
         ArrayList<DataPlaylist> dataPlaylistArrayList = restorePlaylistUser();
@@ -278,23 +292,38 @@ public class SharedPreferencesManager {
             dataPlaylistArrayList = new ArrayList<>();
         }
 
-        // Đặt `encodeId` cho playlist mới
-        String newEncodeId = generateUniqueEncodeId();
-        dataPlaylist.setEncodeId(newEncodeId);
+        // Kiểm tra xem playlist đã tồn tại chưa
+        boolean playlistExists = false;
+        for (DataPlaylist playlist : dataPlaylistArrayList) {
+            if (playlist.getEncodeId().equals(dataPlaylist.getEncodeId())) {
+                playlistExists = true;
+                break;
+            }
+        }
 
-        // Thêm playlist mới vào đầu danh sách
-        dataPlaylistArrayList.add(0, dataPlaylist);
+        // Nếu playlist chưa tồn tại thì mới thêm vào danh sách
+        if (!playlistExists) {
+            // Đặt `encodeId` cho playlist mới nếu chưa có
+            if (dataPlaylist.getEncodeId() == null) {
+                dataPlaylist.setEncodeId(generateUniqueEncodeId());
+            }
 
-        // Lưu danh sách PlaylistUser đã cập nhật vào SharedPreferences
-        Gson gson = new Gson();  // Có thể xem xét đưa ra ngoài để tái sử dụng
-        String playlist_user_json = gson.toJson(dataPlaylistArrayList);
+            // Thêm playlist mới vào đầu danh sách
+            dataPlaylistArrayList.add(0, dataPlaylist);
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("playlist_user", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("playlist_user", playlist_user_json);
-        editor.apply();
+            // Lưu danh sách PlaylistUser đã cập nhật vào SharedPreferences
+            Gson gson = new Gson();  // Có thể xem xét đưa ra ngoài để tái sử dụng
+            String playlist_user_json = gson.toJson(dataPlaylistArrayList);
 
-        Log.d("SharedPreferencesManager", "Saved playlistUser: " + playlist_user_json);
+            SharedPreferences sharedPreferences = context.getSharedPreferences("playlist_user", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("playlist_user", playlist_user_json);
+            editor.apply();
+
+            Log.d("SharedPreferencesManager", "Saved playlistUser: " + playlist_user_json);
+        } else {
+            Log.d("SharedPreferencesManager", "Playlist with encodeId " + dataPlaylist.getEncodeId() + " already exists");
+        }
     }
 
     public String savePlaylistUserReturnEncodeId(DataPlaylist dataPlaylist) {
@@ -307,7 +336,9 @@ public class SharedPreferencesManager {
 
         // Đặt `encodeId` cho playlist mới
         String newEncodeId = generateUniqueEncodeId();
-        dataPlaylist.setEncodeId(newEncodeId);
+        if (dataPlaylist.getEncodeId() == null) {
+            dataPlaylist.setEncodeId(newEncodeId);
+        }
 
         // Thêm playlist mới vào đầu danh sách
         dataPlaylistArrayList.add(0, dataPlaylist);
@@ -361,6 +392,7 @@ public class SharedPreferencesManager {
 
         return null;  // Trả về null nếu không tìm thấy playlist với encodeId này
     }
+
     public void deletePlaylistByEncodeId(String encodeId) {
         ArrayList<DataPlaylist> dataPlaylistArrayList = restorePlaylistUser();
 
@@ -389,7 +421,6 @@ public class SharedPreferencesManager {
             Log.e("SharedPreferencesManager", "No playlists found to delete");
         }
     }
-
 
 
     //playlist_user song

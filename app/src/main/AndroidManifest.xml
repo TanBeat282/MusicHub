@@ -42,8 +42,10 @@
 
         <!--        service-->
         <service android:name=".service.MyService" />
+        <service android:name=".service.MyService2" />
 
         <receiver android:name=".receiver.MyReceiver" />
+
     </application>
 
 </manifest>

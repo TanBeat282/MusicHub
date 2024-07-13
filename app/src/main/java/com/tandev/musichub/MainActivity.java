@@ -12,6 +12,7 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
@@ -46,6 +47,7 @@ import com.tandev.musichub.bottomsheet.BottomSheetPlayer;
 import com.tandev.musichub.constants.Constants;
 import com.tandev.musichub.fragment.home.HomeFragment;
 import com.tandev.musichub.helper.ui.Helper;
+import com.tandev.musichub.helper.ui.SwipeGestureListener;
 import com.tandev.musichub.helper.uliti.log.LogUtil;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.song.SongDetail;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearProgressIndicator progress_indicator;
 
     private ImageView image_back, image_more;
+    private TextView txt_play_from;
 
     private ImageView image_background;
     private RelativeLayout relative_image_song;
@@ -107,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
     private SongDetail songDetail;
     private int currentTime = 0;
     private int totalTime = 0;
+    private GestureDetector gestureDetector;
+
 
     public BroadcastReceiver createBroadcastReceiver() {
         return new BroadcastReceiver() {
@@ -190,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         sharedPreferencesManager = new SharedPreferencesManager(this);
+        gestureDetector = new GestureDetector(this, new SwipeGestureListener(this));
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.frame_layout_player, new HomeFragment())
@@ -296,6 +302,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        layout_bottom_player_main.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+
     }
 
     private void getDataSharedPreferencesSong() {
@@ -390,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
         //player
         RelativeLayout container = relative_player.findViewById(R.id.container);
         image_back = relative_player.findViewById(R.id.image_back);
-        TextView txt_play_from = relative_player.findViewById(R.id.txt_play_from);
+        txt_play_from = relative_player.findViewById(R.id.txt_play_from);
         image_more = relative_player.findViewById(R.id.image_more);
 
         //background
@@ -473,6 +481,8 @@ public class MainActivity extends AppCompatActivity {
         image_song.setVisibility(View.VISIBLE);
         progress_image.setVisibility(View.GONE);
 
+
+        txt_play_from.setText("Phát từ \n Danh sách phát");
         txt_title_song.setText(songDetail.getData().getTitle());
         txt_artist_song.setText(songDetail.getData().getArtistsNames());
 

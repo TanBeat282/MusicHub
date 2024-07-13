@@ -21,6 +21,7 @@ import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.fragment.playlist.MyPlaylistFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
+import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
@@ -58,6 +59,82 @@ public class PlaylistUserAdapter extends RecyclerView.Adapter<PlaylistUserAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         DataPlaylist dataPlaylist = dataPlaylistArrayList.get(position);
 
+        if (Helper.isPlaylistUser(dataPlaylist.getEncodeId())) {
+            loadImagesPlaylistUser(dataPlaylist, holder);
+            holder.grid_img.setVisibility(View.VISIBLE);
+            holder.thumbImageView.setVisibility(View.GONE);
+        } else {
+            loadImagesPlaylist(dataPlaylist, holder);
+            holder.grid_img.setVisibility(View.GONE);
+            holder.thumbImageView.setVisibility(View.VISIBLE);
+        }
+
+        holder.txt_title_playlist.setText(dataPlaylist.getTitle());
+
+
+        holder.itemView.setOnClickListener(v -> {
+            if (Helper.isPlaylistUser(dataPlaylist.getEncodeId())) {
+                MyPlaylistFragment myPlaylistFragment = new MyPlaylistFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("encodeId", dataPlaylist.getEncodeId());
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(myPlaylistFragment, bundle);
+                }
+            } else {
+                PlaylistFragment playlistFragment = new PlaylistFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("encodeId", dataPlaylist.getEncodeId());
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(playlistFragment, bundle);
+                }
+            }
+        });
+        holder.itemView.setOnLongClickListener(view -> {
+            sharedPreferencesManager.deletePlaylistByEncodeId(dataPlaylist.getEncodeId());
+            dataPlaylistArrayList.remove(position);
+            notifyDataSetChanged();
+            Toast.makeText(context, "Xóa playlist thành công", Toast.LENGTH_SHORT).show();
+            return false;
+        });
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return dataPlaylistArrayList.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private GridLayout grid_img;
+        private RoundedImageView thumbImageView;
+        private ImageView imageView1;
+        private ImageView imageView2;
+        private ImageView imageView3;
+        private ImageView imageView4;
+        // Mảng chứa các ImageView
+        private ImageView[] imageViews;
+
+        private TextView txt_title_playlist;
+        private TextView txt_user_name_playlist;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            grid_img = itemView.findViewById(R.id.grid_img);
+            thumbImageView = itemView.findViewById(R.id.thumbImageView);
+            imageView1 = itemView.findViewById(R.id.imageView1);
+            imageView2 = itemView.findViewById(R.id.imageView2);
+            imageView3 = itemView.findViewById(R.id.imageView3);
+            imageView4 = itemView.findViewById(R.id.imageView4);
+            imageViews = new ImageView[]{imageView1, imageView2, imageView3, imageView4};
+
+            txt_title_playlist = itemView.findViewById(R.id.txt_title_playlist);
+            txt_user_name_playlist = itemView.findViewById(R.id.txt_user_name_playlist);
+        }
+    }
+
+    private void loadImagesPlaylistUser(DataPlaylist dataPlaylist, ViewHolder holder) {
         if (dataPlaylist.getSong() != null && dataPlaylist.getSong().getItems() != null) {
             int numberOfImagesToLoad = Math.min(dataPlaylist.getSong().getItems().size(), 4);
             for (int i = 0; i < numberOfImagesToLoad; i++) {
@@ -81,57 +158,14 @@ public class PlaylistUserAdapter extends RecyclerView.Adapter<PlaylistUserAdapte
                 holder.imageViews[i].setVisibility(ImageView.GONE);
             }
         }
-
-        holder.txt_title_playlist.setText(dataPlaylist.getTitle());
         holder.txt_user_name_playlist.setText("User");
-
-        holder.itemView.setOnClickListener(v -> {
-            MyPlaylistFragment myPlaylistFragment = new MyPlaylistFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("encodeId", dataPlaylist.getEncodeId());
-
-            if (context instanceof MainActivity) {
-                ((MainActivity) context).replaceFragmentWithBundle(myPlaylistFragment, bundle);
-            }
-        });
-        holder.itemView.setOnLongClickListener(view -> {
-            sharedPreferencesManager.deletePlaylistByEncodeId(dataPlaylist.getEncodeId());
-            dataPlaylistArrayList.remove(position);
-            notifyDataSetChanged();
-            Toast.makeText(context, "Xóa playlist thành công", Toast.LENGTH_SHORT).show();
-            return false;
-        });
     }
 
-
-    @Override
-    public int getItemCount() {
-        return dataPlaylistArrayList.size();
+    private void loadImagesPlaylist(DataPlaylist dataPlaylist, ViewHolder holder) {
+        Glide.with(context)
+                .load(dataPlaylist.getThumbnailM())
+                .placeholder(R.drawable.holder)
+                .into(holder.thumbImageView);
+        holder.txt_user_name_playlist.setText(dataPlaylist.getUserName() == null ? "Zing Mp3" : dataPlaylist.getUserName());
     }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imageView1;
-        private ImageView imageView2;
-        private ImageView imageView3;
-        private ImageView imageView4;
-        // Mảng chứa các ImageView
-        private ImageView[] imageViews;
-
-        private TextView txt_title_playlist;
-        private TextView txt_user_name_playlist;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            imageView1 = itemView.findViewById(R.id.imageView1);
-            imageView2 = itemView.findViewById(R.id.imageView2);
-            imageView3 = itemView.findViewById(R.id.imageView3);
-            imageView4 = itemView.findViewById(R.id.imageView4);
-            imageViews = new ImageView[]{imageView1, imageView2, imageView3, imageView4};
-
-            txt_title_playlist = itemView.findViewById(R.id.txt_title_playlist);
-            txt_user_name_playlist = itemView.findViewById(R.id.txt_user_name_playlist);
-        }
-    }
-
-
 }

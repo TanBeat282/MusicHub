@@ -359,8 +359,8 @@ public class MyService extends Service {
 
                         mediaSessionCompat.setMetadata(
                                 new MediaMetadataCompat.Builder()
-                                        .putString(MediaMetadata.METADATA_KEY_TITLE, mSong.getTitle())
-                                        .putString(MediaMetadata.METADATA_KEY_ARTIST, mSong.getArtistsNames())
+                                        .putString(MediaMetadata.METADATA_KEY_TITLE, song.getTitle())
+                                        .putString(MediaMetadata.METADATA_KEY_ARTIST, song.getArtistsNames())
                                         .build());
 
                         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
@@ -369,7 +369,7 @@ public class MyService extends Service {
                                 .setContentText(song.getArtistsNames())
                                 .setLargeIcon(resource)
                                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                                        .setShowActionsInCompactView(0, 1, 2)
+                                        .setShowActionsInCompactView(0)
                                         .setMediaSession(mediaSessionCompat.getSessionToken()))
                                 .setPriority(NotificationCompat.PRIORITY_LOW);  // Thay đổi priority
 
@@ -381,17 +381,14 @@ public class MyService extends Service {
 
                         if (isPlaying) {
                             notificationBuilder
-                                    .addAction(R.drawable.baseline_skip_previous_24, "Previous", getPendingIntent(getApplicationContext(), ACTION_PREVIOUS)) // #0
-                                    .addAction(R.drawable.baseline_pause_24, "Pause", getPendingIntent(getApplicationContext(), ACTION_PAUSE)) // #1
-                                    .addAction(R.drawable.baseline_skip_next_24, "Next", getPendingIntent(getApplicationContext(), ACTION_NEXT)); // #2
+                                    .addAction(R.drawable.baseline_pause_24, "Pause", getPendingIntent(getApplicationContext(), ACTION_PAUSE));
                             notificationBuilder.setContentIntent(pendingIntent);
                         } else {
                             notificationBuilder
-                                    .addAction(R.drawable.baseline_skip_previous_24, "Previous", getPendingIntent(getApplicationContext(), ACTION_PREVIOUS)) // #0
-                                    .addAction(R.drawable.baseline_play_arrow_24, "Play", getPendingIntent(getApplicationContext(), ACTION_RESUME)) // #1
-                                    .addAction(R.drawable.baseline_skip_next_24, "Next", getPendingIntent(getApplicationContext(), ACTION_NEXT)); // #2
+                                    .addAction(R.drawable.baseline_play_arrow_24, "Play", getPendingIntent(getApplicationContext(), ACTION_RESUME));
                             notificationBuilder.setContentIntent(pendingIntent);
                         }
+
                         Notification notification = notificationBuilder.build();
                         startForeground(1, notification);
                     }
@@ -402,6 +399,7 @@ public class MyService extends Service {
                     }
                 });
     }
+
 
 
     private PendingIntent getPendingIntent(Context context, int action) {

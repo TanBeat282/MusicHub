@@ -11,12 +11,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
+import com.tandev.musichub.bottomsheet.BottomSheetOptionPlaylist;
 import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.model.playlist.DataPlaylist;
@@ -112,6 +114,11 @@ public class PlaylistMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         ((MainActivity) context).replaceFragmentWithBundle(playlistFragment, bundle);
                     }
                 }
+            });
+            holder.itemView.setOnLongClickListener(view -> {
+                BottomSheetOptionPlaylist bottomSheetOptionPlaylist = new BottomSheetOptionPlaylist(context, activity, dataPlaylist);
+                bottomSheetOptionPlaylist.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetOptionPlaylist.getTag());
+                return false;
             });
         } else {
             MoreViewHolder moreViewHolder = (MoreViewHolder) holder;

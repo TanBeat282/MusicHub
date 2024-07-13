@@ -36,6 +36,7 @@ import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.constants.Constants;
 import com.tandev.musichub.helper.ui.Helper;
+import com.tandev.musichub.helper.ui.MusicHelper;
 import com.tandev.musichub.helper.uliti.log.LogUtil;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.song.song_recommend.SongRecommend;
@@ -57,6 +58,7 @@ public class ContinueFragment extends Fragment implements ItemTouchHelperAdapter
     private RecyclerView rv_song_continue;
     private SongTouchAdapter songTouchAdapter;
 
+    private MusicHelper musicHelper;
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -68,9 +70,9 @@ public class ContinueFragment extends Fragment implements ItemTouchHelperAdapter
             items = (Items) bundle.get("object_song");
             int action = bundle.getInt("action_music");
             if (items != null) {
-//                if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS) {
-//                    setContinueSong(items);
-//                }
+                if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS) {
+                    musicHelper.checkIsPlayingPlaylist(items, songArrayList, songTouchAdapter);
+                }
             }
         }
     };
@@ -91,6 +93,7 @@ public class ContinueFragment extends Fragment implements ItemTouchHelperAdapter
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+        musicHelper = new MusicHelper(requireContext(), sharedPreferencesManager);
 
         rv_song_continue = view.findViewById(R.id.rv_song_continue);
 
@@ -122,6 +125,7 @@ public class ContinueFragment extends Fragment implements ItemTouchHelperAdapter
         if (items != null) {
             songArrayList = items;
             songTouchAdapter.setFilterList(songArrayList);
+            musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), songArrayList, songTouchAdapter);
         }
     }
 

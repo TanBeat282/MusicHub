@@ -11,12 +11,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 //import com.tandev.musichub.activity.ViewPlaylistActivity;
+import com.tandev.musichub.bottomsheet.BottomSheetOptionPlaylist;
+import com.tandev.musichub.bottomsheet.BottomSheetProfile;
 import com.tandev.musichub.fragment.artist.ArtistFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.model.playlist.DataPlaylist;
@@ -67,6 +70,12 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
                 ((MainActivity) context).replaceFragmentWithBundle(playlistFragment, bundle);
             }
         });
+        holder.itemView.setOnLongClickListener(view -> {
+            BottomSheetOptionPlaylist bottomSheetOptionPlaylist = new BottomSheetOptionPlaylist(context, activity, dataPlaylist);
+            bottomSheetOptionPlaylist.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetOptionPlaylist.getTag());
+            return false;
+        });
+
     }
 
 

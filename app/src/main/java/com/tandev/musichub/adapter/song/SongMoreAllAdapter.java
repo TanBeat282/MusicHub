@@ -105,11 +105,10 @@ public class SongMoreAllAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     .into(songHolder.thumbImageView);  // Hiển thị thumbnail lên ImageView
 
             if (selectedPosition == position) {
-                int colorSpotify = ContextCompat.getColor(context, R.color.colorSpotify);
-                songHolder.nameTextView.setTextColor(colorSpotify);
+                songHolder.itemView.setBackgroundResource(R.drawable.select_item_background);
                 songHolder.aniPlay.setVisibility(View.VISIBLE);
             } else {
-                songHolder.nameTextView.setTextColor(Color.WHITE);
+                songHolder.itemView.setBackgroundResource(R.drawable.select_item);
                 songHolder.aniPlay.setVisibility(View.GONE);
             }
             int premiumColor;

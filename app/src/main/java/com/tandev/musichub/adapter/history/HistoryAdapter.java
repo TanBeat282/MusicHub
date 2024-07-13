@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -83,23 +84,26 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 .into(holder.thumbImageView);
 
         if (selectedPosition == position) {
-            int colorSpotify = ContextCompat.getColor(context, R.color.colorSpotify);
-            holder.nameTextView.setTextColor(colorSpotify);
+            holder.itemView.setBackgroundResource(R.drawable.select_item_background);
             holder.aniPlay.setVisibility(View.VISIBLE);
         } else {
-            holder.nameTextView.setTextColor(Color.WHITE);
+            holder.itemView.setBackgroundResource(R.drawable.select_item);
             holder.aniPlay.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, MyService.class);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("object_song", items);
-            bundle.putInt("position_song", position);
-            bundle.putSerializable("song_list", songList);
-            intent.putExtras(bundle);
+            if (items.getStreamingStatus() == 2) {
+                Toast.makeText(context, "Không thể phát bài hát Premium!", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(context, MyService.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("object_song", items);
+                bundle.putInt("position_song", position);
+                bundle.putSerializable("song_list", songList);
+                intent.putExtras(bundle);
 
-            context.startService(intent);
+                context.startService(intent);
+            }
         });
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
