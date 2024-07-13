@@ -198,14 +198,25 @@ public class MyPlaylistFragment extends Fragment {
     }
 
     private void updateUI(DataPlaylist dataPlaylist) {
-        if (dataPlaylist.getSong() != null&& dataPlaylist.getSong().getItems() != null){
+        if (dataPlaylist.getSong() != null && dataPlaylist.getSong().getItems() != null) {
             loadImg(dataPlaylist.getSong().getItems());
             txt_song_and_time.setText(convertLongToString(dataPlaylist.getSong().getItems().size(), dataPlaylist.getSong().getTotalDuration()));
+        } else {
+            Glide.with(requireContext())
+                    .load(R.drawable.holder)
+                    .into(imageViews[0]);
+            imageViews[0].setVisibility(ImageView.VISIBLE);
+
+            for (int i = 1; i < 4; i++) {
+                imageViews[i].setVisibility(ImageView.GONE);
+            }
+            txt_song_and_time.setText("Không có bài hát nào");
+            grid_img.setVisibility(View.VISIBLE);
+            progress_image.setVisibility(View.GONE);
         }
 
         txt_title_playlist.setText(dataPlaylist.getTitle());
         txt_user_name.setText(dataPlaylist.getUserName());
-
 
 
         if (dataPlaylist.getSong() != null) {

@@ -14,6 +14,7 @@ import com.tandev.musichub.model.search.search_recommend.DataSearchRecommend;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class SharedPreferencesManager {
     private final Context context;
@@ -277,9 +278,12 @@ public class SharedPreferencesManager {
             dataPlaylistArrayList = new ArrayList<>();
         }
 
-        // Thêm playlistUser vào danh sách nếu không phải null
-        dataPlaylist.setEncodeId(generateUniqueEncodeId());
-        dataPlaylistArrayList.add(dataPlaylist);
+        // Đặt `encodeId` cho playlist mới
+        String newEncodeId = generateUniqueEncodeId();
+        dataPlaylist.setEncodeId(newEncodeId);
+
+        // Thêm playlist mới vào đầu danh sách
+        dataPlaylistArrayList.add(0, dataPlaylist);
 
         // Lưu danh sách PlaylistUser đã cập nhật vào SharedPreferences
         Gson gson = new Gson();  // Có thể xem xét đưa ra ngoài để tái sử dụng
@@ -292,6 +296,37 @@ public class SharedPreferencesManager {
 
         Log.d("SharedPreferencesManager", "Saved playlistUser: " + playlist_user_json);
     }
+
+    public String savePlaylistUserReturnEncodeId(DataPlaylist dataPlaylist) {
+        ArrayList<DataPlaylist> dataPlaylistArrayList = restorePlaylistUser();
+
+        // Khởi tạo danh sách nếu không có
+        if (dataPlaylistArrayList == null) {
+            dataPlaylistArrayList = new ArrayList<>();
+        }
+
+        // Đặt `encodeId` cho playlist mới
+        String newEncodeId = generateUniqueEncodeId();
+        dataPlaylist.setEncodeId(newEncodeId);
+
+        // Thêm playlist mới vào đầu danh sách
+        dataPlaylistArrayList.add(0, dataPlaylist);
+
+        // Lưu danh sách PlaylistUser đã cập nhật vào SharedPreferences
+        Gson gson = new Gson();  // Có thể xem xét đưa ra ngoài để tái sử dụng
+        String playlist_user_json = gson.toJson(dataPlaylistArrayList);
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("playlist_user", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("playlist_user", playlist_user_json);
+        editor.apply();
+
+        Log.d("SharedPreferencesManager", "Saved playlistUser: " + playlist_user_json);
+
+        // Trả về `encodeId` của playlist vừa tạo
+        return newEncodeId;
+    }
+
 
     public ArrayList<DataPlaylist> restorePlaylistUser() {
         SharedPreferences sharedPreferences = context.getSharedPreferences("playlist_user", Context.MODE_PRIVATE);
@@ -326,6 +361,35 @@ public class SharedPreferencesManager {
 
         return null;  // Trả về null nếu không tìm thấy playlist với encodeId này
     }
+    public void deletePlaylistByEncodeId(String encodeId) {
+        ArrayList<DataPlaylist> dataPlaylistArrayList = restorePlaylistUser();
+
+        if (dataPlaylistArrayList != null) {
+            // Tìm và xóa playlist theo encodeId
+            Iterator<DataPlaylist> iterator = dataPlaylistArrayList.iterator();
+            while (iterator.hasNext()) {
+                DataPlaylist dataPlaylist = iterator.next();
+                if (dataPlaylist.getEncodeId().equals(encodeId)) {
+                    iterator.remove();
+                    break;
+                }
+            }
+
+            // Lưu danh sách PlaylistUser đã cập nhật vào SharedPreferences
+            Gson gson = new Gson();  // Có thể xem xét đưa ra ngoài để tái sử dụng
+            String playlist_user_json = gson.toJson(dataPlaylistArrayList);
+
+            SharedPreferences sharedPreferences = context.getSharedPreferences("playlist_user", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("playlist_user", playlist_user_json);
+            editor.apply();
+
+            Log.d("SharedPreferencesManager", "Deleted playlist with encodeId: " + encodeId);
+        } else {
+            Log.e("SharedPreferencesManager", "No playlists found to delete");
+        }
+    }
+
 
 
     //playlist_user song

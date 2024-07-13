@@ -9,7 +9,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,19 +24,27 @@ import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.fragment.profile.ProfileFragment;
 import com.tandev.musichub.helper.ui.Helper;
+import com.tandev.musichub.model.chart.chart_home.Items;
+import com.tandev.musichub.model.playlist.DataPlaylist;
+import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 
 
 public class BottomSheetCreatePlaylistUser extends BottomSheetDialogFragment {
+    private Items items;
     private final Context context;
     private final Activity activity;
     private BottomSheetDialog bottomSheetDialog;
 
 
-    private LinearLayout linear_profile, linear_setting, linear_send_error, linear_info_app;
+    private EditText edt_name_playlist;
+    private TextView txt_cancel, txt_confirm;
 
-    public BottomSheetCreatePlaylistUser(Context context, Activity activity) {
+    private SharedPreferencesManager sharedPreferencesManager;
+
+    public BottomSheetCreatePlaylistUser(Context context, Activity activity, Items items) {
         this.context = context;
         this.activity = activity;
+        this.items = items;
     }
 
 
@@ -43,10 +54,11 @@ public class BottomSheetCreatePlaylistUser extends BottomSheetDialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         bottomSheetDialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
-        @SuppressLint("InflateParams") View view = LayoutInflater.from(getContext()).inflate(R.layout.item_bottom_sheet_profile, null);
+        @SuppressLint("InflateParams") View view = LayoutInflater.from(getContext()).inflate(R.layout.item_bottom_sheet_create_playlist_user, null);
         bottomSheetDialog.setContentView(view);
 
         Helper.changeNavigationColor(activity, R.color.gray, true);
+        sharedPreferencesManager = new SharedPreferencesManager(context);
 
         initViews(bottomSheetDialog);
         onClick();
@@ -55,18 +67,25 @@ public class BottomSheetCreatePlaylistUser extends BottomSheetDialogFragment {
     }
 
     private void initViews(BottomSheetDialog bottomSheetDialog) {
-        linear_profile = bottomSheetDialog.findViewById(R.id.linear_profile);
-        linear_setting = bottomSheetDialog.findViewById(R.id.linear_setting);
-        linear_send_error = bottomSheetDialog.findViewById(R.id.linear_send_error);
-        linear_info_app = bottomSheetDialog.findViewById(R.id.linear_info_app);
+        edt_name_playlist = bottomSheetDialog.findViewById(R.id.edt_name_playlist);
+        txt_cancel = bottomSheetDialog.findViewById(R.id.txt_cancel);
+        txt_confirm = bottomSheetDialog.findViewById(R.id.txt_confirm);
     }
 
     private void onClick() {
-        linear_profile.setOnClickListener(view1 -> {
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).replaceFragment(new ProfileFragment());
+        txt_cancel.setOnClickListener(view -> bottomSheetDialog.dismiss());
+        txt_confirm.setOnClickListener(view -> {
+            String playlistName = edt_name_playlist.getText().toString().trim();
+            if (!playlistName.isEmpty()) {
+                DataPlaylist dataPlaylist = new DataPlaylist();
+                dataPlaylist.setTitle(playlistName);
+                String encodeId = sharedPreferencesManager.savePlaylistUserReturnEncodeId(dataPlaylist);
+                sharedPreferencesManager.addSongToPlaylistByEncodeId(encodeId, items);
+                Toast.makeText(context, "Tạo playlist thành công", Toast.LENGTH_SHORT).show();
+                bottomSheetDialog.dismiss();
+            } else {
+                Toast.makeText(context, "Vui lòng nhập tên playlist", Toast.LENGTH_SHORT).show();
             }
-            bottomSheetDialog.dismiss();
         });
     }
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +23,7 @@ import com.tandev.musichub.fragment.playlist.MyPlaylistFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.playlist.DataPlaylist;
+import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 
 import java.util.ArrayList;
 
@@ -29,6 +31,7 @@ public class PlaylistUserAdapter extends RecyclerView.Adapter<PlaylistUserAdapte
     private ArrayList<DataPlaylist> dataPlaylistArrayList;
     private final Context context;
     private final Activity activity;
+    private SharedPreferencesManager sharedPreferencesManager;
 
     @SuppressLint("NotifyDataSetChanged")
     public void setFilterList(ArrayList<DataPlaylist> fillterList) {
@@ -40,6 +43,7 @@ public class PlaylistUserAdapter extends RecyclerView.Adapter<PlaylistUserAdapte
         this.dataPlaylistArrayList = dataPlaylistArrayList;
         this.activity = activity;
         this.context = context;
+        this.sharedPreferencesManager = new SharedPreferencesManager(context);
     }
 
     @NonNull
@@ -49,6 +53,7 @@ public class PlaylistUserAdapter extends RecyclerView.Adapter<PlaylistUserAdapte
         return new ViewHolder(view);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         DataPlaylist dataPlaylist = dataPlaylistArrayList.get(position);
@@ -66,6 +71,15 @@ public class PlaylistUserAdapter extends RecyclerView.Adapter<PlaylistUserAdapte
                     holder.imageViews[i].setVisibility(ImageView.GONE);
                 }
             }
+        } else {
+            Glide.with(context)
+                    .load(R.drawable.holder)  // Đặt hình ảnh mặc định ở đây
+                    .into(holder.imageViews[0]);
+            holder.imageViews[0].setVisibility(ImageView.VISIBLE);  // Đảm bảo ImageView này được hiển thị
+
+            for (int i = 1; i < 4; i++) {
+                holder.imageViews[i].setVisibility(ImageView.GONE);
+            }
         }
 
         holder.txt_title_playlist.setText(dataPlaylist.getTitle());
@@ -79,6 +93,13 @@ public class PlaylistUserAdapter extends RecyclerView.Adapter<PlaylistUserAdapte
             if (context instanceof MainActivity) {
                 ((MainActivity) context).replaceFragmentWithBundle(myPlaylistFragment, bundle);
             }
+        });
+        holder.itemView.setOnLongClickListener(view -> {
+            sharedPreferencesManager.deletePlaylistByEncodeId(dataPlaylist.getEncodeId());
+            dataPlaylistArrayList.remove(position);
+            notifyDataSetChanged();
+            Toast.makeText(context, "Xóa playlist thành công", Toast.LENGTH_SHORT).show();
+            return false;
         });
     }
 

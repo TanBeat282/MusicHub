@@ -92,6 +92,15 @@ public class SelectPlaylistUserAdapter extends RecyclerView.Adapter<SelectPlayli
                     holder.imageViews[i].setVisibility(ImageView.GONE);
                 }
             }
+        } else {
+            Glide.with(context)
+                    .load(R.drawable.holder)  // Đặt hình ảnh mặc định ở đây
+                    .into(holder.imageViews[0]);
+            holder.imageViews[0].setVisibility(ImageView.VISIBLE);  // Đảm bảo ImageView này được hiển thị
+
+            for (int i = 1; i < 4; i++) {
+                holder.imageViews[i].setVisibility(ImageView.GONE);
+            }
         }
 
         holder.txt_title_playlist.setText(dataPlaylist.getTitle());

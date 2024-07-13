@@ -73,12 +73,10 @@ public class BottomSheetSelectPlaylistUser extends BottomSheetDialogFragment imp
         rv_select_playlist_user.setAdapter(selectPlaylistUserAdapter);
         selectPlaylistUserAdapter.setListener(this);
 
-        linear_create_playlist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BottomSheetCreatePlaylistUser bottomSheetCreatePlaylistUser = new BottomSheetCreatePlaylistUser(context, activity);
-                bottomSheetCreatePlaylistUser.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetCreatePlaylistUser.getTag());
-            }
+        linear_create_playlist.setOnClickListener(view1 -> {
+            BottomSheetCreatePlaylistUser bottomSheetCreatePlaylistUser = new BottomSheetCreatePlaylistUser(context, activity, items);
+            bottomSheetCreatePlaylistUser.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetCreatePlaylistUser.getTag());
+            bottomSheetDialog.dismiss();
         });
 
         getPlaylistUser();

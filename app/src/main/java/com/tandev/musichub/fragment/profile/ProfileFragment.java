@@ -68,15 +68,7 @@ public class ProfileFragment extends Fragment {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View view) {
-                String playlistName = edt_name_playlist.getText().toString().trim();
-                if (!playlistName.isEmpty()) {
-                    DataPlaylist dataPlaylist = new DataPlaylist();  // Tạo DataPlaylist mới
-                    dataPlaylist.setTitle(playlistName);  // Đặt tên playlist
-                    sharedPreferencesManager.savePlaylistUser(dataPlaylist);  // Thêm playlist mới vào danh sách
-                    dataPlaylists.add(dataPlaylist);  // Cập nhật danh sách playlist trong RecyclerView
-                    playlistUserAdapter.setFilterList(dataPlaylists);  // Thông báo adapter cập nhật dữ liệu mới
-                    edt_name_playlist.setText("");  // Xóa nội dung của EditText
-                }
+
             }
         });
 
