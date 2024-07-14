@@ -104,13 +104,11 @@ public class HistoryFragment extends Fragment {
         linear_no_data = view.findViewById(R.id.linear_no_data);
 
 
-        LinearLayoutManager layoutManagerNgheNhieu = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
-        rv_history_count.setLayoutManager(layoutManagerNgheNhieu);
+        rv_history_count.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         lichSuBaiHatNgheNhieuAdapter = new HistoryAdapter(requireContext(), requireActivity(), songListLichSuBaiHatNgheNhieu);
         rv_history_count.setAdapter(lichSuBaiHatNgheNhieuAdapter);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
-        rv_history.setLayoutManager(layoutManager);
+        rv_history.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         lichSuBaiHatAdapter = new HistoryAdapter(requireContext(), requireActivity(), songListLichSuBaiHat);
         rv_history.setAdapter(lichSuBaiHatAdapter);
 

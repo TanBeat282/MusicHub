@@ -22,8 +22,13 @@ public class MusicHelper {
     public void initAdapter(PlayingStatusUpdater playingStatusUpdater) {
         this.playingStatusUpdater = playingStatusUpdater;
     }
+
     public void checkIsPlayingPlaylist(Items items, ArrayList<Items> songList, PlayingStatusUpdater adapter) {
-        if (items == null || songList == null || adapter == null) {
+        if (songList == null || adapter == null) {
+            return;
+        }
+        if (items == null) {
+            adapter.updatePlayingStatus("null");
             return;
         }
 

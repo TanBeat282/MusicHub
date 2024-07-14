@@ -54,6 +54,7 @@ public class SharedPreferencesManager {
         editor.clear().apply();
     }
 
+    //DANH SACH DANG PHAT
     public void saveSongArrayList(ArrayList<Items> songArrayList) {
         Gson gson = new Gson();
         String songListJson = gson.toJson(songArrayList);
@@ -69,9 +70,11 @@ public class SharedPreferencesManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences("songList", Context.MODE_PRIVATE);
         String song_list = sharedPreferences.getString("song_list", "");
 
-        ArrayList<Items> restoreSongList = gson.fromJson(song_list, new TypeToken<ArrayList<Items>>() {
-        }.getType());
-        return new ArrayList<Items>(restoreSongList);
+        ArrayList<Items> restoreSongList = gson.fromJson(song_list, new TypeToken<ArrayList<Items>>() {}.getType());
+        if (restoreSongList == null) {
+            restoreSongList = new ArrayList<>();
+        }
+        return restoreSongList;
     }
 
     public void updatePositionSongOfArrayList(Items item, int newPosition) {
@@ -97,6 +100,11 @@ public class SharedPreferencesManager {
                 }
             }
         }
+    }
+    public void deleteSongArrayList() {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("songList", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear().apply();
     }
 
 
@@ -147,6 +155,30 @@ public class SharedPreferencesManager {
         editor.putString("song_list_history", songListJson);
         editor.apply();
     }
+    public void deleteSongFromHistory(String encodeId) {
+        ArrayList<Items> songArrayList = restoreSongArrayListHistory();
+        if (songArrayList != null) {
+            Iterator<Items> iterator = songArrayList.iterator();
+            while (iterator.hasNext()) {
+                Items item = iterator.next();
+                if (item.getEncodeId().equals(encodeId)) {
+                    iterator.remove();
+                    break;
+                }
+            }
+
+            // Lưu danh sách lịch sử đã cập nhật vào SharedPreferences
+            Gson gson = new Gson();
+            String songListJson = gson.toJson(songArrayList);
+
+            SharedPreferences sharedPreferences = context.getSharedPreferences("songListHistory", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("song_list_history", songListJson);
+            editor.apply();
+        }
+    }
+
+
 
     public void addSongToEndOfArrayList(Items item) {
         ArrayList<Items> arrayList = restoreSongArrayList();
@@ -269,6 +301,7 @@ public class SharedPreferencesManager {
         Log.e("SharedPreferencesManager", "Failed to parse encodeId: " + newEncodeId);
         return newEncodeId;
     }
+
     public boolean isPlaylistExists(String encodeId) {
         ArrayList<DataPlaylist> dataPlaylistArrayList = restorePlaylistUser();
 
@@ -533,7 +566,92 @@ public class SharedPreferencesManager {
     }
 
 
-    // save data search
+    //FAVOURITE SONG
+    public ArrayList<Items> restoreSongArrayListFavorite() {
+        Gson gson = new Gson();
+        SharedPreferences sharedPreferences = context.getSharedPreferences("song_list_favorite", Context.MODE_PRIVATE);
+        String song_list = sharedPreferences.getString("song_list_favorite", "");
+
+        ArrayList<Items> restoreSongList = gson.fromJson(song_list, new TypeToken<ArrayList<Items>>() {
+        }.getType());
+        if (restoreSongList == null) {
+            restoreSongList = new ArrayList<>();
+        }
+        return restoreSongList;
+    }
+
+    public void saveSongArrayListFavorite(Items song) {
+        ArrayList<Items> songArrayList = restoreSongArrayListFavorite();
+        if (songArrayList == null) {
+            songArrayList = new ArrayList<>();
+        }
+
+        // Tìm xem bài hát đã có trong danh sách yêu thích chưa
+        boolean found = false;
+        for (Items item : songArrayList) {
+            if (item.getEncodeId().equals(song.getEncodeId())) {
+                found = true;
+                break;
+            }
+        }
+
+        // Nếu không tìm thấy, thêm bài hát mới vào danh sách yêu thích
+        if (!found) {
+            songArrayList.add(0, song); // Thêm bài hát vào đầu danh sách
+        }
+
+        // Lưu danh sách yêu thích đã cập nhật vào SharedPreferences
+        Gson gson = new Gson();
+        String songListJson = gson.toJson(songArrayList);
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("song_list_favorite", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("song_list_favorite", songListJson);
+        editor.apply();
+    }
+
+    // Xóa bài hát khỏi danh sách yêu thích
+    public void deleteSongFromFavorite(String encodeId) {
+        ArrayList<Items> songArrayList = restoreSongArrayListFavorite();
+        if (songArrayList != null) {
+            Iterator<Items> iterator = songArrayList.iterator();
+            while (iterator.hasNext()) {
+                Items item = iterator.next();
+                if (item.getEncodeId().equals(encodeId)) {
+                    iterator.remove();
+                    break;
+                }
+            }
+
+            // Lưu danh sách yêu thích đã cập nhật vào SharedPreferences
+            Gson gson = new Gson();
+            String songListJson = gson.toJson(songArrayList);
+
+            SharedPreferences sharedPreferences = context.getSharedPreferences("song_list_favorite", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("song_list_favorite", songListJson);
+            editor.apply();
+        }
+    }
+
+    public boolean isSongInFavorite(String encodeId) {
+        ArrayList<Items> songArrayList = restoreSongArrayListFavorite();
+        if (songArrayList == null) {
+            return false;
+        }
+
+        // Duyệt qua danh sách và kiểm tra xem bài hát có tồn tại hay không
+        for (Items item : songArrayList) {
+            if (item.getEncodeId().equals(encodeId)) {
+                return true; // Bài hát tồn tại trong danh sách yêu thích
+            }
+        }
+        return false; // Bài hát không tồn tại trong danh sách yêu thích
+    }
+
+
+
+    // SEARCH HISTORY
     public void saveSearchHistory(String keyword) {
         // Lấy danh sách lịch sử tìm kiếm hiện tại
         ArrayList<DataSearchRecommend> searchHistory = restoreSearchHistory();
@@ -629,6 +747,11 @@ public class SharedPreferencesManager {
     public int restoreSongPosition() {
         SharedPreferences sharedPreferences = context.getSharedPreferences("songPosition", Context.MODE_PRIVATE);
         return sharedPreferences.getInt("position_song", 0);
+    }
+    public void deleteSongPosition() {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("songPosition", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear().apply();
     }
 
     public void saveActionState(int action) {

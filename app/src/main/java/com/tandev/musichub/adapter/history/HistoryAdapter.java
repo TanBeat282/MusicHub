@@ -138,7 +138,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     private void showBottomSheetInfo(Items items) {
-        BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items);
+        BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items, 5);
         bottomSheetOptionSong.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetOptionSong.getTag());
     }
 

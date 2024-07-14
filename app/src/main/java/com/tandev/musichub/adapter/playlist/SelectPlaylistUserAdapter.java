@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -79,33 +80,43 @@ public class SelectPlaylistUserAdapter extends RecyclerView.Adapter<SelectPlayli
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         DataPlaylist dataPlaylist = dataPlaylists.get(position);
 
-        if (dataPlaylist.getSong() != null && dataPlaylist.getSong().getItems() != null) {
-            int numberOfImagesToLoad = Math.min(dataPlaylist.getSong().getItems().size(), 4);
-            for (int i = 0; i < numberOfImagesToLoad; i++) {
+        if (Helper.isPlaylistUser(dataPlaylist.getEncodeId())) {
+            if (dataPlaylist.getSong() != null && dataPlaylist.getSong().getItems() != null) {
+                int numberOfImagesToLoad = Math.min(dataPlaylist.getSong().getItems().size(), 4);
+                for (int i = 0; i < numberOfImagesToLoad; i++) {
+                    Glide.with(context)
+                            .load(dataPlaylist.getSong().getItems().get(i).getThumbnailM())
+                            .placeholder(R.drawable.holder)
+                            .into(holder.imageViews[i]);
+                }
+                if (dataPlaylist.getSong().getItems().size() < 4) {
+                    for (int i = 1; i < 4; i++) {
+                        holder.imageViews[i].setVisibility(ImageView.GONE);
+                    }
+                }
+
+            } else {
                 Glide.with(context)
-                        .load(dataPlaylist.getSong().getItems().get(i).getThumbnailM())
-                        .placeholder(R.drawable.holder)
-                        .into(holder.imageViews[i]);
-            }
-            if (dataPlaylist.getSong().getItems().size() < 4) {
+                        .load(R.drawable.holder)  // Đặt hình ảnh mặc định ở đây
+                        .into(holder.imageViews[0]);
+                holder.imageViews[0].setVisibility(ImageView.VISIBLE);  // Đảm bảo ImageView này được hiển thị
+
                 for (int i = 1; i < 4; i++) {
                     holder.imageViews[i].setVisibility(ImageView.GONE);
                 }
             }
+            holder.grid_img.setVisibility(View.VISIBLE);
         } else {
-            Glide.with(context)
-                    .load(R.drawable.holder)  // Đặt hình ảnh mặc định ở đây
-                    .into(holder.imageViews[0]);
-            holder.imageViews[0].setVisibility(ImageView.VISIBLE);  // Đảm bảo ImageView này được hiển thị
-
-            for (int i = 1; i < 4; i++) {
-                holder.imageViews[i].setVisibility(ImageView.GONE);
-            }
+            Glide.with(context).load(dataPlaylist.getThumbnailM()).placeholder(R.drawable.holder).into(holder.thumbImageView);
+            holder.thumbImageView.setVisibility(View.VISIBLE);
         }
 
         holder.txt_title_playlist.setText(dataPlaylist.getTitle());
-        holder.txt_user_name_playlist.setText("Cá nhân");
-
+        if (Helper.isPlaylistUser(dataPlaylist.getEncodeId())) {
+            holder.txt_user_name_playlist.setText("Playlist của bạn");
+        } else {
+            holder.txt_user_name_playlist.setText(dataPlaylist.getUserName() == null ? "Zing Mp3" : dataPlaylist.getUserName());
+        }
         holder.itemView.setOnClickListener(view -> {
             addSongToPlaylist(dataPlaylist.getEncodeId(), items);
         });
@@ -119,23 +130,27 @@ public class SelectPlaylistUserAdapter extends RecyclerView.Adapter<SelectPlayli
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        private GridLayout grid_img;
         private ImageView imageView1;
         private ImageView imageView2;
         private ImageView imageView3;
         private ImageView imageView4;
         // Mảng chứa các ImageView
         private ImageView[] imageViews;
+        private RoundedImageView thumbImageView;
         public TextView txt_title_playlist;
         public TextView txt_user_name_playlist;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            grid_img = itemView.findViewById(R.id.grid_img);
             imageView1 = itemView.findViewById(R.id.imageView1);
             imageView2 = itemView.findViewById(R.id.imageView2);
             imageView3 = itemView.findViewById(R.id.imageView3);
             imageView4 = itemView.findViewById(R.id.imageView4);
             imageViews = new ImageView[]{imageView1, imageView2, imageView3, imageView4};
 
+            thumbImageView = itemView.findViewById(R.id.thumbImageView);
             txt_title_playlist = itemView.findViewById(R.id.txt_title_playlist);
             txt_user_name_playlist = itemView.findViewById(R.id.txt_user_name_playlist);
             txt_title_playlist.setSelected(true);

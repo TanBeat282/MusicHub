@@ -172,7 +172,7 @@ public class MyService extends Service {
                                 mediaPlayer.start();
                                 isPlaying = true;
                                 currentSongId = song.getEncodeId();
-                                sendActionToActivity(ACTION_START);
+                                sendActionToActivity(mSong, isPlaying, ACTION_START);
                                 startUpdatingSeekBar();
 
                                 sharedPreferencesManager.saveSongState(song);
@@ -200,7 +200,7 @@ public class MyService extends Service {
                                     mediaPlayer.start();
                                     isPlaying = true;
                                     currentSongId = song.getEncodeId();
-                                    sendActionToActivity(ACTION_START);
+                                    sendActionToActivity(mSong, isPlaying, ACTION_START);
                                     startUpdatingSeekBar();
 
                                     sharedPreferencesManager.saveSongState(song);
@@ -242,8 +242,11 @@ public class MyService extends Service {
                 break;
             case ACTION_CLEAR:
                 stopSelf();
-                sendActionToActivity(ACTION_CLEAR);
+                sendActionToActivity(null, isPlaying, ACTION_CLEAR);
                 stopUpdatingSeekBar();
+                sharedPreferencesManager.deleteSongState();
+                sharedPreferencesManager.deleteSongPosition();
+                sharedPreferencesManager.deleteSongArrayList();
                 break;
             case ACTION_NEXT:
                 nextMusic();
@@ -323,7 +326,7 @@ public class MyService extends Service {
             mediaPlayer.pause();
             isPlaying = false;
             sendNotificationMedia(mSong, false);
-            sendActionToActivity(ACTION_PAUSE);
+            sendActionToActivity(mSong, isPlaying, ACTION_PAUSE);
 
             sharedPreferencesManager.saveIsPlayState(false);
             sharedPreferencesManager.saveActionState(MyService.ACTION_PAUSE);
@@ -338,7 +341,7 @@ public class MyService extends Service {
             mediaPlayer.start();
             isPlaying = true;
             sendNotificationMedia(mSong, true);
-            sendActionToActivity(ACTION_RESUME);
+            sendActionToActivity(mSong, isPlaying, ACTION_RESUME);
 
             sharedPreferencesManager.saveIsPlayState(true);
             sharedPreferencesManager.saveActionState(MyService.ACTION_RESUME);
@@ -399,7 +402,6 @@ public class MyService extends Service {
                     }
                 });
     }
-
 
 
     private PendingIntent getPendingIntent(Context context, int action) {
@@ -486,13 +488,12 @@ public class MyService extends Service {
 
     private final Runnable stopServiceRunnable = this::stopSelf;
 
-    private void sendActionToActivity(int action) {
+    private void sendActionToActivity(Items mSong, boolean isPlaying, int action) {
         Intent intent = new Intent("send_data_to_activity");
         Bundle bundle = new Bundle();
         bundle.putSerializable("object_song", mSong);
         bundle.putBoolean("status_player", isPlaying);
         bundle.putInt("action_music", action);
-
         intent.putExtras(bundle);
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

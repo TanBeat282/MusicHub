@@ -158,7 +158,7 @@ public class PlaylistUserAdapter extends RecyclerView.Adapter<PlaylistUserAdapte
                 holder.imageViews[i].setVisibility(ImageView.GONE);
             }
         }
-        holder.txt_user_name_playlist.setText("User");
+        holder.txt_user_name_playlist.setText("Playlist của bạn");
     }
 
     private void loadImagesPlaylist(DataPlaylist dataPlaylist, ViewHolder holder) {

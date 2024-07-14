@@ -191,11 +191,10 @@ public class HomeFragment extends Fragment {
                 Items items = (Items) bundle.get("object_song");
                 int action = bundle.getInt("action_music");
 
-                if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS) {
+                if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS || action == MyService.ACTION_CLEAR) {
                     musicHelper.checkIsPlayingPlaylist(items, new_release_songArrayList, new_release_songAdapter);
                     musicHelper.checkIsPlayingPlaylist(items, bxh_new_release_songArrayList, bxh_new_release_songAdapter);
                     musicHelper.checkIsPlayingPlaylist(items, bang_xep_hangArrayList, bang_xep_hangAdapter);
-
                 }
 
             }

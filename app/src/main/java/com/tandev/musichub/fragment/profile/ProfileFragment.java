@@ -22,6 +22,8 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.playlist.PlaylistAdapter;
 import com.tandev.musichub.adapter.playlist.PlaylistUserAdapter;
+import com.tandev.musichub.adapter.song.SongAllAdapter;
+import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.tandev.musichub.model.playlist.Playlist;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
@@ -29,11 +31,12 @@ import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 import java.util.ArrayList;
 
 public class ProfileFragment extends Fragment {
-    private TextView txt_add_playlist;
-    private EditText edt_name_playlist;
     private RecyclerView rv_playlist;
+    private RecyclerView rv_song;
     private ArrayList<DataPlaylist> dataPlaylists;
+    private ArrayList<Items> itemsArrayList;
     private PlaylistUserAdapter playlistUserAdapter;
+    private SongAllAdapter songAllAdapter;
     private SharedPreferencesManager sharedPreferencesManager;
 
     @Override
@@ -54,25 +57,24 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
 
-        txt_add_playlist = view.findViewById(R.id.txt_add_playlist);
-        edt_name_playlist = view.findViewById(R.id.edt_name_playlist);
         rv_playlist = view.findViewById(R.id.rv_playlist);
+        rv_song = view.findViewById(R.id.rv_song);
 
         dataPlaylists = new ArrayList<>();
+        itemsArrayList = new ArrayList<>();
 
         rv_playlist.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         playlistUserAdapter = new PlaylistUserAdapter(dataPlaylists, requireActivity(), requireContext());
         rv_playlist.setAdapter(playlistUserAdapter);
 
-        txt_add_playlist.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+        rv_song.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        songAllAdapter = new SongAllAdapter(itemsArrayList, requireActivity(), requireContext());
+        rv_song.setAdapter(songAllAdapter);
 
         dataPlaylists = sharedPreferencesManager.restorePlaylistUser();
         playlistUserAdapter.setFilterList(dataPlaylists);
+
+        itemsArrayList = sharedPreferencesManager.restoreSongArrayListFavorite();
+        songAllAdapter.setFilterList(itemsArrayList);
     }
 }

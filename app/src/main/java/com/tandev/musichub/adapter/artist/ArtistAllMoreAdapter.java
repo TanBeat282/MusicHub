@@ -146,9 +146,4 @@ public class ArtistAllMoreAdapter extends RecyclerView.Adapter<RecyclerView.View
         int position = artistsArrayList.size();
         notifyItemRemoved(position);
     }
-
-    private void showBottomSheetInfo(Items items) {
-        BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items);
-        bottomSheetOptionSong.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetOptionSong.getTag());
-    }
 }

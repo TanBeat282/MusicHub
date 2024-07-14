@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_10sdp"
-            android:gravity="center"
             android:text="Thêm bài hát vào plalist"
             android:textColor="@color/white"
             android:textSize="@dimen/_14ssp" />
@@ -29,17 +28,17 @@
             android:id="@+id/linear_create_playlist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:background="@drawable/select_item"
             android:orientation="horizontal"
             android:padding="@dimen/_5sdp">
 
             <ImageView
-                android:layout_width="@dimen/_50sdp"
-                android:layout_height="@dimen/_50sdp"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
                 android:background="@drawable/background_button_categories_check"
-                android:padding="@dimen/_15sdp"
+                android:padding="@dimen/_10sdp"
                 android:src="@drawable/add_24px"
                 app:riv_corner_radius="@dimen/_3sdp"
                 app:tint="@color/white" />
@@ -68,6 +67,13 @@
                     android:textSize="@dimen/_12ssp" />
             </LinearLayout>
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginVertical="@dimen/_10sdp"
+            android:background="@color/colorSecondaryText" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_select_playlist_user"

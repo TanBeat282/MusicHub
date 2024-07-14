@@ -202,7 +202,7 @@ public class SongChartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void showBottomSheetInfo(Items items) {
-        BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items);
+        BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items,1);
         bottomSheetOptionSong.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetOptionSong.getTag());
     }
 

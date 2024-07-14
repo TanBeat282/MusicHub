@@ -98,11 +98,4 @@ public class AlbumNewReleaseAdapter extends RecyclerView.Adapter<AlbumNewRelease
             nameTextView.setSelected(true);
         }
     }
-
-    private void showBottomSheetInfo(Items items) {
-        BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items);
-        bottomSheetOptionSong.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetOptionSong.getTag());
-    }
-
-
 }

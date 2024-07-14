@@ -201,7 +201,7 @@ public class SongLoadMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void showBottomSheetInfo(Items items) {
-        BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items);
+        BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items,1);
         bottomSheetOptionSong.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetOptionSong.getTag());
     }
 }
