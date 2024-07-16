@@ -41,6 +41,7 @@ import com.tandev.musichub.R;
 import com.tandev.musichub.constants.Constants;
 import com.tandev.musichub.helper.uliti.GetUrlAudioHelper;
 import com.tandev.musichub.model.chart.chart_home.Items;
+import com.tandev.musichub.model.preview_premium.PreviewPremium;
 import com.tandev.musichub.model.song.SongAudio;
 import com.tandev.musichub.receiver.MyReceiver;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
@@ -158,42 +159,15 @@ public class MyService extends Service {
     private void startMusic(Items song) {
         getColor(song.getThumbnailM());
 
-        getUrlAudioHelper.getSongAudio(song.getEncodeId(), new GetUrlAudioHelper.SongAudioCallback() {
-            @Override
-            public void onSuccess(SongAudio songAudio) {
-                if (sharedPreferencesManager.restoreIsRepeatOneState()) {
-                    if (songAudio.getData() != null) {
-                        try {
-                            mediaPlayer.reset();
-                            mediaPlayer.setDataSource(sharedPreferencesManager.restoreQualityAudioState() == 1 ? songAudio.getData().getHigh() : sharedPreferencesManager.restoreQualityAudioState() == 2 ? songAudio.getData().getLossless() : songAudio.getData().getLow());
-                            mediaPlayer.prepareAsync();
-                            mediaPlayer.setOnPreparedListener(mp -> {
-
-                                mediaPlayer.start();
-                                isPlaying = true;
-                                currentSongId = song.getEncodeId();
-                                sendActionToActivity(mSong, isPlaying, ACTION_START);
-                                startUpdatingSeekBar();
-
-                                sharedPreferencesManager.saveSongState(song);
-                                sharedPreferencesManager.saveIsPlayState(true);
-                                sharedPreferencesManager.saveActionState(MyService.ACTION_START);
-                                sharedPreferencesManager.saveSongArrayListHistory(song);
-                            });
-                        } catch (IOException e) {
-                            sendIsSongPremium();
-                            nextMusic();
-                        }
-                    } else {
-                        sendIsSongPremium();
-                        nextMusic();
-                    }
-                } else {
-                    if (!currentSongId.equals(song.getEncodeId())) {
-                        if (songAudio.getData() != null) {
+        if (song.getStreamingStatus() == 2) {
+            getUrlAudioHelper.getPremiumSongAudio(song.getEncodeId(), new GetUrlAudioHelper.PremiumSongAudioCallback() {
+                @Override
+                public void onSuccess(PreviewPremium previewPremium) {
+                    if (sharedPreferencesManager.restoreIsRepeatOneState()) {
+                        if (previewPremium.getData() != null) {
                             try {
                                 mediaPlayer.reset();
-                                mediaPlayer.setDataSource(songAudio.getData().getLow());
+                                mediaPlayer.setDataSource(previewPremium.getData().getLink());
                                 mediaPlayer.prepareAsync();
                                 mediaPlayer.setOnPreparedListener(mp -> {
 
@@ -217,17 +191,116 @@ public class MyService extends Service {
                             nextMusic();
                         }
                     } else {
-                        sendExpandToActivity();
+                        if (!currentSongId.equals(song.getEncodeId())) {
+                            if (previewPremium.getData() != null) {
+                                try {
+                                    mediaPlayer.reset();
+                                    mediaPlayer.setDataSource(previewPremium.getData().getLink());
+                                    mediaPlayer.prepareAsync();
+                                    mediaPlayer.setOnPreparedListener(mp -> {
+
+                                        mediaPlayer.start();
+                                        isPlaying = true;
+                                        currentSongId = song.getEncodeId();
+                                        sendActionToActivity(mSong, isPlaying, ACTION_START);
+                                        startUpdatingSeekBar();
+
+                                        sharedPreferencesManager.saveSongState(song);
+                                        sharedPreferencesManager.saveIsPlayState(true);
+                                        sharedPreferencesManager.saveActionState(MyService.ACTION_START);
+                                        sharedPreferencesManager.saveSongArrayListHistory(song);
+                                    });
+                                } catch (IOException e) {
+                                    sendIsSongPremium();
+                                    nextMusic();
+                                }
+                            } else {
+                                sendIsSongPremium();
+                                nextMusic();
+                            }
+                        } else {
+                            sendExpandToActivity();
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Throwable throwable) {
-                sendIsSongPremium();
-                nextMusic();
-            }
-        });
+                @Override
+                public void onFailure(Throwable throwable) {
+
+                }
+            });
+        } else {
+            getUrlAudioHelper.getSongAudio(song.getEncodeId(), new GetUrlAudioHelper.SongAudioCallback() {
+                @Override
+                public void onSuccess(SongAudio songAudio) {
+                    if (sharedPreferencesManager.restoreIsRepeatOneState()) {
+                        if (songAudio.getData() != null) {
+                            try {
+                                mediaPlayer.reset();
+                                mediaPlayer.setDataSource(sharedPreferencesManager.restoreQualityAudioState() == 1 ? songAudio.getData().getHigh() : sharedPreferencesManager.restoreQualityAudioState() == 2 ? songAudio.getData().getLossless() : songAudio.getData().getLow());
+                                mediaPlayer.prepareAsync();
+                                mediaPlayer.setOnPreparedListener(mp -> {
+
+                                    mediaPlayer.start();
+                                    isPlaying = true;
+                                    currentSongId = song.getEncodeId();
+                                    sendActionToActivity(mSong, isPlaying, ACTION_START);
+                                    startUpdatingSeekBar();
+
+                                    sharedPreferencesManager.saveSongState(song);
+                                    sharedPreferencesManager.saveIsPlayState(true);
+                                    sharedPreferencesManager.saveActionState(MyService.ACTION_START);
+                                    sharedPreferencesManager.saveSongArrayListHistory(song);
+                                });
+                            } catch (IOException e) {
+                                sendIsSongPremium();
+                                nextMusic();
+                            }
+                        } else {
+                            sendIsSongPremium();
+                            nextMusic();
+                        }
+                    } else {
+                        if (!currentSongId.equals(song.getEncodeId())) {
+                            if (songAudio.getData() != null) {
+                                try {
+                                    mediaPlayer.reset();
+                                    mediaPlayer.setDataSource(songAudio.getData().getLow());
+                                    mediaPlayer.prepareAsync();
+                                    mediaPlayer.setOnPreparedListener(mp -> {
+
+                                        mediaPlayer.start();
+                                        isPlaying = true;
+                                        currentSongId = song.getEncodeId();
+                                        sendActionToActivity(mSong, isPlaying, ACTION_START);
+                                        startUpdatingSeekBar();
+
+                                        sharedPreferencesManager.saveSongState(song);
+                                        sharedPreferencesManager.saveIsPlayState(true);
+                                        sharedPreferencesManager.saveActionState(MyService.ACTION_START);
+                                        sharedPreferencesManager.saveSongArrayListHistory(song);
+                                    });
+                                } catch (IOException e) {
+                                    sendIsSongPremium();
+                                    nextMusic();
+                                }
+                            } else {
+                                sendIsSongPremium();
+                                nextMusic();
+                            }
+                        } else {
+                            sendExpandToActivity();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    sendIsSongPremium();
+                    nextMusic();
+                }
+            });
+        }
     }
 
     private void handleActionMusic(int action) {

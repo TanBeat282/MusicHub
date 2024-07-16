@@ -80,6 +80,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:padding="@dimen/_5sdp"
+        android:background="@drawable/select_onclick"
         android:src="@drawable/drag_handle_24px"
         app:tint="@color/white" />
 

@@ -1,6 +1,7 @@
 package com.tandev.musichub.model.chart.home.home_new.radio;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class RadioProgram implements Serializable {
     private String encodeId;
@@ -11,6 +12,7 @@ public class RadioProgram implements Serializable {
     private long startTime;
     private long endTime;
     private boolean hasSongRequest;
+    private List<String> genreIds;
 
     public String getEncodeId() {
         return encodeId;
@@ -74,5 +76,13 @@ public class RadioProgram implements Serializable {
 
     public void setHasSongRequest(boolean hasSongRequest) {
         this.hasSongRequest = hasSongRequest;
+    }
+
+    public List<String> getGenreIds() {
+        return genreIds;
+    }
+
+    public void setGenreIds(List<String> genreIds) {
+        this.genreIds = genreIds;
     }
 }

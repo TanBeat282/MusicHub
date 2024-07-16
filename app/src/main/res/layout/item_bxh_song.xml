@@ -114,7 +114,9 @@
     <ImageView
         android:id="@+id/btn_more"
         android:layout_width="wrap_content"
+        android:background="@drawable/select_onclick"
         android:layout_height="wrap_content"
+        android:padding="@dimen/_5sdp"
         android:layout_gravity="center"
         android:src="@drawable/baseline_more_vert_24"
         app:tint="@color/colorSecondaryText2" />

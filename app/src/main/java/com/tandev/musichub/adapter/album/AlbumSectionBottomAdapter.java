@@ -66,7 +66,7 @@ public class AlbumSectionBottomAdapter extends RecyclerView.Adapter<AlbumSection
             PlaylistMoreAdapter playlistAdapter = new PlaylistMoreAdapter(dataSectionBottomPlaylist.getItems(), activity, context);
             holder.rv_playlist_horizontal.setAdapter(playlistAdapter);
 
-            holder.linear_more.setVisibility(dataSectionBottomPlaylist.getItems().size() > 5 ? View.VISIBLE : View.GONE);
+            holder.linear_more.setVisibility(dataSectionBottomPlaylist.getItems() != null &&dataSectionBottomPlaylist.getItems().size() > 5 ? View.VISIBLE : View.GONE);
 
         } else if (dataSectionBottom instanceof DataSectionBottomPlaylistOfAritst) {
             DataSectionBottomPlaylistOfAritst dataSectionBottomPlaylistOfAritst = (DataSectionBottomPlaylistOfAritst) dataSectionBottom;
@@ -77,7 +77,7 @@ public class AlbumSectionBottomAdapter extends RecyclerView.Adapter<AlbumSection
             PlaylistMoreAdapter playlistAdapter = new PlaylistMoreAdapter(dataSectionBottomPlaylistOfAritst.getItems(), activity, context);
             holder.rv_playlist_horizontal.setAdapter(playlistAdapter);
 
-            holder.linear_more.setVisibility(dataSectionBottomPlaylistOfAritst.getItems().size() > 5 ? View.VISIBLE : View.GONE);
+            holder.linear_more.setVisibility(dataSectionBottomPlaylistOfAritst.getItems() != null && dataSectionBottomPlaylistOfAritst.getItems().size() > 5 ? View.VISIBLE : View.GONE);
 
         }
 

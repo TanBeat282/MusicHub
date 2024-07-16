@@ -361,8 +361,8 @@ public class PlaylistFragment extends Fragment {
         txt_song_and_time.setText(convertLongToString(playlist.getData().getSong().getItems().size(), playlist.getData().getSong().getTotalDuration()));
         txt_content_playlist.setText(playlist.getData().getDescription());
 
-        img_check_playlist.setImageResource(sharedPreferencesManager.isPlaylistExists(playlist.getData().getEncodeId())? R.drawable.playlist_add_check_24px: R.drawable.ic_playlist_add);
-        txt_check_playlist.setText(sharedPreferencesManager.isPlaylistExists(playlist.getData().getEncodeId())? "Đã Thêm": "Thêm");
+        img_check_playlist.setImageResource(sharedPreferencesManager.isPlaylistExists(playlist.getData().getEncodeId()) ? R.drawable.playlist_add_check_24px : R.drawable.ic_playlist_add);
+        txt_check_playlist.setText(sharedPreferencesManager.isPlaylistExists(playlist.getData().getEncodeId()) ? "Đã Thêm" : "Thêm");
 
         ArrayList<Items> arrayList = playlist.getData().getSong().getItems();
         if (!arrayList.isEmpty()) {

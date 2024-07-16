@@ -166,7 +166,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         super.onViewCreated(view, savedInstanceState);
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
         Helper.changeStatusBarColor(requireActivity(), R.color.black);
-        apiService = RetrofitClient.getClient().create(ApiService.class);
+        apiService = RetrofitClient.getSearchSuggestion().create(ApiService.class);
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         permissionUtils = new PermissionUtils(requireContext(), this);
 

@@ -15,10 +15,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 //import com.tandev.musichub.activity.PlayRadioActivity;
 //import com.tandev.musichub.activity.ViewAllArtistActivity;
 //import com.tandev.musichub.activity.ViewArtistActivity;
+import com.tandev.musichub.fragment.album.AlbumFragment;
+import com.tandev.musichub.fragment.radio.RadioFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.chart.home.home_new.radio.HomeDataItemRadioItem;
@@ -85,15 +88,13 @@ public class RadioMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     .placeholder(R.drawable.holder)
                     .into(artistViewHolder.img_user);
 
-            artistViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-//                    Intent intent = new Intent(context, PlayRadioActivity.class);
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("radio_endCodeID", homeDataItemRadioItem.getEncodeId());
-//                    intent.putExtras(bundle);
-//
-//                    context.startActivity(intent);
+            artistViewHolder.itemView.setOnClickListener(view -> {
+                RadioFragment radioFragment = new RadioFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("encodeId", homeDataItemRadioItem.getEncodeId());
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(radioFragment, bundle);
                 }
             });
         } else {

@@ -334,6 +334,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         txt_title.setText(items.getTitle());
+        if (items.getStreamingStatus() == 2) {
+            txt_title.setTextColor(ContextCompat.getColor(this, R.color.yellow));
+        } else {
+            txt_title.setTextColor(ContextCompat.getColor(this, R.color.white));
+        }
         txt_artist.setText(items.getArtistsNames());
         img_play_pause.setImageResource(isPlaying ? R.drawable.baseline_pause_24 : R.drawable.baseline_play_arrow_24);
     }
@@ -484,6 +489,11 @@ public class MainActivity extends AppCompatActivity {
 
         txt_play_from.setText("Phát từ \n Danh sách phát");
         txt_title_song.setText(songDetail.getData().getTitle());
+        if (songDetail.getData().getStreamingStatus() == 2) {
+            txt_title_song.setTextColor(ContextCompat.getColor(this, R.color.yellow));
+        } else {
+            txt_title_song.setTextColor(ContextCompat.getColor(this, R.color.white));
+        }
         txt_artist_song.setText(songDetail.getData().getArtistsNames());
 
         txt_current_time.setText("00:00");
@@ -631,7 +641,7 @@ public class MainActivity extends AppCompatActivity {
             public void onServiceCreated(ApiService service) {
                 try {
                     SongCategories songCategories = new SongCategories();
-                    Map<String, String> map = songCategories.getDetail(encodeId);
+                    Map<String, String> map = songCategories.getInfo(encodeId);
 
                     retrofit2.Call<SongDetail> call = service.SONG_DETAIL_CALL(encodeId, map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
                     call.enqueue(new Callback<SongDetail>() {

@@ -136,17 +136,16 @@ public class SongChartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             holder.itemView.setOnClickListener(v -> {
                 if (song.getStreamingStatus() == 2) {
-                    Toast.makeText(context, "Không thể phát bài hát Premium!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Intent intent = new Intent(context, MyService.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("object_song", song);
-                    bundle.putInt("position_song", position);
-                    bundle.putSerializable("song_list", songList);
-                    intent.putExtras(bundle);
-
-                    context.startService(intent);
+                    Toast.makeText(context, "Giới hạn phát nhạc Premium là 45 giây!", Toast.LENGTH_SHORT).show();
                 }
+                Intent intent = new Intent(context, MyService.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("object_song", song);
+                bundle.putInt("position_song", position);
+                bundle.putSerializable("song_list", songList);
+                intent.putExtras(bundle);
+
+                context.startService(intent);
             });
         } else {
             ButtonViewHolder buttonViewHolder = (ButtonViewHolder) holder;
@@ -202,7 +201,7 @@ public class SongChartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void showBottomSheetInfo(Items items) {
-        BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items,1);
+        BottomSheetOptionSong bottomSheetOptionSong = new BottomSheetOptionSong(context, activity, items, 1);
         bottomSheetOptionSong.show(((AppCompatActivity) context).getSupportFragmentManager(), bottomSheetOptionSong.getTag());
     }
 

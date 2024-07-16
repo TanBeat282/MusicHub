@@ -83,7 +83,7 @@ public class AlbumFragment extends Fragment {
     private TextView txt_title_album;
     private TextView txt_user_name;
     private TextView txt_song_and_time;
-    private ImageView btn_play_playlist;
+    private LinearLayout btn_play_playlist;
 
     private ArrayList<Items> itemsArrayList;
     private SongMoreAllAdapter songMoreAllAdapter;

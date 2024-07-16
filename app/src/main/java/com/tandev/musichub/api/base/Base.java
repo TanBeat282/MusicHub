@@ -81,6 +81,9 @@ public class Base {
     protected String createCommentSig(String path, String id) throws NoSuchAlgorithmException, Exception {
         return createHashAndHmac(path, "count=50ctime=" + this.ctime + "id=" + id + "version=" + this.version);
     }
+    protected String createAnnouncementSig(String path, String id) throws NoSuchAlgorithmException, Exception {
+        return createHashAndHmac(path, "count=10ctime=" + this.ctime + "id=" + id + "version=" + this.version);
+    }
 
     protected String createIdSig(String path, String id) throws NoSuchAlgorithmException, Exception {
         return createHashAndHmac(path, "ctime=" + this.ctime + "id=" + id + "version=" + this.version);

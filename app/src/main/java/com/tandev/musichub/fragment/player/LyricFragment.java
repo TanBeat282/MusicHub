@@ -176,19 +176,32 @@ public class LyricFragment extends Fragment {
         }
     }
 
-    private void smoothScrollToPosition(int position) {
-        LinearSmoothScroller smoothScroller = new LinearSmoothScroller(requireContext()) {
-            private static final float MILLISECONDS_PER_INCH_NORMAL = 1000f;
+    private void smoothScrollToPosition(int targetPosition) {
+        RecyclerView.LayoutManager layoutManager = recyclerViewLyrics.getLayoutManager();
+        if (layoutManager instanceof LinearLayoutManager) {
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+            int distance = Math.abs(targetPosition - firstVisibleItemPosition);
 
-            @Override
-            protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                return MILLISECONDS_PER_INCH_NORMAL / displayMetrics.densityDpi;
-            }
-        };
+            LinearSmoothScroller smoothScroller = new LinearSmoothScroller(requireContext()) {
+                private static final float MILLISECONDS_PER_INCH_FAST = 50f;  // tốc độ nhanh
+                private static final float MILLISECONDS_PER_INCH_NORMAL = 1000f;  // tốc độ bình thường
 
-        smoothScroller.setTargetPosition(position);
-        Objects.requireNonNull(recyclerViewLyrics.getLayoutManager()).startSmoothScroll(smoothScroller);
+                @Override
+                protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                    if (distance > 10) {  // nếu khoảng cách lớn hơn 10 mục, cuộn nhanh
+                        return MILLISECONDS_PER_INCH_FAST / displayMetrics.densityDpi;
+                    } else {  // nếu không, cuộn bình thường
+                        return MILLISECONDS_PER_INCH_NORMAL / displayMetrics.densityDpi;
+                    }
+                }
+            };
+
+            smoothScroller.setTargetPosition(targetPosition);
+            Objects.requireNonNull(layoutManager).startSmoothScroll(smoothScroller);
+        }
     }
+
 
     private List<LyricLine> parseLyrics(String lyricContent) {
         List<LyricLine> lyricLines = new ArrayList<>();

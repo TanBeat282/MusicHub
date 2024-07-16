@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,22 +18,29 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
-//import com.tandev.musichub.activity.ViewPlaylistActivity;
-//import com.tandev.musichub.activity.WeekChartActivity;
-import com.tandev.musichub.fragment.album.AlbumFragment;
+import com.tandev.musichub.api.ApiService;
+import com.tandev.musichub.api.categories.SongCategories;
+import com.tandev.musichub.api.service.ApiServiceFactory;
+import com.tandev.musichub.constants.Constants;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
+import com.tandev.musichub.helper.uliti.log.LogUtil;
 import com.tandev.musichub.model.chart.home.home_new.banner.HomeDataItemBannerItem;
-import com.tandev.musichub.model.chart.home.home_new.week_chart.HomeDataItemWeekChartItem;
+import com.tandev.musichub.model.song.SongDetail;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.tandev.musichub.service.MyService;
 
 import java.util.ArrayList;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class BannerSlideAdapter extends RecyclerView.Adapter<BannerSlideAdapter.ViewHolder> {
     private ArrayList<HomeDataItemBannerItem> homeDataItemBannerItems;
-    private ViewPager2 viewPager2;
+    private final ViewPager2 viewPager2;
     private final Context context;
     private final Activity activity;
-
 
     @SuppressLint("NotifyDataSetChanged")
     public void setFilterList(ArrayList<HomeDataItemBannerItem> homeDataItemBannerItems) {
@@ -70,14 +78,7 @@ public class BannerSlideAdapter extends RecyclerView.Adapter<BannerSlideAdapter.
 
         holder.itemView.setOnClickListener(view -> {
             if (homeDataItemBannerItem.getType() == 1) {
-//                    AlbumFragment albumFragment = new AlbumFragment();
-//                    Bundle bundle = new Bundle();
-//                    bundle.putSerializable("album_endCodeId", homeDataItemBannerItem.getEncodeId());
-//
-//                    if (context instanceof MainActivity) {
-//                        ((MainActivity) context).replaceFragmentWithBundle(albumFragment, bundle);
-//                    }
-                Toast.makeText(context, "Đang phát triển...", Toast.LENGTH_SHORT).show();
+                getSongDetail(homeDataItemBannerItem.getEncodeId());
             } else {
                 PlaylistFragment playlistFragment = new PlaylistFragment();
                 Bundle bundle = new Bundle();
@@ -89,7 +90,6 @@ public class BannerSlideAdapter extends RecyclerView.Adapter<BannerSlideAdapter.
             }
         });
     }
-
 
     @Override
     public int getItemCount() {
@@ -114,4 +114,45 @@ public class BannerSlideAdapter extends RecyclerView.Adapter<BannerSlideAdapter.
         }
     };
 
+    private void getSongDetail(String encodeId) {
+        ApiServiceFactory.createServiceAsync(new ApiServiceFactory.ApiServiceCallback() {
+            @Override
+            public void onServiceCreated(ApiService service) {
+                try {
+                    SongCategories songCategories = new SongCategories();
+                    Map<String, String> map = songCategories.getInfo(encodeId);
+
+                    Call<SongDetail> call = service.SONG_DETAIL_CALL(encodeId, map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
+                    call.enqueue(new Callback<SongDetail>() {
+                        @Override
+                        public void onResponse(@NonNull Call<SongDetail> call, @NonNull Response<SongDetail> response) {
+                            LogUtil.d(Constants.TAG, "getSongDetail: " + call.request().url());
+                            if (response.isSuccessful()) {
+                                SongDetail songDetail = response.body();
+                                if (songDetail != null) {
+                                    handleSongDetail(songDetail);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<SongDetail> call, @NonNull Throwable throwable) {
+                            Log.e("TAG", "API call failed: " + throwable.getMessage(), throwable);
+                        }
+                    });
+                } catch (Exception e) {
+                    Log.e("TAG", "Error: " + e.getMessage(), e);
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+    }
+
+    private void handleSongDetail(SongDetail songDetail) {
+        Toast.makeText(context, "Đang phát triển", Toast.LENGTH_SHORT).show();
+    }
 }

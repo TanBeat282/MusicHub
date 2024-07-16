@@ -59,8 +59,7 @@
         android:layout_height="@dimen/_18sdp"
         android:layout_gravity="center"
         android:layout_marginEnd="@dimen/_5sdp"
-        android:rotation="-180"
-        android:src="@drawable/ic_back"
+        android:src="@drawable/baseline_more_vert_24"
         app:tint="@color/colorSecondaryText2" />
 
 

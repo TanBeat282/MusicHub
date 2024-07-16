@@ -7,6 +7,11 @@ import com.tandev.musichub.model.hub.hub_home.HubHome;
 import com.tandev.musichub.model.new_release.NewReleaseAlbum;
 import com.tandev.musichub.model.new_release.NewReleaseSong;
 import com.tandev.musichub.model.playlist.Playlist;
+import com.tandev.musichub.model.preview_premium.PreviewPremium;
+import com.tandev.musichub.model.radio.host.announcement.AnnouncementRadio;
+import com.tandev.musichub.model.radio.host.detail.HostDetail;
+import com.tandev.musichub.model.radio.host.info.HostInfo;
+import com.tandev.musichub.model.radio.user.comment.CommentUserRadio;
 import com.tandev.musichub.model.search.search_multil.SearchMulti;
 import com.tandev.musichub.model.search.search_recommend.SearchRecommend;
 import com.tandev.musichub.model.search.search_suggestion.SearchSuggestions;
@@ -35,6 +40,7 @@ public interface ApiService {
     String pathTop100 = "/api/v2/page/get/top-100?";
     String pathDetailSong = "/api/v2/song/get/info?";
     String pathAudioSong = "/api/v2/song/get/streaming?";
+    String pathPreviewPremium = "/api/v2/song/get/vip-preview-info?";
     String pathSongRecommend = "/api/v2/recommend/get/songs?";
     String pathArtist = "/api/v2/page/get/artist?";
     String pathSongListOfArtist = "/api/v2/song/get/list?";
@@ -52,6 +58,9 @@ public interface ApiService {
     //radio
     String pathUserActiveRadio = "/api/v2/livestream/get/active-user?";
     String pathInfoRadio = "/api/v2/livestream/get/info?";
+    String pathProgramDetailRadio = "/api/v2/livestream/program/get/detail?";
+    String pathCommentRadio = "/api/v2/download/livestream/get/comments?";
+    String pathAnnouncementRadio = "/api/v2/download/livestream/get/announcement?";
 
     //hub
     String pathHub = "/api/v2/page/get/hub-detail?";
@@ -132,6 +141,13 @@ public interface ApiService {
                                     @Query("ctime") String ctime,
                                     @Query("version") String version,
                                     @Query("apiKey") String apiKey);
+
+    @GET(pathPreviewPremium)
+    Call<PreviewPremium> PREVIEW_PREMIUM_CALL(@Query("id") String id,
+                                              @Query("sig") String sig,
+                                              @Query("ctime") String ctime,
+                                              @Query("version") String version,
+                                              @Query("apiKey") String apiKey);
 
     @GET(pathSongRecommend)
     Call<SongRecommend> SONG_RECOMMEND_CALL(@Query("id") String id,
@@ -226,11 +242,48 @@ public interface ApiService {
                                                  @Query("apiKey") String apiKey);
 
     @GET(pathInfoRadio)
-    Call<ResponseBody> INFO_RADIO_CALL(@Query("id") String id,
-                                       @Query("sig") String sig,
-                                       @Query("ctime") String ctime,
-                                       @Query("version") String version,
-                                       @Query("apiKey") String apiKey);
+    Call<HostInfo> INFO_RADIO_CALL(@Query("id") String id,
+                                   @Query("sig") String sig,
+                                   @Query("ctime") String ctime,
+                                   @Query("version") String version,
+                                   @Query("apiKey") String apiKey);
+
+    @GET(pathProgramDetailRadio)
+    Call<HostDetail> PROGRAM_DETAIL_RADIO_CALL(@Query("id") String id,
+                                               @Query("sig") String sig,
+                                               @Query("ctime") String ctime,
+                                               @Query("version") String version,
+                                               @Query("apiKey") String apiKey);
+
+    @GET(pathCommentRadio)
+    Call<CommentUserRadio> COMMENT_RADIO_CALL(@Query("id") String id,
+                                              @Query("count") String count,
+                                              @Query("cmtType") String cmtType,
+                                              @Query("sig") String sig,
+                                              @Query("ctime") String ctime,
+                                              @Query("version") String version,
+                                              @Query("apiKey") String apiKey);
+
+    @GET(pathCommentRadio)
+    Call<CommentUserRadio> REFRESH_COMMENT_RADIO_CALL(@Query("id") String id,
+                                                      @Query("commentId") String commentId,
+                                                      @Query("getType") String getType,
+                                                      @Query("count") String count,
+                                                      @Query("cmtType") String cmtType,
+                                                      @Query("sig") String sig,
+                                                      @Query("ctime") String ctime,
+                                                      @Query("version") String version,
+                                                      @Query("apiKey") String apiKey);
+
+    @GET(pathAnnouncementRadio)
+    Call<AnnouncementRadio> ANNOUNCEMENT_RADIO_CALL(@Query("id") String id,
+                                                    @Query("commentId") String commentId,
+                                                    @Query("getType") String getType,
+                                                    @Query("count") String count,
+                                                    @Query("sig") String sig,
+                                                    @Query("ctime") String ctime,
+                                                    @Query("version") String version,
+                                                    @Query("apiKey") String apiKey);
 
 
     //HUB

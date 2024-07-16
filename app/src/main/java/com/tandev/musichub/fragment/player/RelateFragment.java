@@ -175,7 +175,7 @@ public class RelateFragment extends Fragment {
             public void onServiceCreated(ApiService service) {
                 try {
                     SongCategories songCategories = new SongCategories();
-                    Map<String, String> map = songCategories.getDetail(encodeId);
+                    Map<String, String> map = songCategories.getInfo(encodeId);
 
                     retrofit2.Call<SongDetail> call = service.SONG_DETAIL_CALL(encodeId, map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
                     call.enqueue(new Callback<SongDetail>() {
