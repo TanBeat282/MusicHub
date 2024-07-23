@@ -16,23 +16,6 @@ MusicHub is an online music streaming application designed and developed indepen
 - **Java:** Core programming language for developing the application.
 - **Firebase:** Backend service for authentication and database management.
 
-## Installation
-
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/TanBeat282/MusicHub.git
-    ```
-2. Open the project in your preferred Java IDE.
-3. Set up Firebase with your project and add the necessary configuration files.
-4. Build and run the application.
-
-## Usage
-
-## Contributing
-
-Contributions are welcome! Please fork the repository and create a pull request with your changes. Make sure to follow the coding guidelines and include a detailed description of your changes.
-
-
 ## Contact
 
 For any inquiries or support, please contact me at:
