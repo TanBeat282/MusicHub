@@ -46,6 +46,7 @@ public class ChartNewReleaseFragment extends Fragment {
     private RelativeLayout relative_header;
     private TextView txt_title_toolbar;
     private ImageView img_back;
+    private ImageView img_play;
 
     private RelativeLayout relative_loading;
     private NestedScrollView nested_scroll;
@@ -101,6 +102,7 @@ public class ChartNewReleaseFragment extends Fragment {
         relative_loading = view.findViewById(R.id.relative_loading);
         nested_scroll = view.findViewById(R.id.nested_scroll);
         txt_new_release = view.findViewById(R.id.txt_new_release);
+        img_play = view.findViewById(R.id.img_play);
 
         rv_new_release_song = view.findViewById(R.id.rv_new_release_song);
     }
@@ -144,6 +146,12 @@ public class ChartNewReleaseFragment extends Fragment {
         img_back.setOnClickListener(view1 -> {
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+        img_play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
     }

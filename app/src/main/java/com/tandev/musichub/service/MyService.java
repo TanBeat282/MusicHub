@@ -61,6 +61,7 @@ public class MyService extends Service {
     private boolean isPlaying = false;
     private Items mSong;
     private String currentSongId = "";
+    private boolean isPlayingBumper = false; // Flag to check if bumper audio is playing
 
     private SharedPreferencesManager sharedPreferencesManager;
     private final Handler seekBarHandler = new Handler();
@@ -81,7 +82,39 @@ public class MyService extends Service {
         mediaPlayer.setOnCompletionListener(mp -> {
             // Kiểm tra nếu thời gian hiện tại gần thời gian kết thúc bài hát
             if (mediaPlayer != null && mediaPlayer.getDuration() > 0 && mediaPlayer.getCurrentPosition() >= mediaPlayer.getDuration() - 100) {
-                nextMusic();
+                if (isPlayingBumper) {
+                    // If bumper audio is playing, play the next song
+                    isPlayingBumper = false;
+                    nextMusic();
+                } else if (mSong.getStreamingStatus() == 2) {
+                    getUrlAudioHelper.getPremiumSongAudio(mSong.getEncodeId(), new GetUrlAudioHelper.PremiumSongAudioCallback() {
+                        @Override
+                        public void onSuccess(PreviewPremium previewPremium) {
+                            if (previewPremium.getData() != null && previewPremium.getData().getBumperAudio() != null) {
+                                try {
+                                    mediaPlayer.reset();
+                                    mediaPlayer.setDataSource(previewPremium.getData().getBumperAudio().getLink());
+                                    mediaPlayer.prepareAsync();
+                                    mediaPlayer.setOnPreparedListener(mp -> {
+                                        mediaPlayer.start();
+                                        isPlayingBumper = true; // Set the flag to true when bumper audio is playing
+                                    });
+                                } catch (IOException e) {
+                                    nextMusic();
+                                }
+                            } else {
+                                nextMusic();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            nextMusic();
+                        }
+                    });
+                } else {
+                    nextMusic();
+                }
             }
         });
         mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
@@ -393,7 +426,6 @@ public class MyService extends Service {
 
     }
 
-
     private void pauseMusic() {
         if (mediaPlayer != null && isPlaying) {
             mediaPlayer.pause();
@@ -476,7 +508,6 @@ public class MyService extends Service {
                 });
     }
 
-
     private PendingIntent getPendingIntent(Context context, int action) {
         Intent intent = new Intent(this, MyReceiver.class);
         intent.putExtra("action", action);
@@ -533,7 +564,6 @@ public class MyService extends Service {
         isPlaying = false;
         stopUpdatingSeekBar();
     }
-
 
     private void startUpdatingSeekBar() {
         seekBarHandler.removeCallbacks(updateSeekBar);

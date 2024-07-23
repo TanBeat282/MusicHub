@@ -65,7 +65,6 @@ public class WeekChartSlideAdapter extends RecyclerView.Adapter<WeekChartSlideAd
             public void onClick(View view) {
                 WeekChartFragment weekChartFragment = new WeekChartFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("itemWeekChart", homeDataItemWeekChartItem);
                 bundle.putInt("position_slide", position);
                 if (context instanceof MainActivity) {
                     ((MainActivity) context).replaceFragmentWithBundle(weekChartFragment, bundle);

@@ -5,6 +5,7 @@ import com.tandev.musichub.model.chart.home.home_new.album.HomeDataItemPlaylistA
 import com.tandev.musichub.model.chart.home.home_new.banner.HomeDataItemBanner;
 import com.tandev.musichub.model.chart.home.home_new.editor_theme.HomeDataItemPlaylistEditorTheme;
 import com.tandev.musichub.model.chart.home.home_new.editor_theme_3.HomeDataItemPlaylistEditorTheme3;
+import com.tandev.musichub.model.chart.home.home_new.editor_theme_4.HomeDataItemPlaylistEditorTheme4;
 import com.tandev.musichub.model.chart.home.home_new.history.HomeDataItemHistory;
 import com.tandev.musichub.model.chart.home.home_new.item.HomeDataItem;
 import com.tandev.musichub.model.chart.home.home_new.new_release.HomeDataItemNewRelease;
@@ -43,6 +44,8 @@ public class HomeDataItemTypeAdapter implements JsonDeserializer<HomeDataItem> {
                         return context.deserialize(jsonObject, HomeDataItemPlaylistEditorTheme.class);
                     case "hEditorTheme3":
                         return context.deserialize(jsonObject, HomeDataItemPlaylistEditorTheme3.class);
+                    case "hEditorTheme4":
+                        return context.deserialize(jsonObject, HomeDataItemPlaylistEditorTheme4.class);
                     case "h100":
                         return context.deserialize(jsonObject, HomeDataItemPlaylistTop100.class);
                     case "hAlbum":

@@ -468,4 +468,9 @@ public class RadioFragment extends Fragment {
         return decimalFormat.format(number).replace(',', '.');
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(runnable);
+    }
 }

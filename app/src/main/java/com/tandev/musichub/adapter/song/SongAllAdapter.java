@@ -115,7 +115,7 @@ public class SongAllAdapter extends RecyclerView.Adapter<SongAllAdapter.ViewHold
 
         holder.itemView.setOnClickListener(v -> {
             if (song.getStreamingStatus() == 2) {
-                Toast.makeText(context, "Giới hạn phát nhạc Premium là 45 giây!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Bạn đang nghe thử bài hát Premium!", Toast.LENGTH_SHORT).show();
             }
             Intent intent = new Intent(context, MyService.class);
             Bundle bundle = new Bundle();

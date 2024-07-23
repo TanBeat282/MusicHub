@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +27,7 @@ public class WeekChartFragment extends Fragment {
     private TabLayout tab_layout_new_release_song;
     private ViewPager view_pager_new_release_song;
     private WeekChartViewPageAdapter mViewPagerAdapter;
-    private HomeDataItemWeekChartItem homeDataItemWeekChartItem;
     private int position_slider = -1;
-    private int week_chart = 0;
     private LinearLayout linear_filter_song;
     private ImageView img_back;
 
@@ -55,18 +54,14 @@ public class WeekChartFragment extends Fragment {
     }
     private void getBundleSong() {
         if (getArguments() != null) {
-            homeDataItemWeekChartItem = (HomeDataItemWeekChartItem) getArguments().getSerializable("itemWeekChart");
             position_slider = getArguments().getInt("position_slide");
-            if (homeDataItemWeekChartItem != null && position_slider != -1) {
-                int position = -1;
+            if (position_slider != -1) {
                 if (position_slider == 1) {
-                    position = 0;
-                } else if (position_slider == 2) {
-                    position = 2;
+                    position_slider = 0;
                 } else {
-                    position = 1;
+                    position_slider = 1;
                 }
-                tab_layout_new_release_song.getTabAt(position).select();
+                tab_layout_new_release_song.getTabAt(position_slider).select();
             }
         }
     }
@@ -82,7 +77,7 @@ public class WeekChartFragment extends Fragment {
     }
 
     private void initViewPager() {
-        mViewPagerAdapter = new WeekChartViewPageAdapter(requireActivity().getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, homeDataItemWeekChartItem, week_chart);
+        mViewPagerAdapter = new WeekChartViewPageAdapter(requireActivity().getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         view_pager_new_release_song.setAdapter(mViewPagerAdapter);
 
         tab_layout_new_release_song.setupWithViewPager(view_pager_new_release_song);

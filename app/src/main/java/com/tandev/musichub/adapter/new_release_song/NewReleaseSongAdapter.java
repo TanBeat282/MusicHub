@@ -120,17 +120,16 @@ public class NewReleaseSongAdapter extends RecyclerView.Adapter<NewReleaseSongAd
 
         holder.itemView.setOnClickListener(v -> {
             if (song.getStreamingStatus() == 2) {
-                Toast.makeText(context, "Không thể phát bài hát Premium!", Toast.LENGTH_SHORT).show();
-            } else {
-                Intent intent = new Intent(context, MyService.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("object_song", song);
-                bundle.putInt("position_song", position);
-                bundle.putSerializable("song_list", songList);
-                intent.putExtras(bundle);
-
-                context.startService(intent);
+                Toast.makeText(context, "Bạn đang nghe thử bài hát Premium!", Toast.LENGTH_SHORT).show();
             }
+            Intent intent = new Intent(context, MyService.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("object_song", song);
+            bundle.putInt("position_song", position);
+            bundle.putSerializable("song_list", songList);
+            intent.putExtras(bundle);
+
+            context.startService(intent);
         });
 
     }

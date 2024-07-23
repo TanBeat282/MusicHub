@@ -9,7 +9,7 @@
 
     <TextView
         android:id="@+id/txt_number_top_song"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/_20sdp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginEnd="@dimen/_5sdp"
@@ -32,7 +32,7 @@
             android:fontFamily="@font/roboto_bold"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/_12sdp" />
+            android:textSize="@dimen/_10sdp" />
 
         <ImageView
             android:id="@+id/img_bxh"
@@ -60,8 +60,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             app:lottie_autoPlay="true"
-            app:lottie_loop="true"
             app:lottie_colorFilter="@color/white"
+            app:lottie_loop="true"
             app:lottie_rawRes="@raw/play" />
     </RelativeLayout>
 
@@ -114,10 +114,10 @@
     <ImageView
         android:id="@+id/btn_more"
         android:layout_width="wrap_content"
-        android:background="@drawable/select_onclick"
         android:layout_height="wrap_content"
-        android:padding="@dimen/_5sdp"
         android:layout_gravity="center"
+        android:background="@drawable/select_onclick"
+        android:padding="@dimen/_5sdp"
         android:src="@drawable/baseline_more_vert_24"
         app:tint="@color/colorSecondaryText2" />
 

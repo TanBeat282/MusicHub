@@ -423,8 +423,6 @@ public class AlbumFragment extends Fragment {
                         int defaultColor = 0x000000;
                         int startColor = p.getDarkVibrantColor(defaultColor);
 
-                        Log.d("Check Start Color", "transform: " + startColor);
-
                         if (startColor == defaultColor) {
                             startColor = p.getDarkMutedColor(defaultColor);
                             if (startColor == defaultColor) {
@@ -439,13 +437,10 @@ public class AlbumFragment extends Fragment {
                                     }
                                 }
                             }
-                            Log.d("Check Start Color", "transform: " + startColor);
                         }
 
                         int endColor = getResources().getColor(R.color.gray, null);
                         startColor = ColorUtils.setAlphaComponent(startColor, 150);
-                        Log.d("Check End Color", "transform: " + endColor);
-
                         GradientDrawable gd = new GradientDrawable(
                                 GradientDrawable.Orientation.TOP_BOTTOM,
                                 new int[]{startColor, endColor}

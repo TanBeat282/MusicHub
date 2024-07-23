@@ -23,6 +23,7 @@ import com.tandev.musichub.fragment.hub.HubFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.home.home_new.editor_theme.HomeDataItemPlaylistEditorTheme;
 import com.tandev.musichub.model.chart.home.home_new.editor_theme_3.HomeDataItemPlaylistEditorTheme3;
+import com.tandev.musichub.model.chart.home.home_new.editor_theme_4.HomeDataItemPlaylistEditorTheme4;
 import com.tandev.musichub.model.chart.home.home_new.item.HomeDataItem;
 import com.tandev.musichub.model.chart.home.home_new.season_theme.HomeDataItemPlaylistSeasonTheme;
 
@@ -136,6 +137,33 @@ public class HomePlaylistAdapter extends RecyclerView.Adapter<HomePlaylistAdapte
                 PlaylistAdapter playlistAdapter = new PlaylistAdapter(homeDataItemPlaylistEditorTheme3.getItems(), activity, context);
                 holder.rv_playlist_horizontal.setAdapter(playlistAdapter);
             }
+        }else if (homeDataItem instanceof HomeDataItemPlaylistEditorTheme4) {
+            // hEditorTheme3
+            HomeDataItemPlaylistEditorTheme4 homeDataItemPlaylistEditorTheme4 = (HomeDataItemPlaylistEditorTheme4) homeDataItem;
+
+            holder.txt_title_playlist.setText(homeDataItemPlaylistEditorTheme4.getTitle());
+
+            holder.rv_playlist_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+
+            if (homeDataItemPlaylistEditorTheme4.getLink() != null) {
+                holder.linear_more.setVisibility(View.VISIBLE);
+
+                PlaylistMoreAdapter playlistMoreAdapter = new PlaylistMoreAdapter(homeDataItemPlaylistEditorTheme4.getItems(), activity, context);
+                holder.rv_playlist_horizontal.setAdapter(playlistMoreAdapter);
+
+                holder.linear_playlist.setOnClickListener(view -> {
+                    HubFragment hubFragment = new HubFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("encodeId", Helper.extractEndCodeID(homeDataItemPlaylistEditorTheme4.getLink()));
+
+                    ((MainActivity) context).replaceFragmentWithBundle(hubFragment, bundle);
+                });
+            } else {
+                holder.linear_more.setVisibility(View.GONE);
+
+                PlaylistAdapter playlistAdapter = new PlaylistAdapter(homeDataItemPlaylistEditorTheme4.getItems(), activity, context);
+                holder.rv_playlist_horizontal.setAdapter(playlistAdapter);
+            }
         } else {
             Log.d("TAG", "Unknown HomeDataItem type: " + homeDataItem.getClass().getSimpleName());
         }
@@ -143,7 +171,7 @@ public class HomePlaylistAdapter extends RecyclerView.Adapter<HomePlaylistAdapte
 
     @Override
     public int getItemCount() {
-        return Math.min(homeDataItems.size(), 3);
+        return Math.min(homeDataItems.size(), 4);
     }
 
     public static class PlaylistViewHolder extends RecyclerView.ViewHolder {

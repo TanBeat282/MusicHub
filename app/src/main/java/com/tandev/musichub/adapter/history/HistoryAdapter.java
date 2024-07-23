@@ -93,17 +93,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         holder.itemView.setOnClickListener(v -> {
             if (items.getStreamingStatus() == 2) {
-                Toast.makeText(context, "Không thể phát bài hát Premium!", Toast.LENGTH_SHORT).show();
-            } else {
-                Intent intent = new Intent(context, MyService.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("object_song", items);
-                bundle.putInt("position_song", position);
-                bundle.putSerializable("song_list", songList);
-                intent.putExtras(bundle);
-
-                context.startService(intent);
+                Toast.makeText(context, "Bạn đang nghe thử bài hát Premium!", Toast.LENGTH_SHORT).show();
             }
+            Intent intent = new Intent(context, MyService.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("object_song", items);
+            bundle.putInt("position_song", position);
+            bundle.putSerializable("song_list", songList);
+            intent.putExtras(bundle);
+
+            context.startService(intent);
         });
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

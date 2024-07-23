@@ -70,6 +70,7 @@ import com.tandev.musichub.model.chart.home.home_new.banner.HomeDataItemBanner;
 import com.tandev.musichub.model.chart.home.home_new.banner.HomeDataItemBannerItem;
 import com.tandev.musichub.model.chart.home.home_new.editor_theme.HomeDataItemPlaylistEditorTheme;
 import com.tandev.musichub.model.chart.home.home_new.editor_theme_3.HomeDataItemPlaylistEditorTheme3;
+import com.tandev.musichub.model.chart.home.home_new.editor_theme_4.HomeDataItemPlaylistEditorTheme4;
 import com.tandev.musichub.model.chart.home.home_new.item.HomeDataItem;
 import com.tandev.musichub.model.chart.home.home_new.new_release.HomeDataItemNewRelease;
 import com.tandev.musichub.model.chart.home.home_new.new_release_chart.HomeDataItemNewReleaseChart;
@@ -105,7 +106,7 @@ public class HomeFragment extends Fragment {
     private HubHomeViewModel hubHomeViewModel;
 
     private Handler mHandler;
-    private static final int INTERVAL = 15000;
+    private static final int INTERVAL = 10000;
     private MusicHelper musicHelper;
     private SharedPreferencesManager sharedPreferencesManager;
 
@@ -621,6 +622,10 @@ public class HomeFragment extends Fragment {
                     // hEditorTheme3
                     HomeDataItemPlaylistEditorTheme3 homeDataItemPlaylistEditorTheme3 = (HomeDataItemPlaylistEditorTheme3) item;
                     homeDataItems.add(homeDataItemPlaylistEditorTheme3);
+                }else if (item instanceof HomeDataItemPlaylistEditorTheme4) {
+                    // hEditorTheme3
+                    HomeDataItemPlaylistEditorTheme4 homeDataItemPlaylistEditorTheme4 = (HomeDataItemPlaylistEditorTheme4) item;
+                    homeDataItems.add(homeDataItemPlaylistEditorTheme4);
                 } else if (item instanceof HomeDataItemPlaylistTop100) {
                     // hTop100
                     HomeDataItemPlaylistTop100 homeDataItemPlaylistTop100 = (HomeDataItemPlaylistTop100) item;

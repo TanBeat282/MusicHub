@@ -249,7 +249,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_bold"
-                            android:text="BXH Nhạc mới"
+                            android:text="BXH nhạc mới"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_14ssp" />
 

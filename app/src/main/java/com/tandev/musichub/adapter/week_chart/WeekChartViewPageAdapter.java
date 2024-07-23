@@ -14,13 +14,9 @@ import com.tandev.musichub.fragment.week_chart.vn.VnFragment;
 import com.tandev.musichub.model.chart.home.home_new.week_chart.HomeDataItemWeekChartItem;
 
 public class WeekChartViewPageAdapter extends FragmentStatePagerAdapter {
-    private HomeDataItemWeekChartItem homeDataItemWeekChartItem;
-    private int weekChartPosition;
 
-    public WeekChartViewPageAdapter(@NonNull FragmentManager fm, int behavior, HomeDataItemWeekChartItem homeDataItemWeekChartItem, int weekChartPosition) {
+    public WeekChartViewPageAdapter(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);
-        this.homeDataItemWeekChartItem = homeDataItemWeekChartItem;
-        this.weekChartPosition = weekChartPosition;
     }
 
     @NonNull

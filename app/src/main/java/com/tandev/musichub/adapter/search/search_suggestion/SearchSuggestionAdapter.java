@@ -195,7 +195,6 @@ public class SearchSuggestionAdapter extends RecyclerView.Adapter<RecyclerView.V
                             if (context instanceof MainActivity) {
                                 ((MainActivity) context).replaceFragmentWithBundle(artistFragment, bundle);
                             }
-                            ;
                         }
                     });
                 }
