@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 public class Helper {
@@ -198,4 +199,11 @@ public class Helper {
         return endCodeId.matches(regex);
     }
 
+    // convert timestamp to dd-MM-yyyy HH:mm
+    public static String convertTimestampToDate(long timestamp) {
+        Date date = new Date(timestamp);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+7"));
+        return sdf.format(date);
+    }
 }

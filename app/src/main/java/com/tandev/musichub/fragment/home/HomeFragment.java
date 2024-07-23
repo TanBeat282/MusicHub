@@ -52,6 +52,7 @@ import com.tandev.musichub.api.categories.RadioCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.api.type_adapter_Factory.home.HomeDataItemTypeAdapter;
 import com.tandev.musichub.bottomsheet.BottomSheetProfile;
+import com.tandev.musichub.fragment.album.AllAlbumFragment;
 import com.tandev.musichub.fragment.chart_home.ChartHomeFragment;
 import com.tandev.musichub.fragment.chart_new_release.ChartNewReleaseFragment;
 import com.tandev.musichub.fragment.history.HistoryFragment;
@@ -170,8 +171,10 @@ public class HomeFragment extends Fragment {
     private PlaylistMoreAdapter playlistMoreAdapter;
     private ArrayList<DataPlaylist> dataPlaylistArrayListTop100;
 
+    //alnum
+    private LinearLayout linear_album;
     private TextView txt_title_album;
-    private LinearLayout linear_more;
+    private LinearLayout linear_more_album;
     private RecyclerView rv_album;
     private ArrayList<DataAlbum> dataAlbumArrayList;
     private AlbumMoreAdapter albumMoreAdapter;
@@ -315,8 +318,9 @@ public class HomeFragment extends Fragment {
         txt_title_top100 = view.findViewById(R.id.txt_title_top100);
         rv_top100 = view.findViewById(R.id.rv_top100);
 
+        linear_album = view.findViewById(R.id.linear_album);
         txt_title_album = view.findViewById(R.id.txt_title_album);
-        linear_more = view.findViewById(R.id.linear_more);
+        linear_more_album = view.findViewById(R.id.linear_more_album);
         rv_album = view.findViewById(R.id.rv_album);
 
         txt_title_radio = view.findViewById(R.id.txt_title_radio);
@@ -403,6 +407,16 @@ public class HomeFragment extends Fragment {
         linear_hub_home.setOnClickListener(view -> {
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).replaceFragment(new HubHomeFragment());
+            }
+        });
+        linear_album.setOnClickListener(view -> {
+            AllAlbumFragment allAlbumFragment = new AllAlbumFragment();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data_album_arraylist", dataAlbumArrayList);
+            bundle.putString("title_album", "Null");
+
+            if (requireContext() instanceof MainActivity) {
+                ((MainActivity) requireContext()).replaceFragmentWithBundle(allAlbumFragment, bundle);
             }
         });
         linear_top100.setOnClickListener(view -> {
@@ -622,7 +636,7 @@ public class HomeFragment extends Fragment {
                     // hEditorTheme3
                     HomeDataItemPlaylistEditorTheme3 homeDataItemPlaylistEditorTheme3 = (HomeDataItemPlaylistEditorTheme3) item;
                     homeDataItems.add(homeDataItemPlaylistEditorTheme3);
-                }else if (item instanceof HomeDataItemPlaylistEditorTheme4) {
+                } else if (item instanceof HomeDataItemPlaylistEditorTheme4) {
                     // hEditorTheme3
                     HomeDataItemPlaylistEditorTheme4 homeDataItemPlaylistEditorTheme4 = (HomeDataItemPlaylistEditorTheme4) item;
                     homeDataItems.add(homeDataItemPlaylistEditorTheme4);
@@ -631,13 +645,14 @@ public class HomeFragment extends Fragment {
                     HomeDataItemPlaylistTop100 homeDataItemPlaylistTop100 = (HomeDataItemPlaylistTop100) item;
                     txt_title_top100.setText(homeDataItemPlaylistTop100.getTitle());
                     dataPlaylistArrayListTop100.addAll(homeDataItemPlaylistTop100.getItems());
-                    playlistMoreAdapter.setFilterList(homeDataItemPlaylistTop100.getItems());
+                    playlistMoreAdapter.setFilterList(dataPlaylistArrayListTop100);
                 } else if (item instanceof HomeDataItemPlaylistAlbum) {
                     // hAlbum
                     HomeDataItemPlaylistAlbum homeDataItemPLaylistAlbum = (HomeDataItemPlaylistAlbum) item;
                     txt_title_album.setText(homeDataItemPLaylistAlbum.getTitle());
                     dataAlbumArrayList.addAll(homeDataItemPLaylistAlbum.getItems());
-                    albumMoreAdapter.setFilterList(homeDataItemPLaylistAlbum.getItems());
+                    albumMoreAdapter.setFilterList(dataAlbumArrayList);
+                    linear_more_album.setVisibility(dataAlbumArrayList.size() > 5 ? View.VISIBLE : View.GONE);
                 } else {
                     Log.d("TAG", "Unknown HomeDataItem type: " + item.getClass().getSimpleName());
                 }

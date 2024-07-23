@@ -21,7 +21,10 @@ import com.tandev.musichub.adapter.playlist.PlaylistAdapter;
 import com.tandev.musichub.adapter.single.SingleAdapter;
 import com.tandev.musichub.adapter.song.SongAllAdapter;
 import com.tandev.musichub.adapter.video.VideoMoreAdapter;
+import com.tandev.musichub.fragment.album.AllAlbumFragment;
+import com.tandev.musichub.fragment.playlist.AllPlaylistFragment;
 import com.tandev.musichub.fragment.song.SongFragment;
+import com.tandev.musichub.fragment.video.AllVideoFragment;
 import com.tandev.musichub.model.artist.artist.SectionArtistArtist;
 import com.tandev.musichub.model.artist.playlist.SectionArtistPlaylist;
 import com.tandev.musichub.model.artist.song.SectionArtistSong;
@@ -140,10 +143,32 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 playlistViewHolder.rv_playlist_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                 SingleAdapter singleAdapter = new SingleAdapter(sectionArtistPlaylist.getItems(), activity, context);
                 playlistViewHolder.rv_playlist_horizontal.setAdapter(singleAdapter);
+                playlistViewHolder.linear_playlist.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        AllAlbumFragment allAlbumFragment = new AllAlbumFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("section_album", sectionArtistPlaylist);
+                        bundle.putString("title_album", sectionArtistPlaylist.getTitle());
+
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).replaceFragmentWithBundle(allAlbumFragment, bundle);
+                        }
+                    }
+                });
             } else {
                 playlistViewHolder.rv_playlist_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                 PlaylistAdapter playlistAdapter = new PlaylistAdapter(sectionArtistPlaylist.getItems(), activity, context);
                 playlistViewHolder.rv_playlist_horizontal.setAdapter(playlistAdapter);
+                playlistViewHolder.linear_playlist.setOnClickListener(view -> {
+                    AllPlaylistFragment allPlaylistFragment = new AllPlaylistFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("section_artist_playlist", sectionArtistPlaylist);
+
+                    if (context instanceof MainActivity) {
+                        ((MainActivity) context).replaceFragmentWithBundle(allPlaylistFragment, bundle);
+                    }
+                });
             }
         } else if (holder.getItemViewType() == VIEW_TYPE_VIDEO) {
             int videoPosition = position - sectionArtistSongs.size() - sectionArtistPlaylists.size();
@@ -160,7 +185,13 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
             videoViewHolder.linear_video.setOnClickListener(view -> {
-                // Xử lý sự kiện click
+                AllVideoFragment allVideoFragment = new AllVideoFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("section_artist_video", sectionArtistVideo);
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(allVideoFragment, bundle);
+                }
             });
         } else if (holder.getItemViewType() == VIEW_TYPE_ARTIST) {
             int artistPosition = position - sectionArtistSongs.size() - sectionArtistPlaylists.size() - sectionArtistVideos.size();

@@ -1,6 +1,10 @@
 package com.tandev.musichub.fragment.chart_home;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -12,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,22 +46,25 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.chart_home.ChartHomeMoreAdapter;
-import com.tandev.musichub.adapter.chart_home.WeekChartAdapter;
+import com.tandev.musichub.adapter.chart_home.WeekChartHomeAdapter;
 import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.ChartCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.fragment.week_chart.WeekChartFragment;
 import com.tandev.musichub.helper.ui.ChartInfoView;
 import com.tandev.musichub.helper.ui.Helper;
+import com.tandev.musichub.helper.ui.MusicHelper;
 import com.tandev.musichub.model.chart.chart_home.ChartHome;
 import com.tandev.musichub.model.chart.chart_home.Items;
+import com.tandev.musichub.service.MyService;
+import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
+import com.tandev.musichub.view_model.chart_home.ChartHomeViewModel;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -68,12 +77,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ChartHomeFragment extends Fragment {
+    ChartHomeViewModel chartHomeViewModel;
     private RelativeLayout relative_header;
     private TextView txt_title_toolbar;
     private ImageView img_back;
     private ImageView imageBackground;
     private RelativeLayout relative_chart_home;
 
+    private ImageView img_play;
+    private TextView txt_time_chart;
+
+    //chart
     private LineChart chart;
     private ChartInfoView chartInfoView;
     private RelativeLayout relative_loading;
@@ -84,27 +98,51 @@ public class ChartHomeFragment extends Fragment {
 
     //week chart
     private LinearLayout linear_week_chart_vn;
+    private RoundedImageView rounded_image_week_chart_vn;
     private TextView txt_title_week_chart_vn;
     private RecyclerView rv_week_chart_vn;
     private ArrayList<Items> itemsArrayList_week_chart_vn;
-    private WeekChartAdapter weekChartMoreAdapter_vn;
+    private WeekChartHomeAdapter weekChartMoreAdapter_vn;
 
     private LinearLayout linear_week_chart_us;
+    private RoundedImageView rounded_image_week_chart_us;
     private TextView txt_title_week_chart_us;
     private RecyclerView rv_week_chart_us;
     private ArrayList<Items> itemsArrayList_week_chart_us;
-    private WeekChartAdapter weekChartMoreAdapter_us;
+    private WeekChartHomeAdapter weekChartMoreAdapter_us;
 
 
     private LinearLayout linear_week_chart_korea;
+    private RoundedImageView rounded_image_week_chart_korea;
     private TextView txt_title_week_chart_korea;
     private RecyclerView rv_week_chart_korea;
     private ArrayList<Items> itemsArrayList_week_chart_korea;
-    private WeekChartAdapter weekChartMoreAdapter_korea;
+    private WeekChartHomeAdapter weekChartMoreAdapter_korea;
+
+    private MusicHelper musicHelper;
+    private SharedPreferencesManager sharedPreferencesManager;
+
+
+    public BroadcastReceiver createBroadcastReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle bundle = intent.getExtras();
+                if (bundle == null) {
+                    return;
+                }
+                Items items = (Items) bundle.get("object_song");
+                musicHelper.checkIsPlayingPlaylist(items, itemsArrayList, chartHomeMoreAdapter);
+
+            }
+        };
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        chartHomeViewModel = new ViewModelProvider(this).get(ChartHomeViewModel.class);
     }
 
     @Override
@@ -118,12 +156,32 @@ public class ChartHomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         chartInfoView = new ChartInfoView(requireContext());
+        sharedPreferencesManager = new SharedPreferencesManager(requireContext());
+        musicHelper = new MusicHelper(requireContext(), sharedPreferencesManager);
+
         initViews(view);
         conFigViews();
         initAdapter();
         setupChart();
         onClick();
-        getChartHome();
+        initViewModel();
+
+    }
+
+    private void initViewModel() {
+        chartHomeViewModel.getChartHomeMutableLiveData().observe(getViewLifecycleOwner(), artistDetail -> {
+            if (artistDetail != null) {
+                updateUiChartHome(artistDetail);
+                updateUiWeekChart(artistDetail);
+                updateChart(artistDetail);
+            } else {
+                getChartHome();
+            }
+        });
+
+        if (chartHomeViewModel.getChartHomeMutableLiveData().getValue() == null) {
+            getChartHome();
+        }
     }
 
     private void initViews(View view) {
@@ -134,6 +192,8 @@ public class ChartHomeFragment extends Fragment {
         txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);
 
         imageBackground = view.findViewById(R.id.imageBackground);
+        img_play = view.findViewById(R.id.img_play);
+        txt_time_chart = view.findViewById(R.id.txt_time_chart);
         relative_chart_home = view.findViewById(R.id.relative_chart_home);
         chart = view.findViewById(R.id.chart);
         relative_loading = view.findViewById(R.id.relative_loading);
@@ -141,14 +201,17 @@ public class ChartHomeFragment extends Fragment {
         rv_chart_home = view.findViewById(R.id.rv_chart_home);
 
         linear_week_chart_vn = view.findViewById(R.id.linear_week_chart_vn);
+        rounded_image_week_chart_vn = view.findViewById(R.id.rounded_image_week_chart_vn);
         txt_title_week_chart_vn = view.findViewById(R.id.txt_title_week_chart_vn);
         rv_week_chart_vn = view.findViewById(R.id.rv_week_chart_vn);
 
         linear_week_chart_us = view.findViewById(R.id.linear_week_chart_us);
+        rounded_image_week_chart_us = view.findViewById(R.id.rounded_image_week_chart_us);
         txt_title_week_chart_us = view.findViewById(R.id.txt_title_week_chart_us);
         rv_week_chart_us = view.findViewById(R.id.rv_week_chart_us);
 
         linear_week_chart_korea = view.findViewById(R.id.linear_week_chart_korea);
+        rounded_image_week_chart_korea = view.findViewById(R.id.rounded_image_week_chart_korea);
         txt_title_week_chart_korea = view.findViewById(R.id.txt_title_week_chart_korea);
         rv_week_chart_korea = view.findViewById(R.id.rv_week_chart_korea);
     }
@@ -165,15 +228,15 @@ public class ChartHomeFragment extends Fragment {
 
         //week chart
         rv_week_chart_vn.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        weekChartMoreAdapter_vn = new WeekChartAdapter(itemsArrayList_week_chart_vn, 0, requireActivity(), requireContext());
+        weekChartMoreAdapter_vn = new WeekChartHomeAdapter(itemsArrayList_week_chart_vn, requireActivity(), requireContext());
         rv_week_chart_vn.setAdapter(weekChartMoreAdapter_vn);
 
         rv_week_chart_us.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        weekChartMoreAdapter_us = new WeekChartAdapter(itemsArrayList_week_chart_us, 1, requireActivity(), requireContext());
+        weekChartMoreAdapter_us = new WeekChartHomeAdapter(itemsArrayList_week_chart_us, requireActivity(), requireContext());
         rv_week_chart_us.setAdapter(weekChartMoreAdapter_us);
 
         rv_week_chart_korea.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        weekChartMoreAdapter_korea = new WeekChartAdapter(itemsArrayList_week_chart_korea, 2, requireActivity(), requireContext());
+        weekChartMoreAdapter_korea = new WeekChartHomeAdapter(itemsArrayList_week_chart_korea, requireActivity(), requireContext());
         rv_week_chart_korea.setAdapter(weekChartMoreAdapter_korea);
     }
 
@@ -203,6 +266,16 @@ public class ChartHomeFragment extends Fragment {
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().popBackStack();
             }
+        });
+        img_play.setOnClickListener(view -> {
+            Intent intent = new Intent(requireContext(), MyService.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("object_song", itemsArrayList.get(0));
+            bundle.putInt("position_song", 0);
+            bundle.putSerializable("song_list", itemsArrayList);
+            intent.putExtras(bundle);
+
+            requireContext().startService(intent);
         });
         linear_week_chart_vn.setOnClickListener(view -> {
             WeekChartFragment weekChartFragment = new WeekChartFragment();
@@ -249,9 +322,7 @@ public class ChartHomeFragment extends Fragment {
                             if (response.isSuccessful()) {
                                 ChartHome chartHome = response.body();
                                 if (chartHome != null) {
-                                    updateUiChartHome(chartHome);
-                                    updateUiWeekChart(chartHome);
-                                    updateChart(chartHome);
+                                    chartHomeViewModel.setChartHomeMutableLiveData(chartHome);
                                 }
                             }
                         }
@@ -276,6 +347,8 @@ public class ChartHomeFragment extends Fragment {
     private void updateUiChartHome(ChartHome chartHome) {
         itemsArrayList = chartHome.getData().getRTChart().getItems();
         chartHomeMoreAdapter.setFilterList(itemsArrayList);
+        musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), itemsArrayList, chartHomeMoreAdapter);
+
         loadImage(itemsArrayList.get(0).getThumbnailM());
     }
 
@@ -283,15 +356,18 @@ public class ChartHomeFragment extends Fragment {
     private void updateUiWeekChart(ChartHome chartHome) {
         itemsArrayList_week_chart_vn = chartHome.getData().getWeekChart().getVn().getItems();
         weekChartMoreAdapter_vn.setFilterList(itemsArrayList_week_chart_vn);
-        txt_title_week_chart_vn.setText("Việt Nam");
+        txt_title_week_chart_vn.setText("V-POP");
+        Glide.with(requireContext()).load(itemsArrayList_week_chart_vn.get(0).getThumbnailM()).into(rounded_image_week_chart_vn);
 
         itemsArrayList_week_chart_us = chartHome.getData().getWeekChart().getUs().getItems();
         weekChartMoreAdapter_us.setFilterList(itemsArrayList_week_chart_us);
         txt_title_week_chart_us.setText("US-UK");
+        Glide.with(requireContext()).load(itemsArrayList_week_chart_us.get(0).getThumbnailM()).into(rounded_image_week_chart_us);
 
         itemsArrayList_week_chart_korea = chartHome.getData().getWeekChart().getKorea().getItems();
         weekChartMoreAdapter_korea.setFilterList(itemsArrayList_week_chart_korea);
-        txt_title_week_chart_korea.setText("K-Pop");
+        txt_title_week_chart_korea.setText("K-POP");
+        Glide.with(requireContext()).load(itemsArrayList_week_chart_korea.get(0).getThumbnailM()).into(rounded_image_week_chart_korea);
     }
 
     private void setupChart() {
@@ -359,6 +435,7 @@ public class ChartHomeFragment extends Fragment {
 
             entryMap.put(key, entries);
             maxValues.put(key, max); // Lưu giá trị tối đa cho line
+            setTimeChartHome(dataArray);
         }
 
         // Sắp xếp các dòng theo giá trị tối đa
@@ -429,6 +506,12 @@ public class ChartHomeFragment extends Fragment {
 
         nested_scroll.setVisibility(View.VISIBLE);
         relative_loading.setVisibility(View.GONE);
+    }
+
+    private void setTimeChartHome(JsonArray dataArray) {
+        JsonObject timeObject = dataArray.get(dataArray.size() - 1).getAsJsonObject();
+        long time = timeObject.get("time").getAsLong();
+        txt_time_chart.setText(Helper.convertTimestampToDate(time));
     }
 
 
@@ -513,4 +596,15 @@ public class ChartHomeFragment extends Fragment {
                 .submit();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(createBroadcastReceiver(), new IntentFilter("send_data_to_activity"));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(createBroadcastReceiver());
+    }
 }

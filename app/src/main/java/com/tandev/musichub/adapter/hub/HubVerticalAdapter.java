@@ -3,6 +3,7 @@ package com.tandev.musichub.adapter.hub;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,15 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.artist.ArtistsAllAdapter;
-import com.tandev.musichub.adapter.playlist.PlaylistAdapter;
+import com.tandev.musichub.adapter.playlist.PlaylistMoreAdapter;
 import com.tandev.musichub.adapter.song.SongAllAdapter;
 import com.tandev.musichub.adapter.video.VideoMoreAdapter;
+import com.tandev.musichub.fragment.artist.AllArtistFragment;
+import com.tandev.musichub.fragment.playlist.AllPlaylistFragment;
+import com.tandev.musichub.fragment.video.AllVideoFragment;
 import com.tandev.musichub.model.hub.SectionHubArtist;
 import com.tandev.musichub.model.hub.SectionHubPlaylist;
 import com.tandev.musichub.model.hub.SectionHubSong;
@@ -112,7 +117,7 @@ public class HubVerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             SongAllAdapter songAllAdapter = new SongAllAdapter(sectionHubSong.getItems(), activity, context);
             songViewHolder.rv_song_horizontal.setAdapter(songAllAdapter);
 
-            songViewHolder.linear_more.setVisibility(sectionHubSong.getLink().isEmpty() || sectionHubSong.equals("") ? View.GONE : View.VISIBLE);
+            songViewHolder.linear_more.setVisibility(sectionHubSongs.size() > 5 ? View.VISIBLE : View.GONE);
 
             songViewHolder.linear_song.setOnClickListener(view -> {
                 // Xử lý sự kiện click
@@ -125,13 +130,19 @@ public class HubVerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             playlistViewHolder.txt_title_playlist.setText(sectionHubPlaylist.getTitle());
 
             playlistViewHolder.rv_playlist_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            PlaylistAdapter playlistAdapter = new PlaylistAdapter(sectionHubPlaylist.getItems(), activity, context);
-            playlistViewHolder.rv_playlist_horizontal.setAdapter(playlistAdapter);
+            PlaylistMoreAdapter playlistMoreAdapter = new PlaylistMoreAdapter(sectionHubPlaylist.getItems(), activity, context);
+            playlistViewHolder.rv_playlist_horizontal.setAdapter(playlistMoreAdapter);
 
-            playlistViewHolder.linear_more.setVisibility(sectionHubPlaylist.getLink().isEmpty() || sectionHubPlaylist.equals("") ? View.GONE : View.VISIBLE);
+            playlistViewHolder.linear_more.setVisibility(sectionHubPlaylists.size() > 5 ? View.VISIBLE : View.GONE);
 
             playlistViewHolder.linear_playlist.setOnClickListener(view -> {
-                // Xử lý sự kiện click
+                AllPlaylistFragment allPlaylistFragment = new AllPlaylistFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("section_hub_playlist", sectionHubPlaylist);
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(allPlaylistFragment, bundle);
+                }
             });
         } else if (holder.getItemViewType() == VIEW_TYPE_VIDEO) {
             int videoPosition = position - sectionHubSongs.size() - sectionHubPlaylists.size();
@@ -144,11 +155,17 @@ public class HubVerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             VideoMoreAdapter videoMoreAdapter = new VideoMoreAdapter(sectionHubVideo.getItems(), activity, context);
             videoViewHolder.rv_video_horizontal.setAdapter(videoMoreAdapter);
 
-            videoViewHolder.linear_more.setVisibility(sectionHubVideo.getLink().isEmpty() || sectionHubVideo.equals("") ? View.GONE : View.VISIBLE);
+            videoViewHolder.linear_more.setVisibility(sectionHubVideos.size() > 5 ? View.VISIBLE : View.GONE);
 
 
             videoViewHolder.linear_video.setOnClickListener(view -> {
-                // Xử lý sự kiện click
+                AllVideoFragment allVideoFragment = new AllVideoFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("section_hub_video", sectionHubVideo);
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(allVideoFragment, bundle);
+                }
             });
         } else if (holder.getItemViewType() == VIEW_TYPE_ARTIST) {
             int artistPosition = position - sectionHubSongs.size() - sectionHubPlaylists.size() - sectionHubVideos.size();
@@ -161,10 +178,16 @@ public class HubVerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ArtistsAllAdapter artistsAllAdapter = new ArtistsAllAdapter(sectionHubArtist.getItems(), activity, context);
             artistViewHolder.rv_artist_horizontal.setAdapter(artistsAllAdapter);
 
-            artistViewHolder.linear_more.setVisibility(sectionHubArtist.getLink().isEmpty() || sectionHubArtist.equals("") ? View.GONE : View.VISIBLE);
+            artistViewHolder.linear_more.setVisibility(sectionHubArtists.size() > 5 ? View.VISIBLE : View.GONE);
 
             artistViewHolder.linear_artist.setOnClickListener(view -> {
-                // Xử lý sự kiện click
+                AllArtistFragment allArtistFragment = new AllArtistFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("section_hub_artist", sectionHubArtist);
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(allArtistFragment, bundle);
+                }
             });
         }
     }

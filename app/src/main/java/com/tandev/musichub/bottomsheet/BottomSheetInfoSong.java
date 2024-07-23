@@ -9,15 +9,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
@@ -41,9 +37,7 @@ import com.tandev.musichub.helper.uliti.GetUrlAudioHelper;
 import com.tandev.musichub.helper.uliti.PermissionUtils;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.song.SongAudio;
-import com.tandev.musichub.model.song.SongDetail;
 import com.tandev.musichub.service.MyService;
-import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -63,7 +57,7 @@ public class BottomSheetInfoSong extends BottomSheetDialogFragment implements Pe
     private GetUrlAudioHelper getUrlAudioHelper;
     private DownloadAudio downloadAudio;
     private long downloadID;
-    private PermissionUtils permissionUtils;
+    private final PermissionUtils permissionUtils;
 
     public BottomSheetInfoSong(Context context, Activity activity, Items items) {
         this.context = context;

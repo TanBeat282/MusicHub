@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +19,7 @@ import androidx.annotation.RequiresApi;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
-import com.tandev.musichub.fragment.profile.ProfileFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.playlist.DataPlaylist;
@@ -30,7 +27,7 @@ import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 
 
 public class BottomSheetCreatePlaylistUser extends BottomSheetDialogFragment {
-    private Items items;
+    private final Items items;
     private final Context context;
     private final Activity activity;
     private BottomSheetDialog bottomSheetDialog;

@@ -81,39 +81,41 @@ public class MyService extends Service {
 
         mediaPlayer.setOnCompletionListener(mp -> {
             // Kiểm tra nếu thời gian hiện tại gần thời gian kết thúc bài hát
-            if (mediaPlayer != null && mediaPlayer.getDuration() > 0 && mediaPlayer.getCurrentPosition() >= mediaPlayer.getDuration() - 100) {
-                if (isPlayingBumper) {
-                    // If bumper audio is playing, play the next song
-                    isPlayingBumper = false;
-                    nextMusic();
-                } else if (mSong.getStreamingStatus() == 2) {
-                    getUrlAudioHelper.getPremiumSongAudio(mSong.getEncodeId(), new GetUrlAudioHelper.PremiumSongAudioCallback() {
-                        @Override
-                        public void onSuccess(PreviewPremium previewPremium) {
-                            if (previewPremium.getData() != null && previewPremium.getData().getBumperAudio() != null) {
-                                try {
-                                    mediaPlayer.reset();
-                                    mediaPlayer.setDataSource(previewPremium.getData().getBumperAudio().getLink());
-                                    mediaPlayer.prepareAsync();
-                                    mediaPlayer.setOnPreparedListener(mp -> {
-                                        mediaPlayer.start();
-                                        isPlayingBumper = true; // Set the flag to true when bumper audio is playing
-                                    });
-                                } catch (IOException e) {
+            if (mediaPlayer != null) {
+                if (mediaPlayer.getDuration() > 0 && mediaPlayer.getCurrentPosition() >= mediaPlayer.getDuration() - 100) {
+                    if (isPlayingBumper) {
+                        // If bumper audio is playing, play the next song
+                        isPlayingBumper = false;
+                        nextMusic();
+                    } else if (mSong.getStreamingStatus() == 2) {
+                        getUrlAudioHelper.getPremiumSongAudio(mSong.getEncodeId(), new GetUrlAudioHelper.PremiumSongAudioCallback() {
+                            @Override
+                            public void onSuccess(PreviewPremium previewPremium) {
+                                if (previewPremium.getData() != null && previewPremium.getData().getBumperAudio() != null) {
+                                    try {
+                                        mediaPlayer.reset();
+                                        mediaPlayer.setDataSource(previewPremium.getData().getBumperAudio().getLink());
+                                        mediaPlayer.prepareAsync();
+                                        mediaPlayer.setOnPreparedListener(mp -> {
+                                            mediaPlayer.start();
+                                            isPlayingBumper = true; // Set the flag to true when bumper audio is playing
+                                        });
+                                    } catch (IOException e) {
+                                        nextMusic();
+                                    }
+                                } else {
                                     nextMusic();
                                 }
-                            } else {
+                            }
+
+                            @Override
+                            public void onFailure(Throwable throwable) {
                                 nextMusic();
                             }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            nextMusic();
-                        }
-                    });
-                } else {
-                    nextMusic();
+                        });
+                    } else {
+                        nextMusic();
+                    }
                 }
             }
         });

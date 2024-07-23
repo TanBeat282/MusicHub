@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/_10sdp"
-        android:background="@drawable/background_button_play"
+        android:background="@drawable/background_button_more"
         android:padding="@dimen/_5sdp"
         android:rotation="-180"
         android:src="@drawable/ic_arrow_back"

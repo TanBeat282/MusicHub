@@ -39,6 +39,7 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.artist.ArtistsMoreAdapter;
 import com.tandev.musichub.adapter.playlist.PlaylistMoreAdapter;
@@ -47,6 +48,7 @@ import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.api.type_adapter_Factory.section_bottom.SectionBottomTypeAdapter;
+import com.tandev.musichub.fragment.artist.AllArtistFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.helper.ui.MusicHelper;
 import com.tandev.musichub.model.chart.chart_home.Artists;
@@ -166,7 +168,7 @@ public class PlaylistFragment extends Fragment {
             if (artistDetail != null) {
                 updateUI(artistDetail);
             } else {
-                getDataBundlePlaylist();
+                getDataBundleSectionBottom();
             }
         });
 
@@ -258,18 +260,18 @@ public class PlaylistFragment extends Fragment {
     }
 
     private void initAdapter() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
-        rv_playlist.setLayoutManager(layoutManager);
+        itemsArrayList = new ArrayList<>();
+        rv_playlist.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         songMoreAllAdapter = new SongMoreAllAdapter(itemsArrayList, requireActivity(), requireContext());
         rv_playlist.setAdapter(songMoreAllAdapter);
 
-        LinearLayoutManager layoutManagerSingle = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        rv_single.setLayoutManager(layoutManagerSingle);
+        artistsArrayList = new ArrayList<>();
+        rv_single.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         artistsMoreAdapter = new ArtistsMoreAdapter(artistsArrayList, requireActivity(), requireContext());
         rv_single.setAdapter(artistsMoreAdapter);
 
-        LinearLayoutManager layoutManagerArtists = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        rv_playlist_like.setLayoutManager(layoutManagerArtists);
+        dataPlaylistArrayList = new ArrayList<>();
+        rv_playlist_like.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         playlistMoreAdapter = new PlaylistMoreAdapter(dataPlaylistArrayList, requireActivity(), requireContext());
         rv_playlist_like.setAdapter(playlistMoreAdapter);
     }
@@ -297,10 +299,22 @@ public class PlaylistFragment extends Fragment {
                 Toast.makeText(requireContext(), "Đã lưu playlist", Toast.LENGTH_SHORT).show();
             }
         });
-        linear_single.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Xử lý sự kiện khi người dùng nhấn vào Single
+        linear_single.setOnClickListener(view -> {
+            AllArtistFragment allArtistFragment = new AllArtistFragment();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data_playlist_arraylist", artistsArrayList);
+
+            if (requireContext() instanceof MainActivity) {
+                ((MainActivity) requireContext()).replaceFragmentWithBundle(allArtistFragment, bundle);
+            }
+        });
+        linear_playlist_like.setOnClickListener(view -> {
+            AllPlaylistFragment allPlaylistFragment = new AllPlaylistFragment();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data_playlist_arraylist", dataPlaylistArrayList);
+
+            if (requireContext() instanceof MainActivity) {
+                ((MainActivity) requireContext()).replaceFragmentWithBundle(allPlaylistFragment, bundle);
             }
         });
     }
@@ -364,12 +378,9 @@ public class PlaylistFragment extends Fragment {
         img_check_playlist.setImageResource(sharedPreferencesManager.isPlaylistExists(playlist.getData().getEncodeId()) ? R.drawable.playlist_add_check_24px : R.drawable.ic_playlist_add);
         txt_check_playlist.setText(sharedPreferencesManager.isPlaylistExists(playlist.getData().getEncodeId()) ? "Đã Thêm" : "Thêm");
 
-        ArrayList<Items> arrayList = playlist.getData().getSong().getItems();
-        if (!arrayList.isEmpty()) {
-            itemsArrayList = arrayList;
-            songMoreAllAdapter.setFilterList(arrayList);
-            musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), itemsArrayList, songMoreAllAdapter);
-        }
+        itemsArrayList = playlist.getData().getSong().getItems();
+        songMoreAllAdapter.setFilterList(itemsArrayList);
+        musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), itemsArrayList, songMoreAllAdapter);
 
         relative_loading.setVisibility(View.GONE);
         nested_scroll.setVisibility(View.VISIBLE);

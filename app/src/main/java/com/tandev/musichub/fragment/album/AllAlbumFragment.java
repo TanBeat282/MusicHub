@@ -20,9 +20,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.tandev.musichub.R;
+import com.tandev.musichub.adapter.album.AlbumAllAdapter;
 import com.tandev.musichub.adapter.album.AlbumMoreAdapter;
+import com.tandev.musichub.adapter.single.SingleAdapter;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.album.DataAlbum;
+import com.tandev.musichub.model.artist.SectionArtist;
+import com.tandev.musichub.model.artist.playlist.SectionArtistPlaylist;
+import com.tandev.musichub.model.hub.SectionHubPlaylist;
+import com.tandev.musichub.model.playlist.DataPlaylist;
 
 import java.util.ArrayList;
 
@@ -35,7 +41,11 @@ public class AllAlbumFragment extends Fragment {
     private TextView txt_playlist;
     private RecyclerView rv_playlist;
     private ArrayList<DataAlbum> dataAlbumArrayList;
-    private AlbumMoreAdapter albumMoreAdapter;
+    private String nameArtist;
+    private AlbumAllAdapter albumAllAdapter;
+
+    private ArrayList<DataPlaylist> sectionHubPlaylistArrayList;
+    private SingleAdapter singleAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,9 +53,7 @@ public class AllAlbumFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_all_album, container, false);
     }
 
@@ -60,11 +68,35 @@ public class AllAlbumFragment extends Fragment {
     }
 
     private void getBundle() {
-        if (getArguments() != null) {
-            dataAlbumArrayList = (ArrayList<DataAlbum>) getArguments().getSerializable("data_album_arraylist");
-            albumMoreAdapter.setFilterList(dataAlbumArrayList);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            if (bundle.containsKey("title_album")) {
+                nameArtist = bundle.getString("title_album");
+                if (nameArtist != null) {
+                    // Cập nhật giao diện với tên nghệ sĩ
+                    txt_name_artist.setText(nameArtist);
+                    txt_playlist.setText(nameArtist);
+                }
+            }
+
+            if (bundle.containsKey("data_album_arraylist")) {
+                // Lấy danh sách DataAlbum từ Bundle
+                dataAlbumArrayList = (ArrayList<DataAlbum>) bundle.getSerializable("data_album_arraylist");
+                if (dataAlbumArrayList != null) {
+                    albumAllAdapter.setFilterList(dataAlbumArrayList);
+                }
+            }
+            if (bundle.containsKey("section_album")) {
+                // Lấy danh sách DataAlbum từ Bundle
+                SectionArtistPlaylist sectionHubPlaylist = (SectionArtistPlaylist) bundle.getSerializable("section_album");
+                if (sectionHubPlaylist != null) {
+                    sectionHubPlaylistArrayList = sectionHubPlaylist.getItems();
+                    singleAdapter.setFilterList(sectionHubPlaylistArrayList);
+                }
+            }
         }
     }
+
 
     private void initViews(View view) {
         relative_header = view.findViewById(R.id.relative_header);
@@ -80,8 +112,6 @@ public class AllAlbumFragment extends Fragment {
 
     @SuppressLint("SetTextI18n")
     private void conFigViews() {
-        txt_playlist.setText("Album");
-
         nested_scroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @SuppressLint({"ObsoleteSdkInt", "SetTextI18n"})
             @Override
@@ -98,7 +128,7 @@ public class AllAlbumFragment extends Fragment {
                 } else if (scrollY >= 300) {
                     txt_name_artist.setVisibility(View.VISIBLE);
                     txt_view.setVisibility(View.GONE);
-                    txt_name_artist.setText("Album");
+                    txt_name_artist.setText(nameArtist);
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
                     Helper.changeStatusBarColor(requireActivity(), R.color.gray);
                 }
@@ -107,9 +137,14 @@ public class AllAlbumFragment extends Fragment {
     }
 
     private void initAdapter() {
+        dataAlbumArrayList = new ArrayList<>();
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 2); // 2 columns
         rv_playlist.setLayoutManager(gridLayoutManager);
-        albumMoreAdapter = new AlbumMoreAdapter(dataAlbumArrayList, requireActivity(), requireContext());
-        rv_playlist.setAdapter(albumMoreAdapter);
+        albumAllAdapter = new AlbumAllAdapter(dataAlbumArrayList, requireActivity(), requireContext());
+        rv_playlist.setAdapter(albumAllAdapter);
+
+        sectionHubPlaylistArrayList = new ArrayList<>();
+        singleAdapter = new SingleAdapter(sectionHubPlaylistArrayList, requireActivity(), requireContext());
+        rv_playlist.setAdapter(singleAdapter);
     }
 }

@@ -20,6 +20,7 @@ import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.bottomsheet.BottomSheetOptionPlaylist;
 import com.tandev.musichub.fragment.album.AlbumFragment;
+import com.tandev.musichub.fragment.playlist.AllPlaylistFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 
@@ -123,7 +124,13 @@ public class PlaylistMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else {
             MoreViewHolder moreViewHolder = (MoreViewHolder) holder;
             moreViewHolder.linear_more.setOnClickListener(v -> {
-                // Handle "More" item click
+                AllPlaylistFragment allPlaylistFragment = new AllPlaylistFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("data_playlist_arraylist", dataPlaylistArrayList);
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(allPlaylistFragment, bundle);
+                }
             });
         }
     }

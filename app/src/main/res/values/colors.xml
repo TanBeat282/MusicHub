@@ -22,4 +22,5 @@
     <color name="yellow">#ffff00</color>
     <color name="transparent">#80000000</color>
     <color name="md_theme_dark_background">#0B0A0A</color>
+    <color name="blue">#0000FF</color>
 </resources>

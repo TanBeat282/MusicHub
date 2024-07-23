@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -25,7 +24,6 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
-import com.tandev.musichub.fragment.profile.ProfileFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
@@ -36,12 +34,12 @@ public class BottomSheetOptionPlaylist extends BottomSheetDialogFragment {
     private final Activity activity;
     private BottomSheetDialog bottomSheetDialog;
 
-    private DataPlaylist dataPlaylist;
+    private final DataPlaylist dataPlaylist;
     private LinearLayout linear_playlist;
     private RoundedImageView thumbImageView;
     private TextView txt_title_playlist, txt_user_name_playlist;
     private LinearLayout linear_save_playlist, linear_share_playlist;
-    private SharedPreferencesManager sharedPreferencesManager;
+    private final SharedPreferencesManager sharedPreferencesManager;
 
     public BottomSheetOptionPlaylist(Context context, Activity activity, DataPlaylist dataPlaylist) {
         this.context = context;

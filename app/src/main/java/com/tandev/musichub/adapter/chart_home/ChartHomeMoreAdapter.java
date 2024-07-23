@@ -73,7 +73,7 @@ public class ChartHomeMoreAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemViewType(int position) {
-            if (!isExpanded && songList.size() > 10 && position == 10) {
+        if (!isExpanded && songList.size() > 10 && position == 10) {
             return ITEM_TYPE_MORE;
         }
         return ITEM_TYPE_SONG;
@@ -116,14 +116,12 @@ public class ChartHomeMoreAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
 
             if (selectedPosition == position) {
-                int colorSpotify = ContextCompat.getColor(context, R.color.colorSpotify);
-                songViewHolder.nameTextView.setTextColor(colorSpotify);
+                songViewHolder.itemView.setBackgroundResource(R.drawable.select_item_background);
                 songViewHolder.aniPlay.setVisibility(View.VISIBLE);
             } else {
-                songViewHolder.nameTextView.setTextColor(Color.WHITE);
+                songViewHolder.itemView.setBackgroundResource(R.drawable.select_item);
                 songViewHolder.aniPlay.setVisibility(View.GONE);
             }
-
             int premiumColor;
             if (song.getStreamingStatus() == 2) {
                 premiumColor = ContextCompat.getColor(context, R.color.yellow);
@@ -208,12 +206,27 @@ public class ChartHomeMoreAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
+    @SuppressLint("ResourceAsColor")
     private void setImageAndTint(ImageView imageView, TextView textView, TextView txt_rank_status, int resId, int colorId, int rankingStatus, int position) {
         imageView.setImageResource(resId);
         int color = ContextCompat.getColor(context, colorId);
         imageView.setColorFilter(color, PorterDuff.Mode.SRC_IN);
 
         textView.setText(String.valueOf(position + 1));
+        // Lấy màu từ tài nguyên màu
+        int blueColor = ContextCompat.getColor(textView.getContext(), R.color.blue);
+        int greenColor = ContextCompat.getColor(textView.getContext(), R.color.green);
+        int redColor = ContextCompat.getColor(textView.getContext(), R.color.red);
+
+        if (position + 1 == 1) {
+            textView.setTextColor(blueColor);
+        } else if (position + 1 == 2) {
+            textView.setTextColor(greenColor);
+        } else if (position + 1 == 3) {
+            textView.setTextColor(redColor);
+        } else {
+            textView.setTextColor(Color.WHITE);
+        }
 
         txt_rank_status.setText(String.valueOf(rankingStatus));
         txt_rank_status.setTextColor(color);

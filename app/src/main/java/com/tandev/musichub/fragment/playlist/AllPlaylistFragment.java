@@ -21,16 +21,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.tandev.musichub.R;
-import com.tandev.musichub.adapter.bxh_song.BXHSongAdapter;
 import com.tandev.musichub.adapter.playlist.PlaylistAdapter;
 import com.tandev.musichub.helper.ui.Helper;
-import com.tandev.musichub.model.chart.chart_home.Items;
+import com.tandev.musichub.model.artist.playlist.SectionArtistPlaylist;
+import com.tandev.musichub.model.hub.SectionHubPlaylist;
 import com.tandev.musichub.model.playlist.DataPlaylist;
 import com.tandev.musichub.model.top100.DataTop100;
 
 import java.util.ArrayList;
 
-public class PlaylistViewAllFragment extends Fragment {
+public class AllPlaylistFragment extends Fragment {
 
     private RelativeLayout relative_header;
     private RelativeLayout relative_loading;
@@ -42,9 +42,11 @@ public class PlaylistViewAllFragment extends Fragment {
     private TextView txt_playlist;
     private RecyclerView rv_playlist;
     private PlaylistAdapter playlistAllAdapter;
+    private String title;
+
+    //data_playlist
     private ArrayList<DataPlaylist> dataPlaylistArrayList;
 
-    private String title;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,17 +73,49 @@ public class PlaylistViewAllFragment extends Fragment {
     private void getBundle() {
         Bundle bundle = getArguments();
         if (bundle != null) {
-            DataTop100 dataTop100 = (DataTop100) bundle.getSerializable("data_top_100");
-            if (dataTop100 != null) {
-                title = dataTop100.getTitle();
-                txt_playlist.setText(title);
-                dataPlaylistArrayList = dataTop100.getItems();
-                playlistAllAdapter.setFilterList(dataPlaylistArrayList);
-                relative_loading.setVisibility(View.GONE);
-                nested_scroll.setVisibility(View.VISIBLE);
+            if (bundle.containsKey("data_top_100")) {
+                DataTop100 dataTop100 = (DataTop100) bundle.getSerializable("data_top_100");
+                if (dataTop100 != null) {
+                    title = dataTop100.getTitle();
+                    txt_playlist.setText(title);
+                    dataPlaylistArrayList = dataTop100.getItems();
+                    playlistAllAdapter.setFilterList(dataPlaylistArrayList);
+                    relative_loading.setVisibility(View.GONE);
+                    nested_scroll.setVisibility(View.VISIBLE);
+                }
+            } else if (bundle.containsKey("section_hub_playlist")) {
+                SectionHubPlaylist sectionHubPlaylist = (SectionHubPlaylist) bundle.getSerializable("section_hub_playlist");
+                if (sectionHubPlaylist != null) {
+                    title = sectionHubPlaylist.getTitle();
+                    txt_playlist.setText(title);
+                    dataPlaylistArrayList = sectionHubPlaylist.getItems();
+                    playlistAllAdapter.setFilterList(dataPlaylistArrayList);
+                    relative_loading.setVisibility(View.GONE);
+                    nested_scroll.setVisibility(View.VISIBLE);
+                }
+            } else if (bundle.containsKey("section_artist_playlist")) {
+                SectionArtistPlaylist sectionArtistPlaylist = (SectionArtistPlaylist) bundle.getSerializable("section_artist_playlist");
+                if (sectionArtistPlaylist != null) {
+                    title = sectionArtistPlaylist.getTitle();
+                    txt_playlist.setText(title);
+                    dataPlaylistArrayList = sectionArtistPlaylist.getItems();
+                    playlistAllAdapter.setFilterList(dataPlaylistArrayList);
+                    relative_loading.setVisibility(View.GONE);
+                    nested_scroll.setVisibility(View.VISIBLE);
+                }
+            }else if (bundle.containsKey("data_playlist_arraylist")) {
+                ArrayList<DataPlaylist> dataPlaylistArrayList = (ArrayList<DataPlaylist>) bundle.getSerializable("data_playlist_arraylist");
+                if (dataPlaylistArrayList != null) {
+                    title = "sectionArtistPlaylist.getTitle()";
+                    txt_playlist.setText(title);
+                    playlistAllAdapter.setFilterList(dataPlaylistArrayList);
+                    relative_loading.setVisibility(View.GONE);
+                    nested_scroll.setVisibility(View.VISIBLE);
+                }
             }
         }
     }
+
 
     private void initViews(View view) {
         relative_loading = view.findViewById(R.id.relative_loading);

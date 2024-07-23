@@ -90,7 +90,7 @@ public class AlbumMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             moreViewHolder.linear_more.setOnClickListener(v -> {
                 AllAlbumFragment allAlbumFragment = new AllAlbumFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("data_album_arraylist", dataAlbumArrayList);
+                bundle.putString("title_album", "Null");
 
                 if (context instanceof MainActivity) {
                     ((MainActivity) context).replaceFragmentWithBundle(allAlbumFragment, bundle);

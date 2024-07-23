@@ -9,7 +9,7 @@
 
     <TextView
         android:id="@+id/txt_number_top_song"
-        android:layout_width="@dimen/_20sdp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginEnd="@dimen/_5sdp"
@@ -18,7 +18,7 @@
         android:textSize="@dimen/_14sdp" />
 
     <LinearLayout
-        android:layout_width="@dimen/_20sdp"
+        android:layout_width="@dimen/_15sdp"
         android:layout_height="match_parent"
         android:layout_marginEnd="@dimen/_5sdp"
         android:gravity="center"
@@ -32,12 +32,12 @@
             android:fontFamily="@font/roboto_bold"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/_10sdp" />
+            android:textSize="@dimen/_8sdp" />
 
         <ImageView
             android:id="@+id/img_bxh"
-            android:layout_width="@dimen/_18sdp"
-            android:layout_height="@dimen/_18sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/arrow_drop_up_24px"
             app:tint="@color/green" />

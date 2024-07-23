@@ -21,15 +21,15 @@
             <LinearLayout
                 android:id="@+id/linear_img"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_180sdp"
+                android:layout_height="@dimen/_200sdp"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <ImageView
                     android:id="@+id/img_playlist"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_180sdp"
-                    android:scaleType="fitCenter"
+                    android:layout_height="@dimen/_200sdp"
+                    android:scaleType="fitXY"
                     android:visibility="gone" />
 
                 <ProgressBar
