@@ -16,6 +16,27 @@ MusicHub is an online music streaming application designed and developed indepen
 - **Java:** Core programming language for developing the application.
 - **Firebase:** Backend service for authentication and database management.
 
+## Screenshots
+
+<p align="center">  
+  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/2.jpg?raw=true" width="200" />  
+  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/3.jpg?raw=true" width="200" />  
+   <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/4.jpg?raw=true" width="200" />  
+   <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/5.jpg?raw=true" width="200" />  
+</p>  
+<p align="center">  
+  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/6.jpg?raw=true" width="200" />  
+  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/7.jpg?raw=true" width="200" />  
+   <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/8.jpg?raw=true" width="200" />  
+   <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/9.jpg?raw=true" width="200" />  
+</p> 
+<p align="center">  
+  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/10.jpg?raw=true" width="200" />  
+  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/11.jpg?raw=true" width="200" /> 
+</p>  
+
+#### More [screenshot](https://photos.app.goo.gl/AbieoXG5ctDrpwzp7) here.
+
 ## Contact
 
 For any inquiries or support, please contact me at:
