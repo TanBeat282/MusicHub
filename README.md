@@ -19,23 +19,24 @@ MusicHub is an online music streaming application designed and developed indepen
 ## Screenshots
 
 <p align="center">  
-  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/2.jpg?raw=true" width="200" />  
-  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/3.jpg?raw=true" width="200" />  
-   <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/4.jpg?raw=true" width="200" />  
-   <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/5.jpg?raw=true" width="200" />  
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/1.jpg?raw=true" width="200" />  
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
+   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/3.png?raw=true" width="200" />  
+   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/4.png?raw=true" width="200" />  
 </p>  
 <p align="center">  
-  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/6.jpg?raw=true" width="200" />  
-  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/7.jpg?raw=true" width="200" />  
-   <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/8.jpg?raw=true" width="200" />  
-   <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/9.jpg?raw=true" width="200" />  
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
+   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
+   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
 </p> 
 <p align="center">  
-  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/10.jpg?raw=true" width="200" />  
-  <img src="https://github.com/maxrave-dev/SimpMusic/blob/jetpack_compose/asset/screenshot/11.jpg?raw=true" width="200" /> 
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" /> 
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />
 </p>  
-
-#### More [screenshot](https://photos.app.goo.gl/AbieoXG5ctDrpwzp7) here.
 
 ## Contact
 
