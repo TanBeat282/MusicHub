@@ -23,19 +23,19 @@ MusicHub is an online music streaming application designed and developed indepen
   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
    <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/3.png?raw=true" width="200" />  
    <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/4.png?raw=true" width="200" />  
+   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/5.png?raw=true" width="200" />  
 </p>  
 <p align="center">  
-  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
-  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
-   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
-   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/6.png?raw=true" width="200" />  
+   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/7.png?raw=true" width="200" />  
+   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/8.png?raw=true" width="200" />  
+   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/9.png?raw=true" width="200" />  
 </p> 
 <p align="center">  
-  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
-  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" /> 
-  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />
-  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />
-  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/10.png?raw=true" width="200" /> 
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/11.png?raw=true" width="200" />
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/12.png?raw=true" width="200" />
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/13.png?raw=true" width="200" />
 </p>  
 
 ## Contact
