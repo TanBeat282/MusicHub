@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.fragment.album.AlbumFragment;
+import com.tandev.musichub.fragment.chart_home.ChartHomeFragment;
 import com.tandev.musichub.fragment.hub.HubFragment;
+import com.tandev.musichub.fragment.new_release.NewReleaseFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.chart.chart_home.Artists;
+import com.tandev.musichub.model.chart.chart_home.ChartHome;
 import com.tandev.musichub.model.search.search_recommend.DataSearchRecommend;
 import com.tandev.musichub.model.search.search_recommend.SearchRecommend;
 
@@ -83,6 +87,10 @@ public class SearchRecommendAdapter extends RecyclerView.Adapter<SearchRecommend
 
                         if (context instanceof MainActivity) {
                             ((MainActivity) context).replaceFragmentWithBundle(playlistFragment, bundle);
+                        }
+                    } else if (Helper.getType(dataSearchRecommend.getLink()).equals("zing-chart")) {
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).replaceFragment(new ChartHomeFragment());
                         }
                     } else {
                         HubFragment hubFragment = new HubFragment();

@@ -60,7 +60,7 @@ public class AllAlbumFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Helper.changeStatusBarColor(requireActivity(), R.color.black);
+        Helper.changeStatusBarColor(requireActivity(), R.color.bg);
         initViews(view);
         conFigViews();
         initAdapter();
@@ -129,8 +129,8 @@ public class AllAlbumFragment extends Fragment {
                     txt_name_artist.setVisibility(View.VISIBLE);
                     txt_view.setVisibility(View.GONE);
                     txt_name_artist.setText(nameArtist);
-                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
-                    Helper.changeStatusBarColor(requireActivity(), R.color.gray);
+                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg));
+                    Helper.changeStatusBarColor(requireActivity(), R.color.bg);
                 }
             }
         });

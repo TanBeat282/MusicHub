@@ -158,8 +158,8 @@ public class HubFragment extends Fragment {
                 } else if (scrollY >= 800) {
                     // Hiển thị TextView khi người dùng cuộn xuống khỏi đầu trang
                     txt_title_toolbar.setText(hubViewModel.getHubMutableLiveData().getValue().getData().getTitle());
-                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
-                    Helper.changeStatusBarColor(requireActivity(), R.color.gray);
+                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg));
+                    Helper.changeStatusBarColor(requireActivity(), R.color.bg);
                 }
             }
         });

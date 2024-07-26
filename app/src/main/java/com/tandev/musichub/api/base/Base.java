@@ -6,6 +6,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -81,6 +82,7 @@ public class Base {
     protected String createCommentSig(String path, String id) throws NoSuchAlgorithmException, Exception {
         return createHashAndHmac(path, "count=50ctime=" + this.ctime + "id=" + id + "version=" + this.version);
     }
+
     protected String createAnnouncementSig(String path, String id) throws NoSuchAlgorithmException, Exception {
         return createHashAndHmac(path, "count=10ctime=" + this.ctime + "id=" + id + "version=" + this.version);
     }
@@ -95,6 +97,10 @@ public class Base {
 
     protected String createNewReleaseSig(String path, String type) throws NoSuchAlgorithmException, Exception {
         return createHashAndHmac(path, "ctime=" + this.ctime + "type=" + type + "version=" + this.version);
+    }
+
+    protected String createGenreSig(String path, String id, String type) throws NoSuchAlgorithmException, Exception {
+        return createHashAndHmac(path, "ctime=" + this.ctime + "id=" + id + "type=" + type + "version=" + this.version);
     }
 
     protected String createSongListOfArtistSig(String path, String id, String page) throws NoSuchAlgorithmException, Exception {

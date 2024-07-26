@@ -1,5 +1,6 @@
 package com.tandev.musichub.model.chart.home.home_new.rt_chart;
 
+import com.google.gson.JsonObject;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.chart.home.home_new.item.HomeDataItem;
 import com.tandev.musichub.model.chart.home.home_new.new_release.HomeDataItemNewReleaseItem;
@@ -11,7 +12,7 @@ public class HomeDataItemRTChart implements HomeDataItem, Serializable {
     private static final long serialVersionUID = 1L;
     private ArrayList<Items> promotes;
     private ArrayList<Items> items;
-    private HomeChart chart;
+    private JsonObject chart;
     private String chartType;
     private String sectionType;
     private String sectionId;
@@ -32,11 +33,11 @@ public class HomeDataItemRTChart implements HomeDataItem, Serializable {
         this.items = items;
     }
 
-    public HomeChart getChart() {
+    public JsonObject getChart() {
         return chart;
     }
 
-    public void setChart(HomeChart chart) {
+    public void setChart(JsonObject chart) {
         this.chart = chart;
     }
 

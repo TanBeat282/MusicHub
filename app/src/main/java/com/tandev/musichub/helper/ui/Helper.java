@@ -147,16 +147,19 @@ public class Helper {
         }
     }
 
-    //check type of url search recommend
+    // Check type of URL search recommendation
     public static String getType(String url) {
         if (url.contains("/album/")) {
             return "album";
         } else if (url.contains("/hub/")) {
             return "hub";
+        } else if (url.contains("/zing-chart")) {
+            return "zing-chart";
         } else {
             return "unknown";
         }
     }
+
 
     // get endCodeId form link
     public static String extractEndCodeID(String url) {

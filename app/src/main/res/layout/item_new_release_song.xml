@@ -6,8 +6,8 @@
     android:layout_height="wrap_content"
     android:background="@drawable/select_item"
     android:orientation="horizontal"
-    android:padding="@dimen/_5sdp"
-    android:paddingEnd="10dp"
+    android:paddingHorizontal="@dimen/_10sdp"
+    android:paddingVertical="@dimen/_5sdp"
     tools:ignore="RtlSymmetry">
 
     <RelativeLayout
@@ -27,6 +27,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             app:lottie_autoPlay="true"
+            app:lottie_colorFilter="@color/white"
             app:lottie_loop="true"
             app:lottie_rawRes="@raw/play" />
     </RelativeLayout>

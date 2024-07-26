@@ -84,7 +84,7 @@ public class SongFragment extends Fragment implements BottomSheetSelectSortSong.
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Helper.changeStatusBarColor(requireActivity(), R.color.black);
+        Helper.changeStatusBarColor(requireActivity(), R.color.bg);
 
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         initView(view);

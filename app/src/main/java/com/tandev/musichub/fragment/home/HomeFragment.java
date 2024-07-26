@@ -5,14 +5,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,14 +35,23 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.github.mikephil.charting.data.Entry;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.album.AlbumAllAdapter;
 import com.tandev.musichub.adapter.album.AlbumMoreAdapter;
 import com.tandev.musichub.adapter.banner.BannerSlideAdapter;
+import com.tandev.musichub.adapter.chart_home.ChartHomeMoreAdapter;
 import com.tandev.musichub.adapter.home.HomePlaylistAdapter;
 import com.tandev.musichub.adapter.hub.HubHomeAdapter;
 import com.tandev.musichub.adapter.playlist.PlaylistMoreAdapter;
@@ -94,7 +108,10 @@ import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 import com.tandev.musichub.view_model.home.HomeViewModel;
 import com.tandev.musichub.view_model.home.HubHomeViewModel;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -111,7 +128,6 @@ public class HomeFragment extends Fragment {
     private MusicHelper musicHelper;
     private SharedPreferencesManager sharedPreferencesManager;
 
-    private ImageView img_icon_app;
     private TextView txt_name_app;
 
     //view
@@ -123,7 +139,7 @@ public class HomeFragment extends Fragment {
 
 
     private LinearLayout btn_tat_ca, btn_viet_nam, btn_quoc_te;
-    private LinearLayout linear_new_release_song, linear_bxh_new_release_song;
+    private LinearLayout linear_new_release_song;
     private ImageView img_history, img_search, img_account;
 
 
@@ -134,17 +150,11 @@ public class HomeFragment extends Fragment {
     private SongMoreAdapter new_release_songAdapter;
     private ArrayList<Items> new_release_songArrayList;
 
-
-    // bxh_new_release_song
-    private RecyclerView rv_bxh_new_release_song;
-    private SongMoreAdapter bxh_new_release_songAdapter;
-    private ArrayList<Items> bxh_new_release_songArrayList;
-
-
     // bxh nhac
     private LinearLayout linear_chart_home;
+    private TextView txt_time_chart;
     private RecyclerView rv_bang_xep_hang;
-    private SongChartAdapter bang_xep_hangAdapter;
+    private ChartHomeMoreAdapter bang_xep_hangAdapter;
     private ArrayList<Items> bang_xep_hangArrayList;
 
     // playlist
@@ -197,7 +207,6 @@ public class HomeFragment extends Fragment {
 
                 if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS || action == MyService.ACTION_CLEAR) {
                     musicHelper.checkIsPlayingPlaylist(items, new_release_songArrayList, new_release_songAdapter);
-                    musicHelper.checkIsPlayingPlaylist(items, bxh_new_release_songArrayList, bxh_new_release_songAdapter);
                     musicHelper.checkIsPlayingPlaylist(items, bang_xep_hangArrayList, bang_xep_hangAdapter);
                 }
 
@@ -222,7 +231,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        requireActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.black));
+        requireActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.bg));
 
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         musicHelper = new MusicHelper(requireContext(), sharedPreferencesManager);
@@ -261,11 +270,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void initData() {
-        Helper.changeStatusBarColor(requireActivity(), R.color.black);
+        Helper.changeStatusBarColor(requireActivity(), R.color.bg);
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
 
         new_release_songArrayList = new ArrayList<>();
-        bxh_new_release_songArrayList = new ArrayList<>();
         bang_xep_hangArrayList = new ArrayList<>();
         homeDataItems = new ArrayList<>();
         dataPlaylistArrayListTop100 = new ArrayList<>();
@@ -279,20 +287,18 @@ public class HomeFragment extends Fragment {
     }
 
     private void initViews(View view) {
-        img_icon_app = view.findViewById(R.id.img_icon_app);
         txt_name_app = view.findViewById(R.id.txt_name_app);
 
         nested_scroll = view.findViewById(R.id.nested_scroll);
         relative_loading = view.findViewById(R.id.relative_loading);
         rv_new_release_song = view.findViewById(R.id.rv_new_release_song);
-        rv_bxh_new_release_song = view.findViewById(R.id.rv_bxh_new_release_song);
 
         linear_chart_home = view.findViewById(R.id.linear_chart_home);
+        txt_time_chart = view.findViewById(R.id.txt_time_chart);
         rv_bang_xep_hang = view.findViewById(R.id.rv_bang_xep_hang);
 
         view_pager_week_chart = view.findViewById(R.id.view_pager_week_chart);
         linear_new_release_song = view.findViewById(R.id.linear_new_release_song);
-        linear_bxh_new_release_song = view.findViewById(R.id.linear_bxh_new_release_song);
 
         img_history = view.findViewById(R.id.img_history);
         view_pager_banner = view.findViewById(R.id.view_pager_banner);
@@ -330,14 +336,11 @@ public class HomeFragment extends Fragment {
     private void initRecyclerView() {
         rv_new_release_song.setLayoutManager(new GridLayoutManager(requireContext(), 4, RecyclerView.HORIZONTAL, false));
 
-        rv_bxh_new_release_song.setLayoutManager(new GridLayoutManager(requireContext(), 4, RecyclerView.HORIZONTAL, false));
-
         rv_bang_xep_hang.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
 
         rv_playlist.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
 
         rv_hub_home.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-
 
         rv_top100.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         rv_album.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -347,15 +350,9 @@ public class HomeFragment extends Fragment {
     private void initAdapter() {
         new_release_songAdapter = new SongMoreAdapter(new_release_songArrayList, 0, requireActivity(), requireContext());
         rv_new_release_song.setAdapter(new_release_songAdapter);
-        musicHelper.initAdapter(new_release_songAdapter);
 
-        bxh_new_release_songAdapter = new SongMoreAdapter(bxh_new_release_songArrayList, 1, requireActivity(), requireContext());
-        rv_bxh_new_release_song.setAdapter(bxh_new_release_songAdapter);
-        musicHelper.initAdapter(bxh_new_release_songAdapter);
-
-        bang_xep_hangAdapter = new SongChartAdapter(bang_xep_hangArrayList, 2, requireActivity(), requireContext());
+        bang_xep_hangAdapter = new ChartHomeMoreAdapter(bang_xep_hangArrayList, requireActivity(), requireContext());
         rv_bang_xep_hang.setAdapter(bang_xep_hangAdapter);
-        musicHelper.initAdapter(bang_xep_hangAdapter);
 
         homePlaylistAdapter = new HomePlaylistAdapter(requireContext(), requireActivity(), homeDataItems);
         rv_playlist.setAdapter(homePlaylistAdapter);
@@ -368,12 +365,12 @@ public class HomeFragment extends Fragment {
 
         albumMoreAdapter = new AlbumMoreAdapter(dataAlbumArrayList, requireActivity(), requireContext());
         rv_album.setAdapter(albumMoreAdapter);
+
         radioMoreAdapter = new RadioMoreAdapter(homeDataItemRadioItemArrayList, requireActivity(), requireContext());
         rv_radio.setAdapter(radioMoreAdapter);
     }
 
     private void onClick() {
-        img_icon_app.setOnClickListener(view -> nested_scroll.smoothScrollTo(0, 0));
         txt_name_app.setOnClickListener(view -> nested_scroll.smoothScrollTo(0, 0));
         img_search.setOnClickListener(view -> {
             if (getActivity() instanceof MainActivity) {
@@ -392,11 +389,6 @@ public class HomeFragment extends Fragment {
         linear_new_release_song.setOnClickListener(view -> {
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).replaceFragment(new NewReleaseFragment());
-            }
-        });
-        linear_bxh_new_release_song.setOnClickListener(view -> {
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).replaceFragment(new ChartNewReleaseFragment());
             }
         });
         linear_chart_home.setOnClickListener(view -> {
@@ -525,7 +517,6 @@ public class HomeFragment extends Fragment {
     private void updateUIHome(Home home) {
         getBanner(home);
         getNewReleaseSong(home);
-        getNewReleaseSongChart(home);
         getRTChart(home);
         getWeekChart(home);
         getPlaylist(home);
@@ -663,26 +654,19 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    @SuppressLint("SetTextI18n")
+    private void setTimeChart(JsonObject chart) {
+        JsonObject items = chart.getAsJsonObject("items");
 
-    // bxh new release song
-    private void getNewReleaseSongChart(Home home) {
-        if (home != null && home.getData() != null && home.getData().getItems() != null) {
-            ArrayList<HomeDataItem> items = home.getData().getItems();
-            for (HomeDataItem item : items) {
-                if (item instanceof HomeDataItemNewReleaseChart) {
-                    HomeDataItemNewReleaseChart homeDataItemNewReleaseChart = (HomeDataItemNewReleaseChart) item;
-                    bxh_new_release_songArrayList = homeDataItemNewReleaseChart.getItems();
-                    bxh_new_release_songAdapter.setFilterList(homeDataItemNewReleaseChart.getItems());
-                    musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), bxh_new_release_songArrayList, bxh_new_release_songAdapter);
-                }
-            }
-        } else {
-            Log.d("TAG", "No data found in JSON");
-        }
+        // Lấy entry đầu tiên từ items
+        Map.Entry<String, JsonElement> firstEntry = items.entrySet().iterator().next();
+        JsonArray dataArray = firstEntry.getValue().getAsJsonArray();
+
+        JsonObject timeObject = dataArray.get(dataArray.size() - 1).getAsJsonObject();
+        long time = timeObject.get("time").getAsLong();
+        txt_time_chart.setText("Cập nhật lúc " + Helper.convertTimestampToDate(time));
     }
 
-
-    // rt chart
     private void getRTChart(Home home) {
         if (home != null && home.getData() != null && home.getData().getItems() != null) {
             ArrayList<HomeDataItem> items = home.getData().getItems();
@@ -692,6 +676,8 @@ public class HomeFragment extends Fragment {
                     bang_xep_hangArrayList = homeDataItemRTChart.getItems();
                     bang_xep_hangAdapter.setFilterList(homeDataItemRTChart.getItems());
                     musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), bang_xep_hangArrayList, bang_xep_hangAdapter);
+
+                    setTimeChart(homeDataItemRTChart.getChart());
                 }
             }
         } else {

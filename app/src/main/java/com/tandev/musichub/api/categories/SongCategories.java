@@ -21,6 +21,7 @@ public class SongCategories extends Base {
             throw error;
         }
     }
+
     public Map<String, String> getPremiumAudio(String songId) throws Exception {
         try {
             String sig = createIdSig("/api/v2/song/get/vip-preview-info", songId);
@@ -121,6 +122,18 @@ public class SongCategories extends Base {
     public Map<String, String> getSongRecommend(String id) throws Exception {
         try {
             String sig = createIdSig("/api/v2/recommend/get/songs", id);
+            Map<String, String> params = createRequest();
+            params.put("id", id);
+            params.put("sig", sig);
+            return params;
+        } catch (Exception error) {
+            throw error;
+        }
+    }
+
+    public Map<String, String> getGenreInfo(String id, String type) throws Exception {
+        try {
+            String sig = createGenreSig("/api/v2/genre/get/info", id, type);
             Map<String, String> params = createRequest();
             params.put("id", id);
             params.put("sig", sig);

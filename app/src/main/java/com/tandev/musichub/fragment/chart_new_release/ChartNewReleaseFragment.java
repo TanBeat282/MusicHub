@@ -118,7 +118,7 @@ public class ChartNewReleaseFragment extends Fragment {
     }
 
     private void conFigViews() {
-        Helper.changeStatusBarColor(requireActivity(), R.color.black);
+        Helper.changeStatusBarColor(requireActivity(), R.color.bg);
 
 
         nested_scroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
@@ -135,8 +135,8 @@ public class ChartNewReleaseFragment extends Fragment {
 
                 } else if (scrollY >= 300) {
                     txt_title_toolbar.setText(chartNewReleaseViewModel.getNewReleaseMutableLiveData().getValue().getData().getTitle());
-                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
-                    Helper.changeStatusBarColor(requireActivity(), R.color.gray);
+                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg));
+                    Helper.changeStatusBarColor(requireActivity(), R.color.bg);
                 }
             }
         });

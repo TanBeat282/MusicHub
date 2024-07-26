@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -31,6 +32,7 @@ import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.helper.uliti.GetUrlAudioHelper;
 import com.tandev.musichub.helper.uliti.log.LogUtil;
 import com.tandev.musichub.model.chart.chart_home.Items;
+import com.tandev.musichub.model.genre.GenreInfo;
 import com.tandev.musichub.model.new_release.NewReleaseSong;
 import com.tandev.musichub.model.song.SongDetail;
 import com.tandev.musichub.model.song.song_recommend.SongRecommend;
@@ -50,6 +52,7 @@ public class RelateFragment extends Fragment {
     private ArrayList<Items> songArrayList;
     private SharedPreferencesManager sharedPreferencesManager;
 
+    private LinearLayout linear_info_song;
     private RoundedImageView thumbImageView;
     private TextView nameTextView;
     private TextView artistTextView;
@@ -101,6 +104,7 @@ public class RelateFragment extends Fragment {
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         getUrlAudioHelper = new GetUrlAudioHelper();
 
+        linear_info_song = view.findViewById(R.id.linear_info_song);
         thumbImageView = view.findViewById(R.id.thumbImageView);
         nameTextView = view.findViewById(R.id.nameTextView);
         artistTextView = view.findViewById(R.id.artistTextView);
@@ -207,6 +211,51 @@ public class RelateFragment extends Fragment {
         });
     }
 
+
+    public interface GenreInfoCallback {
+        void onGenreInfoFetched(GenreInfo genreInfo);
+
+        void onError(String error);
+    }
+
+    private void getGenreInfo(String encodeId, GenreInfoCallback callback) {
+        ApiServiceFactory.createServiceAsync(new ApiServiceFactory.ApiServiceCallback() {
+            @Override
+            public void onServiceCreated(ApiService service) {
+                try {
+                    SongCategories songCategories = new SongCategories();
+                    Map<String, String> map = songCategories.getGenreInfo(encodeId, "album");
+
+                    retrofit2.Call<GenreInfo> call = service.GENRE_INFO_CALL(encodeId, "album", map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
+                    call.enqueue(new Callback<GenreInfo>() {
+                        @Override
+                        public void onResponse(Call<GenreInfo> call, Response<GenreInfo> response) {
+                            LogUtil.d(Constants.TAG, "getGenreInfo: " + call.request().url());
+                            if (response.isSuccessful()) {
+                                GenreInfo genreInfo = response.body();
+                                if (genreInfo != null) {
+                                    callback.onGenreInfoFetched(genreInfo);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<GenreInfo> call, Throwable throwable) {
+                            LogUtil.d(Constants.TAG, "onFailure: " + call.request().url());
+                        }
+                    });
+                } catch (Exception e) {
+                    Log.e("TAG", "Error: " + e.getMessage(), e);
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e("TAG", "Service creation error: " + e.getMessage(), e);
+            }
+        });
+    }
+
     private void setDataPLayer(SongDetail songDetail) {
         if (!(requireActivity()).isDestroyed()) {
             Glide.with(requireActivity())
@@ -222,22 +271,58 @@ public class RelateFragment extends Fragment {
 
         if (songDetail.getData().getComposers() != null) {
             String composers = "";
-            for (int i = 0; i < songDetail.getData().getComposers().size(); i++) {
-                composers += songDetail.getData().getComposers().get(i).getName() + ", ";
+            if (songDetail.getData().getComposers().size() > 1) {
+                for (int i = 0; i < songDetail.getData().getComposers().size(); i++) {
+                    composers += songDetail.getData().getComposers().get(i).getName() + ", ";
+                }
+            } else {
+                composers = songDetail.getData().getComposers().get(0).getName();
             }
             txt_composed.setText(composers);
         } else {
             txt_composed.setText("");
         }
+
         if (songDetail.getData().getGenreIds() != null) {
-            String genre = "";
+            StringBuilder genreBuilder = new StringBuilder();
+            int[] remainingCalls = {songDetail.getData().getGenreIds().size()};
+
             for (int i = 0; i < songDetail.getData().getGenreIds().size(); i++) {
-                genre += songDetail.getData().getGenreIds().get(i) + ", ";
+                getGenreInfo(songDetail.getData().getGenreIds().get(i), new GenreInfoCallback() {
+                    @Override
+                    public void onGenreInfoFetched(GenreInfo genreInfo) {
+                        synchronized (genreBuilder) {
+                            genreBuilder.append(genreInfo.getData().getName()).append(", ");
+                        }
+
+                        synchronized (remainingCalls) {
+                            remainingCalls[0]--;
+                            if (remainingCalls[0] == 0) {
+                                if (genreBuilder.length() > 0) {
+                                    genreBuilder.setLength(genreBuilder.length() - 2);
+                                }
+                                txt_genre.setText(genreBuilder.toString());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        synchronized (remainingCalls) {
+                            remainingCalls[0]--;
+                            if (remainingCalls[0] == 0) {
+                                txt_genre.setText(genreBuilder.toString());
+                            }
+                        }
+                    }
+                });
             }
-            txt_genre.setText(genre);
         }
+
         txt_release.setText(songDetail.getData().getReleaseDate() != 0 ? Helper.convertLongToTime(String.valueOf(songDetail.getData().getReleaseDate())) : "");
         txt_provide.setText(songDetail.getData().getDistributor() != null ? songDetail.getData().getDistributor() : "");
+
+        linear_info_song.setVisibility(View.VISIBLE);
     }
 
 
@@ -245,6 +330,7 @@ public class RelateFragment extends Fragment {
         if (songRecommend != null) {
             songArrayList = songRecommend.getData().getItems();
             songAllAdapter.setFilterList(songArrayList);
+            rv_song_recommend.setVisibility(View.VISIBLE);
         }
     }
 

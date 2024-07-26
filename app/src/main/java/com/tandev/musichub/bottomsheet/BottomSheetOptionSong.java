@@ -69,6 +69,7 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment implements 
     private LinearLayout linear_share;
     private LinearLayout linear_download;
     private LinearLayout linear_delete_song_history;
+    private LinearLayout linear_delete_song_playlist_user;
     private LinearLayout linear_album;
     private LinearLayout linear_artist;
 
@@ -141,6 +142,7 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment implements 
         linear_share = bottomSheetDialog.findViewById(R.id.linear_share);
         linear_download = bottomSheetDialog.findViewById(R.id.linear_download);
         linear_delete_song_history = bottomSheetDialog.findViewById(R.id.linear_delete_song_history);
+        linear_delete_song_playlist_user = bottomSheetDialog.findViewById(R.id.linear_delete_song_playlist_user);
         txtDownload = bottomSheetDialog.findViewById(R.id.txtDownload);
         img_Download = bottomSheetDialog.findViewById(R.id.img_Download);
         linear_album = bottomSheetDialog.findViewById(R.id.linear_album);
@@ -156,11 +158,6 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment implements 
 
     private void initViewFavorite() {
         isSongInFavorite = sharedPreferencesManager.isSongInFavorite(songDetail.getData().getEncodeId());
-        if (songDetail.getData().getStreamingStatus() == 2) {
-            linear_favorite.setVisibility(View.GONE);
-        } else {
-            linear_favorite.setVisibility(View.VISIBLE);
-        }
         if (isSongInFavorite) {
             img_favorite.setImageResource(R.drawable.baseline_favorite_24);
         } else {
@@ -220,6 +217,18 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment implements 
             linear_delete_song_history.setVisibility(View.GONE);
         }
         linear_delete_song_history.setOnClickListener(v -> {
+            sharedPreferencesManager.deleteSongFromHistory(songDetail.getData().getEncodeId());
+            Toast.makeText(context, "Đã xóa bài hát khỏi lịch sử nghe!", Toast.LENGTH_SHORT).show();
+            bottomSheetDialog.dismiss();
+        });
+    }
+    private void initViewDeleteSongPlaylist() {
+        if (views == 6) {
+            linear_delete_song_playlist_user.setVisibility(View.VISIBLE);
+        } else {
+            linear_delete_song_playlist_user.setVisibility(View.GONE);
+        }
+        linear_delete_song_playlist_user.setOnClickListener(v -> {
             sharedPreferencesManager.deleteSongFromHistory(songDetail.getData().getEncodeId());
             Toast.makeText(context, "Đã xóa bài hát khỏi lịch sử nghe!", Toast.LENGTH_SHORT).show();
             bottomSheetDialog.dismiss();
@@ -340,6 +349,7 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment implements 
         initViewAddPlaylist();
         initViewAddMyPlaylist();
         initViewDeleteSongHistory();
+        initViewDeleteSongPlaylist();
         initViewDownload();
         initViewAlbum();
         initViewArtist();

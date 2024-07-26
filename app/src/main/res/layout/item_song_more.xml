@@ -7,7 +7,8 @@
     android:background="@drawable/select_item"
     android:gravity="center"
     android:orientation="horizontal"
-    android:padding="@dimen/_5sdp">
+    android:paddingHorizontal="@dimen/_10sdp"
+    android:paddingVertical="@dimen/_5sdp">
 
     <LinearLayout
         android:id="@+id/btn_more"

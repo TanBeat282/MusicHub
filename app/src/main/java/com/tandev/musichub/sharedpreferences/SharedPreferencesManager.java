@@ -514,7 +514,7 @@ public class SharedPreferencesManager {
         }
     }
 
-    public void removeSongFromPlaylistByEncodeId(String playlistEncodeId, String songEncodeId) {
+    public void deleteSongFromPlaylistByEncodeId(String playlistEncodeId, String songEncodeId) {
         // Lấy danh sách các playlist
         ArrayList<DataPlaylist> dataPlaylistArrayList = restorePlaylistUser();
 

@@ -75,6 +75,7 @@ public class AlbumFragment extends Fragment {
     private TextView txt_title_toolbar;
     private ImageView img_back;
 
+    private RelativeLayout relative_loading;
     private NestedScrollView nested_scroll_view;
     private TextView txt_content_playlist;
     private ImageView imageBackground;
@@ -177,6 +178,7 @@ public class AlbumFragment extends Fragment {
         txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);
 
         imageBackground = view.findViewById(R.id.imageBackground);
+        relative_loading = view.findViewById(R.id.relative_loading);
         nested_scroll_view = view.findViewById(R.id.nested_scroll_view);
         txt_content_playlist = view.findViewById(R.id.txt_content_playlist);
         txt_content_playlist.setSelected(true);
@@ -398,8 +400,10 @@ public class AlbumFragment extends Fragment {
 
     private void updateUISectionBottom(SectionBottom sectionBottom) {
         dataSectionBottoms = sectionBottom.getData();
-
         albumSectionBottomAdapter.setFilterList(dataSectionBottoms);
+
+        nested_scroll_view.setVisibility(View.VISIBLE);
+        relative_loading.setVisibility(View.GONE);
     }
 
     private String convertLongToString(long time) {

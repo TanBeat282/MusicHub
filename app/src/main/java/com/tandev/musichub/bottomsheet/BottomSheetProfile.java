@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi;
 
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
+import com.tandev.musichub.fragment.history.HistoryFragment;
 import com.tandev.musichub.fragment.profile.ProfileFragment;
 import com.tandev.musichub.fragment.search.SearchFragment;
 import com.tandev.musichub.helper.ui.Helper;
@@ -30,7 +31,7 @@ public class BottomSheetProfile extends BottomSheetDialogFragment {
     private BottomSheetDialog bottomSheetDialog;
 
 
-    private LinearLayout linear_profile, linear_setting, linear_send_error, linear_info_app;
+    private LinearLayout linear_profile, linear_history, linear_setting, linear_send_error, linear_info_app;
 
     public BottomSheetProfile(Context context, Activity activity) {
         this.context = context;
@@ -57,6 +58,7 @@ public class BottomSheetProfile extends BottomSheetDialogFragment {
 
     private void initViews(BottomSheetDialog bottomSheetDialog) {
         linear_profile = bottomSheetDialog.findViewById(R.id.linear_profile);
+        linear_history = bottomSheetDialog.findViewById(R.id.linear_history);
         linear_setting = bottomSheetDialog.findViewById(R.id.linear_setting);
         linear_send_error = bottomSheetDialog.findViewById(R.id.linear_send_error);
         linear_info_app = bottomSheetDialog.findViewById(R.id.linear_info_app);
@@ -66,6 +68,12 @@ public class BottomSheetProfile extends BottomSheetDialogFragment {
         linear_profile.setOnClickListener(view1 -> {
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).replaceFragment(new ProfileFragment());
+            }
+            bottomSheetDialog.dismiss();
+        });
+        linear_history.setOnClickListener(view -> {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).replaceFragment(new HistoryFragment());
             }
             bottomSheetDialog.dismiss();
         });

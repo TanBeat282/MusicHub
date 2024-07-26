@@ -3,6 +3,7 @@ package com.tandev.musichub.api;
 import com.tandev.musichub.model.chart.chart_home.ChartHome;
 import com.tandev.musichub.model.chart.new_release.NewRelease;
 import com.tandev.musichub.model.chart.weekchart.WeekChart;
+import com.tandev.musichub.model.genre.GenreInfo;
 import com.tandev.musichub.model.hub.hub_home.HubHome;
 import com.tandev.musichub.model.new_release.NewReleaseAlbum;
 import com.tandev.musichub.model.new_release.NewReleaseSong;
@@ -42,6 +43,7 @@ public interface ApiService {
     String pathAudioSong = "/api/v2/song/get/streaming?";
     String pathPreviewPremium = "/api/v2/song/get/vip-preview-info?";
     String pathSongRecommend = "/api/v2/recommend/get/songs?";
+    String pathGenreInfo = "/api/v2/genre/get/info?";
     String pathArtist = "/api/v2/page/get/artist?";
     String pathSongListOfArtist = "/api/v2/song/get/list?";
     String pathPlaylist = "/api/v2/page/get/playlist?";
@@ -135,6 +137,7 @@ public interface ApiService {
                                       @Query("version") String version,
                                       @Query("apiKey") String apiKey);
 
+    // get link song audio
     @GET(pathAudioSong)
     Call<SongAudio> SONG_AUDIO_CALL(@Query("id") String id,
                                     @Query("sig") String sig,
@@ -142,6 +145,8 @@ public interface ApiService {
                                     @Query("version") String version,
                                     @Query("apiKey") String apiKey);
 
+
+    // preview song premium
     @GET(pathPreviewPremium)
     Call<PreviewPremium> PREVIEW_PREMIUM_CALL(@Query("id") String id,
                                               @Query("sig") String sig,
@@ -149,6 +154,7 @@ public interface ApiService {
                                               @Query("version") String version,
                                               @Query("apiKey") String apiKey);
 
+    //get song recommend
     @GET(pathSongRecommend)
     Call<SongRecommend> SONG_RECOMMEND_CALL(@Query("id") String id,
                                             @Query("sig") String sig,
@@ -156,6 +162,18 @@ public interface ApiService {
                                             @Query("version") String version,
                                             @Query("apiKey") String apiKey);
 
+
+    // get info genre
+    @GET(pathGenreInfo)
+    Call<GenreInfo> GENRE_INFO_CALL(@Query("id") String id,
+                                    @Query("type") String type,
+                                    @Query("sig") String sig,
+                                    @Query("ctime") String ctime,
+                                    @Query("version") String version,
+                                    @Query("apiKey") String apiKey);
+
+
+    //get link lyric
     @GET(pathLyric)
     Call<Lyric> LYRIC_CALL(@Query("id") String id,
                            @Query("sig") String sig,
@@ -163,6 +181,8 @@ public interface ApiService {
                            @Query("version") String version,
                            @Query("apiKey") String apiKey);
 
+
+    //get detail artist
     @GET(pathArtist)
     Call<ResponseBody> ARTISTS_CALL(@Query("alias") String alias,
                                     @Query("sig") String sig,
@@ -170,6 +190,8 @@ public interface ApiService {
                                     @Query("version") String version,
                                     @Query("apiKey") String apiKey);
 
+
+    // get song of artist
     @GET(pathSongListOfArtist)
     Call<SongOfArtist> SONG_LIST_OF_ARTIST_CALL(@Query("id") String id,
                                                 @Query("type") String type,
@@ -182,6 +204,7 @@ public interface ApiService {
                                                 @Query("version") String version,
                                                 @Query("apiKey") String apiKey);
 
+    // get playlist
     @GET(pathPlaylist)
     Call<Playlist> PLAYLIST_CALL(@Query("id") String id,
                                  @Query("sig") String sig,
@@ -189,6 +212,8 @@ public interface ApiService {
                                  @Query("version") String version,
                                  @Query("apiKey") String apiKey);
 
+
+    // get album
     @GET(pathAlbum)
     Call<com.tandev.musichub.model.album.Album> ALBUM_CALL(@Query("id") String id,
                                                            @Query("sig") String sig,

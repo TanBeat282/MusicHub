@@ -3,6 +3,7 @@ package com.tandev.musichub.adapter.playlist;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -92,10 +94,18 @@ public class PlaylistUserAdapter extends RecyclerView.Adapter<PlaylistUserAdapte
             }
         });
         holder.itemView.setOnLongClickListener(view -> {
-            sharedPreferencesManager.deletePlaylistByEncodeId(dataPlaylist.getEncodeId());
-            dataPlaylistArrayList.remove(position);
-            notifyDataSetChanged();
-            Toast.makeText(context, "Xóa playlist thành công", Toast.LENGTH_SHORT).show();
+            new AlertDialog.Builder(context)
+                    .setTitle("Xác nhận")
+                    .setMessage("Bạn có chắc chắn muốn xóa playlist này không?")
+                    .setPositiveButton("Xóa", (dialogInterface, i) -> {
+                        sharedPreferencesManager.deletePlaylistByEncodeId(dataPlaylist.getEncodeId());
+                        dataPlaylistArrayList.remove(position);
+                        notifyDataSetChanged();
+                        Toast.makeText(context, "Xóa playlist thành công", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Hủy", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .show();
+
             return false;
         });
     }

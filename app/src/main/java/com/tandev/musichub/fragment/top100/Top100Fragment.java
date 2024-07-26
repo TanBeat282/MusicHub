@@ -137,8 +137,8 @@ public class Top100Fragment extends Fragment {
                     txt_name_playlist.setVisibility(View.VISIBLE);
                     txt_view.setVisibility(View.GONE);
                     txt_name_playlist.setText("Top 100");
-                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
-                    Helper.changeStatusBarColor(requireActivity(), R.color.gray);
+                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg));
+                    Helper.changeStatusBarColor(requireActivity(), R.color.bg);
                 }
             }
         });

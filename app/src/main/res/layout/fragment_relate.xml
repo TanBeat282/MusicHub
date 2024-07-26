@@ -20,9 +20,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:background="@drawable/background_button_categories_check"
+                android:background="@drawable/background_info_song"
                 android:orientation="vertical"
-                android:padding="@dimen/_10sdp">
+                android:padding="@dimen/_10sdp"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -33,7 +34,6 @@
                         android:id="@+id/thumbImageView"
                         android:layout_width="@dimen/_50sdp"
                         android:layout_height="@dimen/_50sdp"
-                        android:src="@color/white"
                         app:riv_corner_radius="@dimen/_3sdp" />
 
                     <LinearLayout
@@ -91,8 +91,8 @@
                                 android:gravity="center">
 
                                 <ImageView
-                                    android:layout_width="@dimen/_16sdp"
-                                    android:layout_height="@dimen/_16sdp"
+                                    android:layout_width="@dimen/_12sdp"
+                                    android:layout_height="@dimen/_12sdp"
                                     android:src="@drawable/ic_like" />
 
                                 <TextView
@@ -101,7 +101,6 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="@dimen/_5sdp"
                                     android:fontFamily="@font/roboto"
-                                    android:text="333"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10ssp" />
                             </LinearLayout>
@@ -114,8 +113,8 @@
                                 android:gravity="center">
 
                                 <ImageView
-                                    android:layout_width="@dimen/_16sdp"
-                                    android:layout_height="@dimen/_16sdp"
+                                    android:layout_width="@dimen/_12sdp"
+                                    android:layout_height="@dimen/_12sdp"
                                     android:src="@drawable/ic_view" />
 
                                 <TextView
@@ -124,7 +123,6 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="@dimen/_5sdp"
                                     android:fontFamily="@font/roboto"
-                                    android:text="333"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_10ssp" />
                             </LinearLayout>
@@ -139,7 +137,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_1sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@color/colorSecondaryText" />
+                    android:background="@color/colorSecondaryText2" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -157,7 +155,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto"
                             android:text="Album"
-                            android:textColor="@color/white"
+                            android:textColor="@color/colorSecondaryText1"
                             android:textSize="@dimen/_10ssp" />
 
                         <TextView
@@ -166,7 +164,6 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="@font/roboto"
-                            android:text="AAAAAAAAAAAAAAA"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_10ssp" />
                     </LinearLayout>
@@ -182,7 +179,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto"
                             android:text="Nhạc sĩ"
-                            android:textColor="@color/white"
+                            android:textColor="@color/colorSecondaryText1"
                             android:textSize="@dimen/_10ssp" />
 
                         <TextView
@@ -191,7 +188,6 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="@font/roboto"
-                            android:text="AAAAAAAAAAAAAAA"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_10ssp" />
                     </LinearLayout>
@@ -207,7 +203,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto"
                             android:text="Thể loại"
-                            android:textColor="@color/white"
+                            android:textColor="@color/colorSecondaryText1"
                             android:textSize="@dimen/_10ssp" />
 
                         <TextView
@@ -216,7 +212,6 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="@font/roboto"
-                            android:text="AAAAAAAAAAAAAAA"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_10ssp" />
                     </LinearLayout>
@@ -232,7 +227,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto"
                             android:text="Phát hành"
-                            android:textColor="@color/white"
+                            android:textColor="@color/colorSecondaryText1"
                             android:textSize="@dimen/_10ssp" />
 
                         <TextView
@@ -241,7 +236,6 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="@font/roboto"
-                            android:text="AAAAAAAAAAAAAAA"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_10ssp" />
                     </LinearLayout>
@@ -257,7 +251,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto"
                             android:text="Cung cấp"
-                            android:textColor="@color/white"
+                            android:textColor="@color/colorSecondaryText1"
                             android:textSize="@dimen/_10ssp" />
 
                         <TextView
@@ -266,7 +260,6 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="@font/roboto"
-                            android:text="GDFD"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_10ssp" />
                     </LinearLayout>
@@ -291,7 +284,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/txt_relate"
-                android:visibility="visible" />
+                android:layout_marginTop="@dimen/_10sdp"
+                android:visibility="gone" />
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 

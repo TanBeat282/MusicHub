@@ -35,8 +35,8 @@ public class NewReleaseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Helper.changeStatusBarColor(requireActivity(), R.color.black);
-        Helper.changeNavigationColor(requireActivity(), R.color.black, true);
+        Helper.changeStatusBarColor(requireActivity(), R.color.bg);
+        Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
 
         TabLayout tab_layout_new_release_song = view.findViewById(R.id.tab_layout_new_release_song);
         ViewPager view_pager_new_release_song = view.findViewById(R.id.view_pager_new_release_song);

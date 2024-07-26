@@ -17,19 +17,19 @@
             android:layout_height="match_parent"
             android:layout_above="@id/view_player"
             android:layout_alignParentTop="true"
-            android:background="@color/black" />
+            android:background="@color/bg" />
 
         <View
             android:id="@+id/view_player"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_51sdp"
-            android:visibility="visible"
-            android:layout_alignParentBottom="true" />
+            android:layout_alignParentBottom="true"
+            android:visibility="visible" />
     </RelativeLayout>
 
     <include
-        android:visibility="visible"
         android:id="@+id/layout_bottom_player_main"
-        layout="@layout/item_now_playing" />
+        layout="@layout/item_now_playing"
+        android:visibility="visible" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -508,10 +508,11 @@ public class ChartHomeFragment extends Fragment {
         relative_loading.setVisibility(View.GONE);
     }
 
+    @SuppressLint("SetTextI18n")
     private void setTimeChartHome(JsonArray dataArray) {
         JsonObject timeObject = dataArray.get(dataArray.size() - 1).getAsJsonObject();
         long time = timeObject.get("time").getAsLong();
-        txt_time_chart.setText(Helper.convertTimestampToDate(time));
+        txt_time_chart.setText("Cập nhật lúc " + Helper.convertTimestampToDate(time));
     }
 
 

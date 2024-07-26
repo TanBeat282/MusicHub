@@ -44,10 +44,9 @@ public class HistoryFragment extends Fragment {
     private ImageView img_back;
 
 
-    private LinearLayout linear_da_nghe, linear_nghe_nhieu, linear_no_data;
+    private LinearLayout linear_da_nghe, linear_no_data;
     private ArrayList<Items> songListLichSuBaiHat;
-    private ArrayList<Items> songListLichSuBaiHatNgheNhieu;
-    private HistoryAdapter lichSuBaiHatNgheNhieuAdapter, lichSuBaiHatAdapter;
+    private HistoryAdapter lichSuBaiHatAdapter;
     private SharedPreferencesManager sharedPreferencesManager;
     private MusicHelper musicHelper;
 
@@ -63,7 +62,6 @@ public class HistoryFragment extends Fragment {
             if (items != null) {
                 if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS) {
                     musicHelper.checkIsPlayingPlaylist(items, songListLichSuBaiHat, lichSuBaiHatAdapter);
-                    musicHelper.checkIsPlayingPlaylist(items, songListLichSuBaiHatNgheNhieu, lichSuBaiHatNgheNhieuAdapter);
                 }
             }
         }
@@ -84,7 +82,7 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Helper.changeStatusBarColor(requireActivity(), R.color.black);
+        Helper.changeStatusBarColor(requireActivity(), R.color.bg);
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         musicHelper = new MusicHelper(requireContext(), sharedPreferencesManager);
@@ -97,17 +95,11 @@ public class HistoryFragment extends Fragment {
 
         NestedScrollView nested_scroll = view.findViewById(R.id.nested_scroll);
 
-        linear_nghe_nhieu = view.findViewById(R.id.linear_nghe_nhieu);
-        RecyclerView rv_history_count = view.findViewById(R.id.rv_history_count);
         linear_da_nghe = view.findViewById(R.id.linear_da_nghe);
         RecyclerView rv_history = view.findViewById(R.id.rv_history);
         linear_no_data = view.findViewById(R.id.linear_no_data);
 
-
-        rv_history_count.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
-        lichSuBaiHatNgheNhieuAdapter = new HistoryAdapter(requireContext(), requireActivity(), songListLichSuBaiHatNgheNhieu);
-        rv_history_count.setAdapter(lichSuBaiHatNgheNhieuAdapter);
-
+        songListLichSuBaiHat = new ArrayList<>();
         rv_history.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         lichSuBaiHatAdapter = new HistoryAdapter(requireContext(), requireActivity(), songListLichSuBaiHat);
         rv_history.setAdapter(lichSuBaiHatAdapter);
@@ -126,8 +118,8 @@ public class HistoryFragment extends Fragment {
 
                 } else if (scrollY >= 300) {
                     txt_title_toolbar.setText("Lịch sử nghe");
-                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
-                    Helper.changeStatusBarColor(requireActivity(), R.color.gray);
+                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg));
+                    Helper.changeStatusBarColor(requireActivity(), R.color.bg);
                 }
             }
         });
@@ -143,38 +135,12 @@ public class HistoryFragment extends Fragment {
 
     @SuppressLint("NotifyDataSetChanged")
     private void getSongHistory() {
-
-        songListLichSuBaiHat = new ArrayList<>();
-        songListLichSuBaiHatNgheNhieu = new ArrayList<>();
-
-        // Khởi tạo danh sách bài hát lịch sử
         songListLichSuBaiHat = sharedPreferencesManager.restoreSongArrayListHistory();
 
         if (songListLichSuBaiHat.isEmpty()) {
-            linear_nghe_nhieu.setVisibility(View.GONE);
             linear_da_nghe.setVisibility(View.GONE);
             linear_no_data.setVisibility(View.VISIBLE);
         } else {
-            // Sắp xếp songListLichSuBaiHat theo historyCount từ lớn đến nhỏ
-            songListLichSuBaiHat.sort((o1, o2) -> Integer.compare(o2.getHistoryCount(), o1.getHistoryCount()));
-
-            // Lấy 3 mục có historyCount lớn nhất và thêm vào songListLichSuBaiHatNgheNhieu
-            for (int i = 0; i < Math.min(songListLichSuBaiHat.size(), 4); i++) {
-                songListLichSuBaiHatNgheNhieu.add(songListLichSuBaiHat.get(i));
-            }
-
-            // Xóa 3 mục đó ra khỏi songListLichSuBaiHat
-            songListLichSuBaiHat.removeAll(songListLichSuBaiHatNgheNhieu);
-
-            // Cập nhật Adapter và kiểm tra bài hát đang phát
-            if (!songListLichSuBaiHatNgheNhieu.isEmpty()) {
-                linear_nghe_nhieu.setVisibility(View.VISIBLE);
-                lichSuBaiHatNgheNhieuAdapter.setFilterList(songListLichSuBaiHatNgheNhieu);
-                lichSuBaiHatNgheNhieuAdapter.notifyDataSetChanged(); // Thông báo cho Adapter biết dữ liệu đã thay đổi
-                musicHelper.checkIsPlayingPlaylist(sharedPreferencesManager.restoreSongState(), songListLichSuBaiHatNgheNhieu, lichSuBaiHatNgheNhieuAdapter);
-            }
-
-            // Cập nhật Adapter cho danh sách lịch sử chung và kiểm tra bài hát đang phát
             linear_da_nghe.setVisibility(View.VISIBLE);
             linear_no_data.setVisibility(View.GONE);
             lichSuBaiHatAdapter.setFilterList(songListLichSuBaiHat);
@@ -187,7 +153,6 @@ public class HistoryFragment extends Fragment {
     public void onResume() {
         super.onResume();
         songListLichSuBaiHat.clear();
-        songListLichSuBaiHatNgheNhieu.clear();
         getSongHistory();
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(broadcastReceiver, new IntentFilter("send_data_to_activity"));
     }

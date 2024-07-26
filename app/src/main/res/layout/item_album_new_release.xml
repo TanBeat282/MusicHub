@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="@dimen/_5sdp">
+    android:background="@drawable/select_item"
+    android:paddingHorizontal="@dimen/_10sdp"
+    android:paddingVertical="@dimen/_5sdp">
 
     <RelativeLayout
         android:layout_width="wrap_content"

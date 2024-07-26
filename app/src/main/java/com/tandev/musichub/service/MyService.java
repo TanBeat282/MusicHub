@@ -86,7 +86,13 @@ public class MyService extends Service {
                     if (isPlayingBumper) {
                         // If bumper audio is playing, play the next song
                         isPlayingBumper = false;
-                        nextMusic();
+                        if (sharedPreferencesManager.restoreSongArrayList().size() == 1) {
+                            stopMusic();
+                            sendActionToActivity(mSong, false, ACTION_PAUSE);
+                        } else {
+                            // Logic cho khi có nhiều bài hát
+                            nextMusic();
+                        }
                     } else if (mSong.getStreamingStatus() == 2) {
                         getUrlAudioHelper.getPremiumSongAudio(mSong.getEncodeId(), new GetUrlAudioHelper.PremiumSongAudioCallback() {
                             @Override
@@ -366,31 +372,32 @@ public class MyService extends Service {
     }
 
     private void handleNextOrPreviousMusic(boolean isNext) {
-        if (sharedPreferencesManager.restoreIsRepeatOneState()) {
-            // Repeat One: Không thay đổi mPositionSong, phát lại bài hát hiện tại
-            startMusic(mSong);
+        int songCount = sharedPreferencesManager.restoreSongArrayList().size();
+        if (songCount == 1) {
+            // Dừng nhạc và gửi thông báo đến Activity
+            stopMusic();
+            sendActionToActivity(mSong, false, ACTION_PAUSE);
         } else {
-            int mPositionSong = -1;
+            // Logic xử lý cho danh sách có nhiều hơn 1 bài hát
+            int mPositionSong;
             if (sharedPreferencesManager.restoreIsShuffleState()) {
-                // Shuffle: Chọn một chỉ số ngẫu nhiên
                 Random random = new Random();
-                mPositionSong = random.nextInt(sharedPreferencesManager.restoreSongArrayList().size());
+                mPositionSong = random.nextInt(songCount);
             } else {
-                // Không Shuffle: Tiếp tục theo thứ tự
                 if (isNext) {
                     mPositionSong = sharedPreferencesManager.restoreSongPosition() + 1;
-                    if (mPositionSong >= sharedPreferencesManager.restoreSongArrayList().size()) {
+                    if (mPositionSong >= songCount) {
                         mPositionSong = 0;
                     }
                 } else {
                     mPositionSong = sharedPreferencesManager.restoreSongPosition() - 1;
                     if (mPositionSong < 0) {
-                        mPositionSong = sharedPreferencesManager.restoreSongArrayList().size() - 1;
+                        mPositionSong = songCount - 1;
                     }
                 }
             }
 
-            if (mPositionSong >= 0 && mPositionSong < sharedPreferencesManager.restoreSongArrayList().size()) {
+            if (mPositionSong >= 0 && mPositionSong < songCount) {
                 mSong = sharedPreferencesManager.restoreSongArrayList().get(mPositionSong);
                 startMusic(mSong);
                 sendNotificationMedia(mSong, true);
@@ -456,7 +463,14 @@ public class MyService extends Service {
             stopServiceHandler.removeCallbacks(stopServiceRunnable);
         }
     }
-
+    private void stopMusic() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+            isPlaying = false;
+            stopSelf();
+        }
+    }
     private void sendNotificationMedia(Items song, boolean isPlaying) {
         Glide.with(getApplicationContext())
                 .asBitmap()

@@ -67,7 +67,7 @@ public class WeekChartFragment extends Fragment {
     }
 
     private void initView(View view) {
-        Helper.changeStatusBarColor(requireActivity(), R.color.black);
+        Helper.changeStatusBarColor(requireActivity(), R.color.bg);
 
 
         tab_layout_new_release_song = view.findViewById(R.id.tab_layout_new_release_song);

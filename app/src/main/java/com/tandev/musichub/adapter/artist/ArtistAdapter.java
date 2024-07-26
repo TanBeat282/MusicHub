@@ -17,9 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
+import com.tandev.musichub.adapter.chart_home.ChartHomeMoreAdapter;
 import com.tandev.musichub.adapter.playlist.PlaylistAdapter;
 import com.tandev.musichub.adapter.single.SingleAdapter;
 import com.tandev.musichub.adapter.song.SongAllAdapter;
+import com.tandev.musichub.adapter.song.SongMoreAdapter;
 import com.tandev.musichub.adapter.video.VideoMoreAdapter;
 import com.tandev.musichub.fragment.album.AllAlbumFragment;
 import com.tandev.musichub.fragment.playlist.AllPlaylistFragment;
@@ -114,10 +116,9 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             songViewHolder.txt_title_song.setText(sectionArtistSong.getTitle());
 
-            GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 4, RecyclerView.HORIZONTAL, false);
-            songViewHolder.rv_song_horizontal.setLayoutManager(gridLayoutManager);
-            SongAllAdapter songAllAdapter = new SongAllAdapter(sectionArtistSong.getItems(), activity, context);
-            songViewHolder.rv_song_horizontal.setAdapter(songAllAdapter);
+            songViewHolder.rv_song_horizontal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+            SongMoreAdapter songMoreAdapter = new SongMoreAdapter(sectionArtistSong.getItems(),3, activity, context);
+            songViewHolder.rv_song_horizontal.setAdapter(songMoreAdapter);
 
             songViewHolder.linear_more.setVisibility(sectionArtistSong.getLink().isEmpty() || sectionArtistSong.equals("") ? View.GONE : View.VISIBLE);
 

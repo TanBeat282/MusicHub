@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
@@ -48,6 +49,7 @@ import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.api.type_adapter_Factory.section_bottom.SectionBottomTypeAdapter;
+import com.tandev.musichub.bottomsheet.BottomSheetOptionPlaylist;
 import com.tandev.musichub.fragment.artist.AllArtistFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.helper.ui.MusicHelper;
@@ -84,6 +86,7 @@ public class PlaylistFragment extends Fragment {
     private RelativeLayout relative_header;
     private TextView txt_title_toolbar;
     private ImageView img_back;
+    private ImageView img_more;
 
     private RoundedImageView img_playlist;
     private ProgressBar progress_image;
@@ -200,6 +203,7 @@ public class PlaylistFragment extends Fragment {
         relative_header = tool_bar.findViewById(R.id.relative_header);
         img_back = tool_bar.findViewById(R.id.img_back);
         txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);
+        img_more = tool_bar.findViewById(R.id.img_more);
 
 
         imageBackground = view.findViewById(R.id.imageBackground);
@@ -281,6 +285,10 @@ public class PlaylistFragment extends Fragment {
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().popBackStack();
             }
+        });
+        img_more.setOnClickListener(view -> {
+            BottomSheetOptionPlaylist bottomSheetOptionPlaylist = new BottomSheetOptionPlaylist(requireContext(), requireActivity(), playlistViewModel.getPlaylistMutableLiveData().getValue().getData());
+            bottomSheetOptionPlaylist.show(((AppCompatActivity) requireContext()).getSupportFragmentManager(), bottomSheetOptionPlaylist.getTag());
         });
         btn_play_playlist.setOnClickListener(view -> {
             Intent intent = new Intent(requireContext(), MyService.class);

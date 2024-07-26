@@ -94,24 +94,29 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     private ImageView img_mic;
     private ImageView img_back;
 
+    //search query
+    private RelativeLayout relative_search_query;
+
+    //search suggestion
+    private RecyclerView rv_search_suggestion;
+
     //search recommend
+    private LinearLayout linear_search_query;
+
+    //search history
+    private View linear_search_history;
+
+    private TextView txt_delete_search_history;
+    private RecyclerView rv_search_history;
+    private SearchHistoryAdapter searchHistoryAdapter;
+    private ArrayList<DataSearchRecommend> dataSearchHistoryArrayList;
+
+
     private LinearLayout linear_search_recommend;
     private RecyclerView rv_search_recommend;
     private SearchRecommendAdapter searchRecommendAdapter;
     private ArrayList<DataSearchRecommend> dataSearchRecommendArrayList;
 
-
-    //search suggestion
-    private RelativeLayout relative_search_suggestion;
-    private RecyclerView rv_search_suggestion;
-
-    //search history
-    private View view_search_history;
-    private TextView txt_search_history;
-    private TextView txt_delete_search_history;
-    private RecyclerView rv_search_history;
-    private SearchHistoryAdapter searchHistoryAdapter;
-    private ArrayList<DataSearchRecommend> dataSearchHistoryArrayList;
 
     //search multi
     private RelativeLayout relative_search_multi;
@@ -165,18 +170,16 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Helper.changeNavigationColor(requireActivity(), R.color.gray, true);
-        Helper.changeStatusBarColor(requireActivity(), R.color.black);
+        Helper.changeStatusBarColor(requireActivity(), R.color.bg);
         apiService = RetrofitClient.getSearchSuggestion().create(ApiService.class);
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         permissionUtils = new PermissionUtils(requireContext(), this);
 
-        initViewsSearchSuggestion(view);
-        conFigViewSearchSuggestion();
-
-        initViewsSearchHistory(view);
-
-
+        initViews(view);
+        initViewsSearchQuery(view);
         initViewsSearchMulti(view);
+        conFigViewSearchSearchQuery();
+
 
         initAdapter();
         onClick();
@@ -207,23 +210,26 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         }
     }
 
-    private void initViewsSearchSuggestion(View view) {
+    private void initViews(View view) {
         searchView = view.findViewById(R.id.searchView);
         img_mic = view.findViewById(R.id.img_mic);
-        relative_search_suggestion = view.findViewById(R.id.relative_search_suggestion);
-        rv_search_suggestion = view.findViewById(R.id.rv_search_suggestion);
-        linear_search_recommend = view.findViewById(R.id.linear_search_recommend);
-        rv_search_recommend = view.findViewById(R.id.rv_search_recommend);
         progress_bar_loading = view.findViewById(R.id.progress_bar_loading);
         img_back = view.findViewById(R.id.img_back);
     }
 
-    private void initViewsSearchHistory(View view) {
-        view_search_history = view.findViewById(R.id.view_search_history);
-        txt_search_history = view.findViewById(R.id.txt_search_history);
+    private void initViewsSearchQuery(View view) {
+        relative_search_query = view.findViewById(R.id.relative_search_query);
+
+        rv_search_suggestion = view.findViewById(R.id.rv_search_suggestion);
+
+        linear_search_query = view.findViewById(R.id.linear_search_query);
+
+        linear_search_history = view.findViewById(R.id.linear_search_history);
         txt_delete_search_history = view.findViewById(R.id.txt_delete_search_history);
         rv_search_history = view.findViewById(R.id.rv_search_history);
 
+        linear_search_recommend = view.findViewById(R.id.linear_search_recommend);
+        rv_search_recommend = view.findViewById(R.id.rv_search_recommend);
     }
 
     private void initViewsSearchMulti(View view) {
@@ -240,11 +246,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
     }
 
     @SuppressLint("SetTextI18n")
-    private void conFigViewSearchSuggestion() {
-        linear_search_recommend.setVisibility(View.VISIBLE);
-        progress_bar_loading.setVisibility(View.GONE);
-        rv_search_suggestion.setVisibility(View.GONE);
-
+    private void conFigViewSearchSearchQuery() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -257,10 +259,9 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
                 if (inputMethodManager != null) {
                     inputMethodManager.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                 }
-                // Clear focus from the SearchView to prevent the keyboard from reopening
                 searchView.clearFocus();
 
-                relative_search_suggestion.setVisibility(View.GONE);
+                relative_search_query.setVisibility(View.GONE);
                 relative_search_multi.setVisibility(View.VISIBLE);
 
                 return true;
@@ -268,18 +269,23 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                relative_search_suggestion.setVisibility(View.VISIBLE);
+                relative_search_query.setVisibility(View.VISIBLE);
                 relative_search_multi.setVisibility(View.GONE);
 
                 if (newText == null || newText.isEmpty()) {
                     initViewModel();
-                    linear_search_recommend.setVisibility(View.VISIBLE);
-                    progress_bar_loading.setVisibility(View.GONE);
+                    linear_search_query.setVisibility(View.VISIBLE);
+
                     rv_search_suggestion.setVisibility(View.GONE);
                 } else {
-                    linear_search_recommend.setVisibility(View.GONE);
-                    progress_bar_loading.setVisibility(View.VISIBLE);
-                    rv_search_suggestion.setVisibility(View.GONE);
+                    linear_search_query.setVisibility(View.GONE);
+                    rv_search_suggestion.setVisibility(View.VISIBLE);
+                    if (dataSearchHistoryArrayList.isEmpty()) {
+                        linear_search_history.setVisibility(View.GONE);
+                    } else {
+                        linear_search_history.setVisibility(View.VISIBLE);
+                    }
+
                     handler.removeCallbacks(searchRunnable);
                     handler.postDelayed(searchRunnable, DELAY);
                 }
@@ -439,16 +445,12 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         ArrayList<DataSearchRecommend> searchHistory = sharedPreferencesManager.restoreSearchHistory();
 
         // Kiểm tra nếu danh sách lịch sử tìm kiếm là null
-        if (searchHistory == null) {
-            view_search_history.setVisibility(View.GONE);
-            txt_search_history.setVisibility(View.GONE);
-            rv_search_history.setVisibility(View.GONE);
+        if (searchHistory.isEmpty()) {
+            linear_search_history.setVisibility(View.GONE);
         } else {
             dataSearchHistoryArrayList = searchHistory;
             searchHistoryAdapter.setFilterList(dataSearchHistoryArrayList);
-            view_search_history.setVisibility(View.VISIBLE);
-            txt_search_history.setVisibility(View.VISIBLE);
-            rv_search_history.setVisibility(View.VISIBLE);
+            linear_search_history.setVisibility(View.VISIBLE);
         }
     }
 
@@ -542,7 +544,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
 
         searchSuggestionAdapter.setFilterList(filteredData, searchSuggestionsDataItemKeyWordsItems, searchSuggestionsDataItemSuggestionsArtists, searchSuggestionsDataItemSuggestionsPlaylists, searchSuggestionsDataItemSuggestionsSongs);
 
-        linear_search_recommend.setVisibility(View.GONE);
+        linear_search_query.setVisibility(View.GONE);
         progress_bar_loading.setVisibility(View.GONE);
         rv_search_suggestion.setVisibility(View.VISIBLE);
     }
@@ -566,7 +568,7 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         sendBroadcast(keyword);
         saveSearchHistory(keyword);
 
-        relative_search_suggestion.setVisibility(View.GONE);
+        relative_search_query.setVisibility(View.GONE);
         relative_search_multi.setVisibility(View.VISIBLE);
         // Close the keyboard
         InputMethodManager inputMethodManager = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -579,9 +581,10 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
 
     @Override
     public void onSearchRecommendClickListener(String keyword) {
+        searchView.setQuery(keyword, true);
         initViewPager(keyword);
         sendBroadcast(keyword);
-        relative_search_suggestion.setVisibility(View.GONE);
+        relative_search_query.setVisibility(View.GONE);
         relative_search_multi.setVisibility(View.VISIBLE);
         // Close the keyboard
         InputMethodManager inputMethodManager = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -589,7 +592,6 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
             inputMethodManager.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
         }
         saveSearchHistory(keyword);
-        searchView.setQuery(keyword, true);
     }
 
     private void promptSpeechInput() {
@@ -613,8 +615,22 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
             if (resultCode == RESULT_OK && null != data) {
                 ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 if (result != null && !result.isEmpty()) {
-                    saveSearchHistory(result.get(0));
+
+
                     searchView.setQuery(result.get(0), true);
+                    initViewPager(result.get(0));
+                    sendBroadcast(result.get(0));
+                    saveSearchHistory(result.get(0));
+
+                    // Close the keyboard
+                    InputMethodManager inputMethodManager = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (inputMethodManager != null) {
+                        inputMethodManager.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+                    }
+                    searchView.clearFocus();
+
+                    relative_search_query.setVisibility(View.GONE);
+                    relative_search_multi.setVisibility(View.VISIBLE);
                 }
             }
         }

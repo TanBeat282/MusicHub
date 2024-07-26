@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@drawable/select_item"
-    android:padding="@dimen/_5sdp">
+    android:paddingHorizontal="@dimen/_10sdp"
+    android:paddingVertical="@dimen/_5sdp">
 
     <RelativeLayout
         android:layout_width="@dimen/_40sdp"

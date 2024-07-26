@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     layoutPlayerBottom.setVisibility(View.VISIBLE);
                     relative_player.setVisibility(View.GONE);
-                    Helper.changeStatusBarColor(MainActivity.this, R.color.black);
+                    Helper.changeStatusBarColor(MainActivity.this, R.color.bg);
                     Helper.changeNavigationColor(MainActivity.this, R.color.gray, false);
                 }
             }

@@ -264,6 +264,29 @@
                     android:textColor="@color/white"
                     android:textSize="@dimen/_14ssp" />
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/linear_delete_song_playlist_user"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:background="@drawable/select_item"
+                android:padding="@dimen/_5sdp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/delete_24px"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:text="Xóa khỏi danh sách phát"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_14ssp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linear_download"

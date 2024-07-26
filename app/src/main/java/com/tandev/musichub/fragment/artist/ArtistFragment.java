@@ -187,8 +187,8 @@ public class ArtistFragment extends Fragment {
 
                 } else if (scrollY >= 800) {
                     txt_title_toolbar.setText(name);
-                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
-                    Helper.changeStatusBarColor(requireActivity(), R.color.gray);
+                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg));
+                    Helper.changeStatusBarColor(requireActivity(), R.color.bg);
                 }
             }
         });

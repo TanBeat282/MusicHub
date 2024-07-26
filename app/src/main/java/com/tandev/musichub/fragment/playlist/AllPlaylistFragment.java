@@ -141,7 +141,7 @@ public class AllPlaylistFragment extends Fragment {
     }
 
     private void conFigViews() {
-        Helper.changeStatusBarColor(requireActivity(), R.color.black);
+        Helper.changeStatusBarColor(requireActivity(), R.color.bg);
 
         nested_scroll.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @SuppressLint({"ObsoleteSdkInt", "SetTextI18n"})
@@ -160,8 +160,8 @@ public class AllPlaylistFragment extends Fragment {
                     txt_name_artist.setVisibility(View.VISIBLE);
                     txt_view.setVisibility(View.GONE);
                     txt_name_artist.setText(title);
-                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
-                    Helper.changeStatusBarColor(requireActivity(), R.color.gray);
+                    relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg));
+                    Helper.changeStatusBarColor(requireActivity(), R.color.bg);
                 }
             }
         });
