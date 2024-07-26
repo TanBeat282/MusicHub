@@ -19,7 +19,7 @@ MusicHub is an online music streaming application designed and developed indepen
 ## Screenshots
 
 <p align="center">  
-  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/1.jpg?raw=true" width="200" />  
+  <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/1.png?raw=true" width="200" />  
   <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/2.png?raw=true" width="200" />  
    <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/4.png?raw=true" width="200" />  
    <img src="https://github.com/TanBeat282/MusicHub/blob/main/asset/screenshots/5.png?raw=true" width="200" />  
