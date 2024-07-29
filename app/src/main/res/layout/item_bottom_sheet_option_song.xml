@@ -40,7 +40,6 @@
                 android:layout_height="@dimen/_40sdp"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_10sdp"
-                android:src="@color/white"
                 app:riv_corner_radius="@dimen/_2sdp" />
 
             <LinearLayout

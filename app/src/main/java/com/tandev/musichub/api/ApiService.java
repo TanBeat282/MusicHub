@@ -24,6 +24,8 @@ import com.tandev.musichub.model.song.song_recommend.SongRecommend;
 import com.tandev.musichub.model.song_of_artist.SongOfArtist;
 import com.tandev.musichub.model.top100.Top100;
 import com.tandev.musichub.model.user_active_radio.UserActiveRadio;
+import com.tandev.musichub.model.video.Video;
+import com.tandev.musichub.model.video.section_relate.SectionRelateVideo;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -49,6 +51,10 @@ public interface ApiService {
     String pathPlaylist = "/api/v2/page/get/playlist?";
     String pathAlbum = "/api/v2/page/get/album?";
     String pathLyric = "/api/v2/lyric/get/lyric?";
+
+    //video
+    String pathSectionRelateVideo = "/api/v2/video/get/section-relate?";
+    String pathVideo = "/api/v2/page/get/video?";
 
     //search
     String pathSearchMulti = "/api/v2/search/multi?";
@@ -180,6 +186,23 @@ public interface ApiService {
                            @Query("ctime") String ctime,
                            @Query("version") String version,
                            @Query("apiKey") String apiKey);
+
+    //video
+    @GET(pathVideo)
+    Call<Video> VIDEO_CALL(@Query("id") String id,
+                           @Query("sig") String sig,
+                           @Query("ctime") String ctime,
+                           @Query("version") String version,
+                           @Query("apiKey") String apiKey);
+
+    //relate video
+    //get link lyric
+    @GET(pathSectionRelateVideo)
+    Call<SectionRelateVideo> SECTION_RELATE_VIDEO_CALL(@Query("id") String id,
+                                                       @Query("sig") String sig,
+                                                       @Query("ctime") String ctime,
+                                                       @Query("version") String version,
+                                                       @Query("apiKey") String apiKey);
 
 
     //get detail artist

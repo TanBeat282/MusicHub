@@ -209,4 +209,16 @@ public class Helper {
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+7"));
         return sdf.format(date);
     }
+
+    //
+    public static String calculateYearsAgo(long createdAt) {
+        long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
+        long differenceInSeconds = currentTimeInSeconds - createdAt;
+
+        // Chuyển đổi sang năm và lấy phần nguyên
+        int differenceInYears = (int) Math.floor(differenceInSeconds / (double) (365 * 24 * 60 * 60));
+
+        return differenceInYears + " năm trước";
+    }
+
 }

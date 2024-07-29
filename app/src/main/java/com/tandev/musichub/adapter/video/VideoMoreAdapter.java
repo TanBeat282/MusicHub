@@ -3,6 +3,7 @@ package com.tandev.musichub.adapter.video;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
+import com.tandev.musichub.fragment.artist.ArtistFragment;
+import com.tandev.musichub.fragment.video.VideoFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.model.hub.HubVideo;
 
@@ -86,7 +90,13 @@ public class VideoMoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 if (hubVideo.getStreamingStatus() == 2) {
                     Toast.makeText(context, "Không thể phát video Premium!", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Handle video click
+                    VideoFragment videoFragment = new VideoFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("encodeId", hubVideo.getEncodeId());
+
+                    if (context instanceof MainActivity) {
+                        ((MainActivity) context).replaceFragmentWithBundle(videoFragment, bundle);
+                    }
                 }
             });
         } else {

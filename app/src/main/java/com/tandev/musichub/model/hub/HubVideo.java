@@ -20,7 +20,6 @@ public class HubVideo implements  Serializable {
     private String thumbnail;
     private int duration;
     private int streamingStatus;
-    private ArrayList<Integer> streamPrivileges;
     private Artists artist;
 
     public String getEncodeId() {
@@ -127,13 +126,6 @@ public class HubVideo implements  Serializable {
         this.streamingStatus = streamingStatus;
     }
 
-    public ArrayList<Integer> getStreamPrivileges() {
-        return streamPrivileges;
-    }
-
-    public void setStreamPrivileges(ArrayList<Integer> streamPrivileges) {
-        this.streamPrivileges = streamPrivileges;
-    }
 
     public Artists getArtist() {
         return artist;

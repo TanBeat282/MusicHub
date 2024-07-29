@@ -8,11 +8,11 @@ public class VideoCategories extends Base {
     public VideoCategories() {
     }
 
-    public Map<String, String> getRelatedVideos(String videoId) throws Exception {
+    public Map<String, String> getRelatedVideos(String id) throws Exception {
         try {
-            String sig = createIdSig("/api/v2/video/get/section-relate", videoId);
+            String sig = createIdSig("/api/v2/video/get/section-relate", id);
             Map<String, String> params = createRequest();
-            params.put("videoId", videoId);
+            params.put("id", id);
             params.put("sig", sig);
             return params;
         } catch (Exception error) {
@@ -20,11 +20,11 @@ public class VideoCategories extends Base {
         }
     }
 
-    public Map<String, String> getDetail(String videoId) throws Exception {
+    public Map<String, String> getVideo(String id) throws Exception {
         try {
-            String sig = createIdSig("/api/v2/page/get/video", videoId);
+            String sig = createIdSig("/api/v2/page/get/video", id);
             Map<String, String> params = createRequest();
-            params.put("videoId", videoId);
+            params.put("id", id);
             params.put("sig", sig);
             return params;
         } catch (Exception error) {

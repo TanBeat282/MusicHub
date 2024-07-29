@@ -228,6 +228,7 @@
                 android:paddingVertical="@dimen/_10sdp">
 
                 <LinearLayout
+                    android:layout_marginStart="@dimen/_10sdp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
