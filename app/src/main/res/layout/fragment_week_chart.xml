@@ -53,16 +53,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Tuần 22 (27/05 - 02/06)"
                         android:textColor="@color/white"
                         android:textSize="16sp" />
 
                     <ImageView
                         android:id="@+id/img_filter_song"
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginBottom="5dp"
+                        android:layout_width="@dimen/_16sdp"
+                        android:layout_height="@dimen/_16sdp"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_4sdp"
                         android:rotation="-90"
                         android:src="@drawable/ic_back" />
                 </LinearLayout>

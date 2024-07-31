@@ -110,6 +110,13 @@ public class SongTouchAdapter extends RecyclerView.Adapter<SongTouchAdapter.View
         }
         holder.nameTextView.setTextColor(premiumColor);
 
+        // Thiết lập hiệu ứng mờ cho các item trước selectedPosition
+        if (position < selectedPosition) {
+            holder.itemView.setAlpha(0.5f); // Giá trị alpha từ 0.0 (trong suốt) đến 1.0 (rõ ràng)
+        } else {
+            holder.itemView.setAlpha(1.0f);
+        }
+
         holder.btn_more.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN && itemTouchHelper != null) {
                 itemTouchHelper.startDrag(holder);  // Bắt đầu kéo

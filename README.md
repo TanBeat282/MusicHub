@@ -1,6 +1,6 @@
 ## MusicHub
 ⚠️ **Warning:**
-This is the new app version of Musichub. You can view the old version at: https://github.com/TanBeat282/MusicHub_old
+This is a new version rebuilt from the old version of MusicHub. You can see the old version at: https://github.com/TanBeat282/MusicHub_old
 
 MusicHub is an online music streaming application designed and developed independently using Java. This project aims to provide users with a seamless and enjoyable music listening experience. The application allows users to stream music, create and manage playlists, and explore various genres and artists.
 
@@ -15,6 +15,10 @@ MusicHub is an online music streaming application designed and developed indepen
 
 - **Java:** Core programming language for developing the application.
 - **Firebase:** Backend service for authentication and database management.
+- 
+## Thank you
+
+- Thanks to [ZingMp3API](https://github.com/whoant/ZingMp3API) for the idea to get data from ZingMp3. This repo is my inspiration to create this app
 
 ## Screenshots
 

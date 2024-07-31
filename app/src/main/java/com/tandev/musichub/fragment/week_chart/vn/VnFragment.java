@@ -37,6 +37,7 @@ import com.tandev.musichub.sharedpreferences.SharedPreferencesManager;
 import com.tandev.musichub.view_model.week_chart.WeekChartVnViewModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -103,12 +104,12 @@ public class VnFragment extends Fragment {
             if (artistDetail != null) {
                 updateUI(artistDetail);
             } else {
-                getWeekChart(VN_CATEGORY_ID, "25", "2024");
+                getWeekChart(VN_CATEGORY_ID, String.valueOf(getWeekChartPosition()), "2024");
             }
         });
 
         if (weekChartVnViewModel.getWeekChartMutableLiveData().getValue() == null) {
-            getWeekChart(VN_CATEGORY_ID, "25", "2024");
+            getWeekChart(VN_CATEGORY_ID, String.valueOf(getWeekChartPosition()), "2024");
         }
     }
 
@@ -124,6 +125,12 @@ public class VnFragment extends Fragment {
         recycler_week_chart.setLayoutManager(linearLayoutManager);
         bxhSongAdapter = new BXHSongAdapter(itemsArrayList, requireActivity(), requireContext());
         recycler_week_chart.setAdapter(bxhSongAdapter);
+    }
+
+    private int getWeekChartPosition() {
+        Calendar calendar = Calendar.getInstance();
+        int weekNumber = calendar.get(Calendar.WEEK_OF_YEAR);
+        return (weekNumber - 1);
     }
 
     private void getWeekChart(String encodeId, String week, String year) {

@@ -22,12 +22,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.tandev.musichub.MainActivity;
 import com.tandev.musichub.R;
 import com.tandev.musichub.adapter.song.SongAllAdapter;
 import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.constants.Constants;
+import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.helper.uliti.GetUrlAudioHelper;
 import com.tandev.musichub.helper.uliti.log.LogUtil;
@@ -49,6 +51,7 @@ import retrofit2.Response;
 public class RelateFragment extends Fragment {
     private Items items;
     private boolean is_playing;
+    private SongDetail songDetail;
     private ArrayList<Items> songArrayList;
     private SharedPreferencesManager sharedPreferencesManager;
 
@@ -67,7 +70,6 @@ public class RelateFragment extends Fragment {
 
     private RecyclerView rv_song_recommend;
     private SongAllAdapter songAllAdapter;
-    private GetUrlAudioHelper getUrlAudioHelper;
 
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -81,6 +83,7 @@ public class RelateFragment extends Fragment {
             int action = bundle.getInt("action_music");
             if (action == MyService.ACTION_START || action == MyService.ACTION_NEXT || action == MyService.ACTION_PREVIOUS) {
                 getRelateSong(items.getEncodeId());
+                getSongDetail(items.getEncodeId());
             }
         }
     };
@@ -102,7 +105,6 @@ public class RelateFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
-        getUrlAudioHelper = new GetUrlAudioHelper();
 
         linear_info_song = view.findViewById(R.id.linear_info_song);
         thumbImageView = view.findViewById(R.id.thumbImageView);
@@ -122,6 +124,19 @@ public class RelateFragment extends Fragment {
         songAllAdapter = new SongAllAdapter(songArrayList, requireActivity(), requireContext());
         rv_song_recommend.setAdapter(songAllAdapter);
 
+        linear_info_song.setOnClickListener(view1 -> {
+            if (songDetail.getData().getAlbum() != null) {
+                AlbumFragment albumFragment = new AlbumFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("album_endCodeId", songDetail.getData().getAlbum().getEncodeId());
+
+                if (requireContext() instanceof MainActivity) {
+                    ((MainActivity) requireContext()).replaceFragmentWithBundle(albumFragment, bundle);
+                }
+                sendExpandToActivity();
+            }
+        });
+
         getSongPlaying();
     }
 
@@ -130,20 +145,26 @@ public class RelateFragment extends Fragment {
         is_playing = sharedPreferencesManager.restoreIsPlayState();
         songArrayList = sharedPreferencesManager.restoreSongArrayList();
         if (items != null && songArrayList != null) {
-            getRelateSong(items.getEncodeId());
+            getRelateSong( items.getEncodeId());
             getSongDetail(items.getEncodeId());
         }
     }
 
-    private void getRelateSong(String endCodeID) {
+    private void sendExpandToActivity() {
+        Intent intent = new Intent("send_expand_to_activity");
+        intent.putExtra("is_expand", true);
+        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent);
+    }
+
+    private void getRelateSong(String id) {
         ApiServiceFactory.createServiceAsync(new ApiServiceFactory.ApiServiceCallback() {
             @Override
             public void onServiceCreated(ApiService service) {
                 try {
                     SongCategories songCategories = new SongCategories();
-                    Map<String, String> map = songCategories.getSongRecommend(endCodeID);
+                    Map<String, String> map = songCategories.getSongRecommend(id);
 
-                    retrofit2.Call<SongRecommend> call = service.SONG_RECOMMEND_CALL(endCodeID, map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
+                    retrofit2.Call<SongRecommend> call = service.SONG_RECOMMEND_CALL(id, "0", "999", map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
                     call.enqueue(new Callback<SongRecommend>() {
                         @Override
                         public void onResponse(Call<SongRecommend> call, Response<SongRecommend> response) {
@@ -187,7 +208,7 @@ public class RelateFragment extends Fragment {
                         public void onResponse(@NonNull Call<SongDetail> call, @NonNull Response<SongDetail> response) {
                             LogUtil.d(Constants.TAG, "getSongDetail: " + call.request().url());
                             if (response.isSuccessful()) {
-                                SongDetail songDetail = response.body();
+                                songDetail = response.body();
                                 if (songDetail != null) {
                                     setDataPLayer(songDetail);
                                 }
@@ -234,7 +255,9 @@ public class RelateFragment extends Fragment {
                             if (response.isSuccessful()) {
                                 GenreInfo genreInfo = response.body();
                                 if (genreInfo != null) {
-                                    callback.onGenreInfoFetched(genreInfo);
+                                    if (genreInfo.getErr() == 0) {
+                                        callback.onGenreInfoFetched(genreInfo);
+                                    }
                                 }
                             }
                         }
@@ -283,23 +306,25 @@ public class RelateFragment extends Fragment {
             txt_composed.setText("");
         }
 
-        if (songDetail.getData().getGenreIds() != null) {
+        if (songDetail.getData().getGenreIds() != null && !songDetail.getData().getGenreIds().isEmpty()) {
             StringBuilder genreBuilder = new StringBuilder();
             int[] remainingCalls = {songDetail.getData().getGenreIds().size()};
 
-            for (int i = 0; i < songDetail.getData().getGenreIds().size(); i++) {
-                getGenreInfo(songDetail.getData().getGenreIds().get(i), new GenreInfoCallback() {
+            for (String genreId : songDetail.getData().getGenreIds()) {
+                getGenreInfo(genreId, new GenreInfoCallback() {
                     @Override
                     public void onGenreInfoFetched(GenreInfo genreInfo) {
-                        synchronized (genreBuilder) {
-                            genreBuilder.append(genreInfo.getData().getName()).append(", ");
+                        if (genreInfo != null && genreInfo.getData() != null && genreInfo.getErr() == 0) {
+                            synchronized (genreBuilder) {
+                                genreBuilder.append(genreInfo.getData().getName()).append(", ");
+                            }
                         }
 
                         synchronized (remainingCalls) {
                             remainingCalls[0]--;
                             if (remainingCalls[0] == 0) {
                                 if (genreBuilder.length() > 0) {
-                                    genreBuilder.setLength(genreBuilder.length() - 2);
+                                    genreBuilder.setLength(genreBuilder.length() - 2); // Xóa dấu phẩy cuối cùng
                                 }
                                 txt_genre.setText(genreBuilder.toString());
                             }
@@ -311,13 +336,16 @@ public class RelateFragment extends Fragment {
                         synchronized (remainingCalls) {
                             remainingCalls[0]--;
                             if (remainingCalls[0] == 0) {
-                                txt_genre.setText(genreBuilder.toString());
+                                txt_genre.setText(genreBuilder.length() > 0 ? genreBuilder.toString() : "N/A");
                             }
                         }
                     }
                 });
             }
+        } else {
+            txt_genre.setText("N/A");
         }
+
 
         txt_release.setText(songDetail.getData().getReleaseDate() != 0 ? Helper.convertLongToTime(String.valueOf(songDetail.getData().getReleaseDate())) : "");
         txt_provide.setText(songDetail.getData().getDistributor() != null ? songDetail.getData().getDistributor() : "");

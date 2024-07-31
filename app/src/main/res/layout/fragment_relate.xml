@@ -8,8 +8,7 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="@dimen/_10sdp">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -20,6 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:background="@drawable/background_info_song"
                 android:orientation="vertical"
                 android:padding="@dimen/_10sdp"
@@ -275,6 +275,7 @@
                 android:layout_below="@+id/linear_info_song"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:fontFamily="@font/roboto_bold"
+                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:text="Có thể bạn muốn nghe"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_14ssp" />

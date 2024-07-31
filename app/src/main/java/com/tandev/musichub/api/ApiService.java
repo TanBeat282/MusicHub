@@ -163,6 +163,8 @@ public interface ApiService {
     //get song recommend
     @GET(pathSongRecommend)
     Call<SongRecommend> SONG_RECOMMEND_CALL(@Query("id") String id,
+                                            @Query("start") String start,
+                                            @Query("count") String count,
                                             @Query("sig") String sig,
                                             @Query("ctime") String ctime,
                                             @Query("version") String version,

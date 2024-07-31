@@ -29,6 +29,7 @@ public class DataSongDetail {
     private String distributor;
     private List<Object> indicators;
     private boolean isIndie;
+    private String mvlink;
     private int streamingStatus;
     private boolean allowAudioAds;
     private boolean hasLyric;
@@ -304,5 +305,13 @@ public class DataSongDetail {
 
     public void setComment(int comment) {
         this.comment = comment;
+    }
+
+    public String getMvlink() {
+        return mvlink;
+    }
+
+    public void setMvlink(String mvlink) {
+        this.mvlink = mvlink;
     }
 }

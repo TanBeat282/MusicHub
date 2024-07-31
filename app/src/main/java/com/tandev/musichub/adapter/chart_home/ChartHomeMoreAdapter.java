@@ -73,7 +73,7 @@ public class ChartHomeMoreAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemViewType(int position) {
-        if (!isExpanded && songList.size() > 10 && position == 10) {
+        if (!isExpanded && songList.size() > 9 && position == 9) {
             return ITEM_TYPE_MORE;
         }
         return ITEM_TYPE_SONG;
@@ -155,8 +155,8 @@ public class ChartHomeMoreAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        if (!isExpanded && songList.size() > 10) {
-            return 11; // 5 items + 1 "more" item
+        if (!isExpanded && songList.size() > 9) {
+            return 10; // 5 items + 1 "more" item
         } else {
             return songList.size();
         }

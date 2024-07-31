@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import java.text.Normalizer;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -87,6 +88,9 @@ public class Helper {
     // convert time to text
     public static String convertLongToTime2(String timeInMillis) {
         long time = Long.parseLong(timeInMillis);
+        if (time < 10000000000L) {
+            time *= 1000;
+        }
         Date date = new Date(time);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -129,6 +133,9 @@ public class Helper {
         try {
             long time = Long.parseLong(timeInMillis);
 
+            if (time < 10000000000L) {
+                time *= 1000;
+            }
             // Kiểm tra giá trị time để tránh lỗi thời gian Unix Epoch (năm 1970)
             if (time <= 0) {
                 return "Invalid time";
@@ -210,7 +217,7 @@ public class Helper {
         return sdf.format(date);
     }
 
-    //
+    // calculateYearsAgo
     public static String calculateYearsAgo(long createdAt) {
         long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
         long differenceInSeconds = currentTimeInSeconds - createdAt;
@@ -219,6 +226,20 @@ public class Helper {
         int differenceInYears = (int) Math.floor(differenceInSeconds / (double) (365 * 24 * 60 * 60));
 
         return differenceInYears + " năm trước";
+    }
+
+    // convert dd-MM-yyyy to dd/MM
+    public static String formatToDayMonth(String dateString) {
+        SimpleDateFormat originalFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        SimpleDateFormat targetFormat = new SimpleDateFormat("dd/MM", Locale.getDefault());
+
+        try {
+            Date date = originalFormat.parse(dateString);
+            return date != null ? targetFormat.format(date) : "";
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
 }

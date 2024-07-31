@@ -14,13 +14,11 @@ import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
-import android.media.audiofx.AudioEffect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -86,18 +84,12 @@ public class MyService extends Service {
                     if (isPlayingBumper) {
                         // If bumper audio is playing, play the next song
                         isPlayingBumper = false;
-                        if (sharedPreferencesManager.restoreSongArrayList().size() == 1) {
-                            stopMusic();
-                            sendActionToActivity(mSong, false, ACTION_PAUSE);
-                        } else {
-                            // Logic cho khi có nhiều bài hát
-                            nextMusic();
-                        }
+                        nextMusic();
                     } else if (mSong.getStreamingStatus() == 2) {
                         getUrlAudioHelper.getPremiumSongAudio(mSong.getEncodeId(), new GetUrlAudioHelper.PremiumSongAudioCallback() {
                             @Override
                             public void onSuccess(PreviewPremium previewPremium) {
-                                if (previewPremium.getData() != null && previewPremium.getData().getBumperAudio() != null) {
+                                if (previewPremium.getData() != null && previewPremium.getData().getBumperAudio() != null && previewPremium.getData().getLink() != null) {
                                     try {
                                         mediaPlayer.reset();
                                         mediaPlayer.setDataSource(previewPremium.getData().getBumperAudio().getLink());
@@ -125,9 +117,7 @@ public class MyService extends Service {
                 }
             }
         });
-        mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
-            sendBufferingUpdate(percent);
-        });
+        mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> sendBufferingUpdate(percent));
     }
 
     @Nullable
@@ -205,7 +195,7 @@ public class MyService extends Service {
                 @Override
                 public void onSuccess(PreviewPremium previewPremium) {
                     if (sharedPreferencesManager.restoreIsRepeatOneState()) {
-                        if (previewPremium.getData() != null) {
+                        if (previewPremium.getData() != null && previewPremium.getData().getLink() != null) {
                             try {
                                 mediaPlayer.reset();
                                 mediaPlayer.setDataSource(previewPremium.getData().getLink());
@@ -232,35 +222,34 @@ public class MyService extends Service {
                             nextMusic();
                         }
                     } else {
-                        if (!currentSongId.equals(song.getEncodeId())) {
-                            if (previewPremium.getData() != null) {
-                                try {
-                                    mediaPlayer.reset();
-                                    mediaPlayer.setDataSource(previewPremium.getData().getLink());
-                                    mediaPlayer.prepareAsync();
-                                    mediaPlayer.setOnPreparedListener(mp -> {
+                        if (currentSongId.equals(song.getEncodeId())) {
+                            sendExpandToActivity();
+                        }
+                        if (previewPremium.getData() != null&& previewPremium.getData().getLink() != null) {
+                            try {
+                                mediaPlayer.reset();
+                                mediaPlayer.setDataSource(previewPremium.getData().getLink());
+                                mediaPlayer.prepareAsync();
+                                mediaPlayer.setOnPreparedListener(mp -> {
 
-                                        mediaPlayer.start();
-                                        isPlaying = true;
-                                        currentSongId = song.getEncodeId();
-                                        sendActionToActivity(mSong, isPlaying, ACTION_START);
-                                        startUpdatingSeekBar();
+                                    mediaPlayer.start();
+                                    isPlaying = true;
+                                    currentSongId = song.getEncodeId();
+                                    sendActionToActivity(mSong, isPlaying, ACTION_START);
+                                    startUpdatingSeekBar();
 
-                                        sharedPreferencesManager.saveSongState(song);
-                                        sharedPreferencesManager.saveIsPlayState(true);
-                                        sharedPreferencesManager.saveActionState(MyService.ACTION_START);
-                                        sharedPreferencesManager.saveSongArrayListHistory(song);
-                                    });
-                                } catch (IOException e) {
-                                    sendIsSongPremium();
-                                    nextMusic();
-                                }
-                            } else {
+                                    sharedPreferencesManager.saveSongState(song);
+                                    sharedPreferencesManager.saveIsPlayState(true);
+                                    sharedPreferencesManager.saveActionState(MyService.ACTION_START);
+                                    sharedPreferencesManager.saveSongArrayListHistory(song);
+                                });
+                            } catch (IOException e) {
                                 sendIsSongPremium();
                                 nextMusic();
                             }
                         } else {
-                            sendExpandToActivity();
+                            sendIsSongPremium();
+                            nextMusic();
                         }
                     }
                 }
@@ -302,35 +291,34 @@ public class MyService extends Service {
                             nextMusic();
                         }
                     } else {
-                        if (!currentSongId.equals(song.getEncodeId())) {
-                            if (songAudio.getData() != null) {
-                                try {
-                                    mediaPlayer.reset();
-                                    mediaPlayer.setDataSource(songAudio.getData().getLow());
-                                    mediaPlayer.prepareAsync();
-                                    mediaPlayer.setOnPreparedListener(mp -> {
+                        if (currentSongId.equals(song.getEncodeId())) {
+                            sendExpandToActivity();
+                        }
+                        if (songAudio.getData() != null) {
+                            try {
+                                mediaPlayer.reset();
+                                mediaPlayer.setDataSource(songAudio.getData().getLow());
+                                mediaPlayer.prepareAsync();
+                                mediaPlayer.setOnPreparedListener(mp -> {
 
-                                        mediaPlayer.start();
-                                        isPlaying = true;
-                                        currentSongId = song.getEncodeId();
-                                        sendActionToActivity(mSong, isPlaying, ACTION_START);
-                                        startUpdatingSeekBar();
+                                    mediaPlayer.start();
+                                    isPlaying = true;
+                                    currentSongId = song.getEncodeId();
+                                    sendActionToActivity(mSong, isPlaying, ACTION_START);
+                                    startUpdatingSeekBar();
 
-                                        sharedPreferencesManager.saveSongState(song);
-                                        sharedPreferencesManager.saveIsPlayState(true);
-                                        sharedPreferencesManager.saveActionState(MyService.ACTION_START);
-                                        sharedPreferencesManager.saveSongArrayListHistory(song);
-                                    });
-                                } catch (IOException e) {
-                                    sendIsSongPremium();
-                                    nextMusic();
-                                }
-                            } else {
+                                    sharedPreferencesManager.saveSongState(song);
+                                    sharedPreferencesManager.saveIsPlayState(true);
+                                    sharedPreferencesManager.saveActionState(MyService.ACTION_START);
+                                    sharedPreferencesManager.saveSongArrayListHistory(song);
+                                });
+                            } catch (IOException e) {
                                 sendIsSongPremium();
                                 nextMusic();
                             }
                         } else {
-                            sendExpandToActivity();
+                            sendIsSongPremium();
+                            nextMusic();
                         }
                     }
                 }
@@ -374,9 +362,11 @@ public class MyService extends Service {
     private void handleNextOrPreviousMusic(boolean isNext) {
         int songCount = sharedPreferencesManager.restoreSongArrayList().size();
         if (songCount == 1) {
-            // Dừng nhạc và gửi thông báo đến Activity
-            stopMusic();
-            sendActionToActivity(mSong, false, ACTION_PAUSE);
+            // Nếu chỉ có 1 bài hát trong danh sách, phát lại bài hát đó
+            mSong = sharedPreferencesManager.restoreSongArrayList().get(0);
+            startMusic(mSong);
+            sendNotificationMedia(mSong, true);
+            saveSongListAndPosition(mSong, 0, sharedPreferencesManager.restoreSongArrayList());
         } else {
             // Logic xử lý cho danh sách có nhiều hơn 1 bài hát
             int mPositionSong;
@@ -405,6 +395,7 @@ public class MyService extends Service {
             }
         }
     }
+
 
     private void nextMusic() {
         if (mediaPlayer != null) {
@@ -463,6 +454,7 @@ public class MyService extends Service {
             stopServiceHandler.removeCallbacks(stopServiceRunnable);
         }
     }
+
     private void stopMusic() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
@@ -471,6 +463,7 @@ public class MyService extends Service {
             stopSelf();
         }
     }
+
     private void sendNotificationMedia(Items song, boolean isPlaying) {
         Glide.with(getApplicationContext())
                 .asBitmap()

@@ -325,7 +325,7 @@
                 android:layout_height="@dimen/_3sdp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/_10sdp"
-                app:cardBackgroundColor="@color/colorSecondaryText">
+                app:cardBackgroundColor="@color/colorSecondaryText1">
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -352,7 +352,7 @@
                         android:fontFamily="@font/roboto"
                         android:padding="@dimen/_5sdp"
                         android:text="TIẾP THEO"
-                        android:textColor="@color/colorSecondaryText"
+                        android:textColor="@color/colorSecondaryText1"
                         android:textSize="@dimen/_11ssp"
                         tools:ignore="HardcodedText" />
 
@@ -392,7 +392,7 @@
                         android:fontFamily="@font/roboto"
                         android:padding="@dimen/_5sdp"
                         android:text="LIÊN QUAN"
-                        android:textColor="@color/colorSecondaryText"
+                        android:textColor="@color/colorSecondaryText1"
                         android:textSize="@dimen/_11ssp"
                         tools:ignore="HardcodedText" />
 
