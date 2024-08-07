@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.tandev.musichub.MainActivity;
@@ -180,25 +181,17 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment implements 
 
     private void initViewPlayCont() {
         linear_play_cont.setOnClickListener(view14 -> {
-            if (songDetail.getData().getStreamingStatus() == 2) {
-                Toast.makeText(context, "Không thể phát bài hát Premium tiếp theo!", Toast.LENGTH_SHORT).show();
-            } else {
-                sharedPreferencesManager.addSongAfterCurrentPlaying(items);
-                Toast.makeText(context, "Đã thêm bài hát vào phát tiếp theo!", Toast.LENGTH_SHORT).show();
-                bottomSheetDialog.dismiss();
-            }
+            sharedPreferencesManager.addSongAfterCurrentPlaying(items);
+            Toast.makeText(context, "Đã thêm bài hát vào phát tiếp theo!", Toast.LENGTH_SHORT).show();
+            bottomSheetDialog.dismiss();
         });
     }
 
     private void initViewAddPlaylist() {
         linear_playlist_add.setOnClickListener(view13 -> {
-            if (songDetail.getData().getStreamingStatus() == 2) {
-                Toast.makeText(context, "Không thể thêm bài hát Premium vào danh sách phát!", Toast.LENGTH_SHORT).show();
-            } else {
-                sharedPreferencesManager.addSongToEndOfArrayList(items);
-                Toast.makeText(context, "Đã thêm bài hát vào danh sách phát!", Toast.LENGTH_SHORT).show();
-                bottomSheetDialog.dismiss();
-            }
+            sharedPreferencesManager.addSongToEndOfArrayList(items);
+            Toast.makeText(context, "Đã thêm bài hát vào danh sách phát!", Toast.LENGTH_SHORT).show();
+            bottomSheetDialog.dismiss();
         });
     }
 
@@ -222,6 +215,7 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment implements 
             bottomSheetDialog.dismiss();
         });
     }
+
     private void initViewDeleteSongPlaylist() {
         if (views == 6) {
             linear_delete_song_playlist_user.setVisibility(View.VISIBLE);
@@ -338,6 +332,13 @@ public class BottomSheetOptionSong extends BottomSheetDialogFragment implements 
     @SuppressLint("SetTextI18n")
     private void setInfoSong(SongDetail songDetail) {
         txt_title_song.setText(songDetail.getData().getTitle());
+        int premiumColor;
+        if (items.getStreamingStatus() == 2) {
+            premiumColor = ContextCompat.getColor(context, R.color.yellow);
+        } else {
+            premiumColor = ContextCompat.getColor(context, R.color.white);
+        }
+        txt_title_song.setTextColor(premiumColor);
         txt_artist.setText(songDetail.getData().getArtistsNames());
         Glide.with(context)
                 .load(songDetail.getData().getThumbnail())

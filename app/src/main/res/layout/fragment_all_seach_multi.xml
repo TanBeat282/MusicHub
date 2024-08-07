@@ -20,9 +20,42 @@
             android:layout_marginBottom="@dimen/_20sdp">
 
             <LinearLayout
+                android:id="@+id/linear_correct_keyword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/txt_correct_keyword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/roboto_bold"
+                    android:maxLines="2"
+                    android:text="Đang hiển thị kết quả cho "
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_14ssp" />
+
+                <TextView
+                    android:id="@+id/txt_query"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/roboto"
+                    android:maxLines="2"
+                    android:text="Tìm kiếm và thay thế cho "
+                    android:textColor="@color/colorSecondaryText1"
+                    android:textSize="@dimen/_12ssp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/linear_top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/linear_correct_keyword"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="horizontal"
                 android:visibility="gone">
 
@@ -49,7 +82,7 @@
                             android:fontFamily="@font/roboto_bold"
                             android:text="Nổi bật"
                             android:textColor="@color/white"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/_16ssp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -407,8 +440,8 @@
     <RelativeLayout
         android:id="@+id/linear_empty_search"
         android:layout_width="match_parent"
-        android:visibility="gone"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"

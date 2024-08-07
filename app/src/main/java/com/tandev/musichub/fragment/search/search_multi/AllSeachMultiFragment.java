@@ -5,7 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -38,6 +43,7 @@ import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SearchCategories;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
+import com.tandev.musichub.api.service.RetrofitClient;
 import com.tandev.musichub.api.type_adapter_Factory.artist.ArtistTypeAdapter;
 import com.tandev.musichub.constants.Constants;
 import com.tandev.musichub.fragment.artist.ArtistFragment;
@@ -49,6 +55,7 @@ import com.tandev.musichub.model.chart.chart_home.Artists;
 import com.tandev.musichub.model.chart.chart_home.Items;
 import com.tandev.musichub.model.hub.HubVideo;
 import com.tandev.musichub.model.playlist.DataPlaylist;
+import com.tandev.musichub.model.search.search_featured.SearchFeatured;
 import com.tandev.musichub.model.search.search_multil.SearchMulti;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.tandev.musichub.model.search.search_multil.SearchMultiDataTop;
@@ -70,11 +77,17 @@ public class AllSeachMultiFragment extends Fragment {
     private static final String ARG_DATA = "query";
     private static final String allowCorrect = "1";
     private String query;
+    private ApiService apiService;
+
 
     //view
     private NestedScrollView nested_scroll_view;
     private RelativeLayout relative_loading;
     private RelativeLayout linear_empty_search;
+
+    private LinearLayout linear_correct_keyword;
+    private TextView txt_correct_keyword;
+    private TextView txt_query;
 
     private LinearLayout linear_top;
     private LinearLayout linear_info;
@@ -117,6 +130,11 @@ public class AllSeachMultiFragment extends Fragment {
             }
             query = bundle.getString("query");
             searchMulti(query);
+            try {
+                getSearchFeatured(query);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     };
 
@@ -148,7 +166,7 @@ public class AllSeachMultiFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        apiService = RetrofitClient.getSearchSuggestion().create(ApiService.class);
         initView(view);
         conFigViews();
         initAdapter();
@@ -162,11 +180,21 @@ public class AllSeachMultiFragment extends Fragment {
                 updateUI(artistDetail);
             } else {
                 searchMulti(query);
+                try {
+                    getSearchFeatured(query);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
         if (searchMultiAllViewModel.getSearchMultiMutableLiveData().getValue() == null) {
             searchMulti(query);
+            try {
+                getSearchFeatured(query);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -174,6 +202,10 @@ public class AllSeachMultiFragment extends Fragment {
         nested_scroll_view = view.findViewById(R.id.nested_scroll_view);
         relative_loading = view.findViewById(R.id.relative_loading);
         linear_empty_search = view.findViewById(R.id.linear_empty_search);
+
+        linear_correct_keyword = view.findViewById(R.id.linear_correct_keyword);
+        txt_correct_keyword = view.findViewById(R.id.txt_correct_keyword);
+        txt_query = view.findViewById(R.id.txt_query);
 
         linear_top = view.findViewById(R.id.linear_top);
         linear_info = view.findViewById(R.id.linear_info);
@@ -295,6 +327,57 @@ public class AllSeachMultiFragment extends Fragment {
 
             }
         });
+    }
+
+    private void getSearchFeatured(String query) throws Exception {
+        // Gọi phương thức trong ApiService
+        SearchCategories searchCategories = new SearchCategories();
+        Map<String, String> map = searchCategories.getSearchFeatured();
+
+        Call<SearchFeatured> call = apiService.SEARCH_FEATURED_CALL(query, "1", map.get("sig"), map.get("ctime"), map.get("version"), map.get("apiKey"));
+
+        // Thực hiện cuộc gọi bất đồng bộ
+        call.enqueue(new Callback<SearchFeatured>() {
+            @Override
+            public void onResponse(Call<SearchFeatured> call, Response<SearchFeatured> response) {
+                LogUtil.d(Constants.TAG, "getSearchFeatured: " + call.request().url());
+                if (response.isSuccessful()) {
+                    SearchFeatured searchFeatured = response.body();
+                    if (searchFeatured != null) {
+                        updateUISearchFeatured(searchFeatured);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SearchFeatured> call, Throwable throwable) {
+
+            }
+        });
+    }
+
+    @SuppressLint({"SetTextI18n", "ResourceAsColor"})
+    private void updateUISearchFeatured(SearchFeatured searchFeatured) {
+        if (!searchFeatured.getData().getCorrectKeyword().isEmpty()) {
+            linear_correct_keyword.setVisibility(View.VISIBLE);
+            SpannableString spannableString = new SpannableString("Đang hiển thị kết quả cho " + searchFeatured.getData().getCorrectKeyword());
+            spannableString.setSpan(new ForegroundColorSpan(Color.WHITE), 0, 25, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannableString.setSpan(new ForegroundColorSpan(Color.BLUE), 26, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            txt_correct_keyword.setText(spannableString);
+
+            // Lấy giá trị màu từ tài nguyên màu
+            int color = ContextCompat.getColor(requireContext(), R.color.colorSecondaryText1);
+
+            SpannableString spannableString2 = new SpannableString("Tìm kiếm và thay thế cho " + query);
+            spannableString2.setSpan(new ForegroundColorSpan(color), 0, 24, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannableString2.setSpan(new ForegroundColorSpan(Color.BLUE), 25, spannableString2.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            txt_query.setText(spannableString2);
+        } else {
+            linear_correct_keyword.setVisibility(View.GONE);
+        }
     }
 
     private void getArtist(String artistId) {
@@ -426,7 +509,6 @@ public class AllSeachMultiFragment extends Fragment {
 
         songArrayList = searchMulti.getData().getSongs();
         setDataSong(songArrayList);
-
 
 
         hubVideos = searchMulti.getData().getVideos();

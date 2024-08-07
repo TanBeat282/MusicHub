@@ -184,7 +184,7 @@ public class LyricFragment extends Fragment {
             int distance = Math.abs(targetPosition - firstVisibleItemPosition);
 
             LinearSmoothScroller smoothScroller = new LinearSmoothScroller(requireContext()) {
-                private static final float MILLISECONDS_PER_INCH_FAST = 50f;  // tốc độ nhanh
+                private static final float MILLISECONDS_PER_INCH_FAST = 500f;  // tốc độ nhanh
                 private static final float MILLISECONDS_PER_INCH_NORMAL = 1000f;  // tốc độ bình thường
 
                 @Override

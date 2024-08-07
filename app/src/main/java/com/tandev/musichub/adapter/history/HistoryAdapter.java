@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -104,13 +105,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
             context.startService(intent);
         });
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                showBottomSheetInfo(items);
-                return false;
-            }
+        holder.itemView.setOnLongClickListener(view -> {
+            showBottomSheetInfo(items);
+            return false;
         });
+        holder.btn_more.setOnClickListener(view -> showBottomSheetInfo(items));
     }
 
 
@@ -124,6 +123,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public TextView artistTextView;
         public TextView nameTextView;
         public LottieAnimationView aniPlay;
+        public ImageView btn_more;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -131,6 +131,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             artistTextView = itemView.findViewById(R.id.artistTextView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             aniPlay = itemView.findViewById(R.id.aniPlay);
+            btn_more = itemView.findViewById(R.id.btn_more);
             artistTextView.setSelected(true);
             nameTextView.setSelected(true);
         }

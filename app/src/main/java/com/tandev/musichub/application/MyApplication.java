@@ -6,6 +6,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
+import com.google.firebase.FirebaseApp;
+
 public class MyApplication extends Application {
 
     public static final String CHANNEL_ID = "MusicHub_Notification";
@@ -14,6 +16,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         createChannelNotification();
+        FirebaseApp.initializeApp(this);
     }
 
     @SuppressLint("ObsoleteSdkInt")

@@ -289,7 +289,7 @@ public class RelateFragment extends Fragment {
         artistTextView.setText(songDetail.getData().getArtistsNames());
         txt_like.setText(Helper.convertToIntString(songDetail.getData().getLike()));
         txt_listen.setText(Helper.convertToIntString(songDetail.getData().getListen()));
-        txt_album.setText(songDetail.getData().getAlbum().getTitle() != null ? songDetail.getData().getAlbum().getTitle() : "");
+        txt_album.setText(songDetail.getData().getAlbum() != null ? songDetail.getData().getAlbum().getTitle() : "");
 
 
         if (songDetail.getData().getComposers() != null) {

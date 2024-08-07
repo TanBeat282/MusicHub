@@ -60,8 +60,6 @@ public class BottomSheetProfile extends BottomSheetDialogFragment {
         linear_profile = bottomSheetDialog.findViewById(R.id.linear_profile);
         linear_history = bottomSheetDialog.findViewById(R.id.linear_history);
         linear_setting = bottomSheetDialog.findViewById(R.id.linear_setting);
-        linear_send_error = bottomSheetDialog.findViewById(R.id.linear_send_error);
-        linear_info_app = bottomSheetDialog.findViewById(R.id.linear_info_app);
     }
 
     private void onClick() {

@@ -81,7 +81,6 @@
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/view_pager_banner"
                 android:layout_width="match_parent"
-                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:layout_height="@dimen/_150sdp"
                 android:paddingStart="@dimen/_20sdp"
                 android:paddingEnd="@dimen/_20sdp" />
@@ -281,7 +280,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_80sdp"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:gravity="center"
                 android:orientation="horizontal">
 

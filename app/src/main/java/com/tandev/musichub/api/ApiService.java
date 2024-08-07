@@ -13,6 +13,7 @@ import com.tandev.musichub.model.radio.host.announcement.AnnouncementRadio;
 import com.tandev.musichub.model.radio.host.detail.HostDetail;
 import com.tandev.musichub.model.radio.host.info.HostInfo;
 import com.tandev.musichub.model.radio.user.comment.CommentUserRadio;
+import com.tandev.musichub.model.search.search_featured.SearchFeatured;
 import com.tandev.musichub.model.search.search_multil.SearchMulti;
 import com.tandev.musichub.model.search.search_recommend.SearchRecommend;
 import com.tandev.musichub.model.search.search_suggestion.SearchSuggestions;
@@ -60,6 +61,7 @@ public interface ApiService {
     String pathSearchMulti = "/api/v2/search/multi?";
     String pathSearchType = "/api/v2/search?";
     String pathSearchSuggestion = "/v1/web/ac-suggestions?";
+    String pathSearchFeatured = "/v1/web/featured?";
     String pathSearchRecommend = "/api/v2/app/get/recommend-keyword?";
 
 
@@ -256,6 +258,15 @@ public interface ApiService {
                                                @Query("ctime") String ctime,
                                                @Query("version") String version,
                                                @Query("apiKey") String apiKey);
+
+    //SEARCH
+    @GET(pathSearchFeatured)
+    Call<SearchFeatured> SEARCH_FEATURED_CALL(@Query("query") String query,
+                                              @Query("allowCorrect") String allowCorrect,
+                                              @Query("sig") String sig,
+                                              @Query("ctime") String ctime,
+                                              @Query("version") String version,
+                                              @Query("apiKey") String apiKey);
 
     @GET(pathSearchMulti)
     Call<SearchMulti> SEARCH_MULTI_CALL(@Query("q") String q,

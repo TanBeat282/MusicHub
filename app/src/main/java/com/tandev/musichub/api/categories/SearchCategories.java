@@ -20,6 +20,16 @@ public class SearchCategories extends Base {
             throw error;
         }
     }
+    public Map<String, String> getSearchFeatured() throws NoSuchAlgorithmException, IOException, Exception {
+        try {
+            String sig = createNoIdSig("/v1/web/featured");
+            Map<String, String> params = createRequest();
+            params.put("sig", sig);
+            return params;
+        } catch (Exception error) {
+            throw error;
+        }
+    }
 
     public Map<String, String> getSearchMulti(String q) throws Exception {
         try {

@@ -60,6 +60,7 @@ import com.tandev.musichub.constants.PermissionConstants;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.helper.uliti.PermissionUtils;
 import com.tandev.musichub.helper.uliti.log.LogUtil;
+import com.tandev.musichub.model.search.search_featured.SearchFeatured;
 import com.tandev.musichub.model.search.search_recommend.DataSearchRecommend;
 import com.tandev.musichub.model.search.search_recommend.SearchRecommend;
 import com.tandev.musichub.model.search.search_suggestion.SearchSuggestions;
@@ -454,13 +455,22 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
         }
     }
 
-    private void searchSuggestion(String query) throws Exception {
+    private void searchSuggestion(String query) {
         // Clear previous data before making a new search request
         searchSuggestionsDataItemKeyWordsItems.clear();
         searchSuggestionsDataItemSuggestionsArtists.clear();
         searchSuggestionsDataItemSuggestionsSongs.clear();
         searchSuggestionsDataItemSuggestionsPlaylists.clear();
 
+        // Make a new search request
+        try {
+            getSearchSuggestion(query);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void getSearchSuggestion(String query) throws Exception {
         // Gọi phương thức trong ApiService
         SearchCategories searchCategories = new SearchCategories();
         Map<String, String> map = searchCategories.getSearchSuggestion();
@@ -500,6 +510,8 @@ public class SearchFragment extends Fragment implements SearchSuggestionAdapter.
             }
         });
     }
+
+
 
     private void updateUISearchRecommend(SearchRecommend searchRecommend) {
         ArrayList<DataSearchRecommend> data = searchRecommend.getData();
