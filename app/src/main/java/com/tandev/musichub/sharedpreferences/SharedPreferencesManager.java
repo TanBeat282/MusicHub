@@ -513,6 +513,39 @@ public class SharedPreferencesManager {
             Log.e("SharedPreferencesManager", "Playlist with encodeId " + encodeId + " not found");
         }
     }
+    public boolean renamePlaylistUserByEncodeId(String encodeId, String newName) {
+        ArrayList<DataPlaylist> dataPlaylistArrayList = restorePlaylistUser();
+
+        if (dataPlaylistArrayList != null) {
+            // Tìm playlist theo encodeId
+            DataPlaylist targetPlaylist = null;
+            for (DataPlaylist dataPlaylist : dataPlaylistArrayList) {
+                if (dataPlaylist.getEncodeId().equals(encodeId)) {
+                    targetPlaylist = dataPlaylist;
+                    break;
+                }
+            }
+
+            if (targetPlaylist != null) {
+                // Đổi tên playlist
+                targetPlaylist.setTitle(newName);
+
+                // Lưu danh sách playlist đã cập nhật vào SharedPreferences
+                savePlaylistUserList(dataPlaylistArrayList);
+
+                Log.d("SharedPreferencesManager", "Renamed playlist with encodeId " + encodeId + " to " + newName);
+                return true;  // Thành công
+            } else {
+                Log.e("SharedPreferencesManager", "Playlist with encodeId " + encodeId + " not found");
+                return false; // Không tìm thấy playlist
+            }
+        } else {
+            Log.e("SharedPreferencesManager", "No playlists found to rename");
+            return false; // Không tìm thấy danh sách playlist
+        }
+    }
+
+
 
     public void deleteSongFromPlaylistByEncodeId(String playlistEncodeId, String songEncodeId) {
         // Lấy danh sách các playlist

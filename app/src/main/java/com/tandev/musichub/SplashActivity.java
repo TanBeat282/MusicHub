@@ -53,11 +53,11 @@ public class SplashActivity extends AppCompatActivity {
                 new android.os.Handler().postDelayed(() -> {
                     // Kiểm tra phiên bản ứng dụng
                     new CheckVersionTask().execute();
-                }, 1000);
+                }, 500);
             } else {
                 showNetworkErrorDialog();
             }
-        }, 1000);
+        }, 500);
     }
 
     private boolean isNetworkAvailable() {
@@ -105,7 +105,7 @@ public class SplashActivity extends AppCompatActivity {
                     // Lấy tag_name từ JSON
                     String latestVersion = releaseJson.getString("tag_name");
                     // Lấy version hiện tại của ứng dụng
-                    String currentVersion = BuildConfig.VERSION_NAME;
+                    String currentVersion = "0.0.2";
                     Log.d(">>>>>>>>>>>>>>>>", "latestVersion: "+latestVersion);
                     Log.d(">>>>>>>>>>>>>>>>", "currentVersion: "+currentVersion);
 
@@ -123,6 +123,9 @@ public class SplashActivity extends AppCompatActivity {
 
                         // Hiển thị dialog với nội dung và nút tải xuống
                         showUpdateDialog(releaseNotes, downloadUrl);
+                    }else {
+                        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                        startActivity(intent);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

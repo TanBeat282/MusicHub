@@ -46,6 +46,7 @@ import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.api.type_adapter_Factory.section_bottom.SectionBottomTypeAdapter;
+import com.tandev.musichub.bottomsheet.BottomSheetRenamePlaylistUser;
 import com.tandev.musichub.helper.ui.Helper;
 import com.tandev.musichub.helper.ui.MusicHelper;
 import com.tandev.musichub.model.chart.chart_home.Artists;
@@ -88,6 +89,7 @@ public class MyPlaylistFragment extends Fragment {
 
     private ProgressBar progress_image;
     private TextView txt_title_playlist;
+    private ImageView img_edit_title_playlist;
     private TextView txt_user_name;
     private TextView txt_song_and_time;
     private LinearLayout btn_play_playlist;
@@ -98,6 +100,7 @@ public class MyPlaylistFragment extends Fragment {
     private RecyclerView rv_playlist;
     private SharedPreferencesManager sharedPreferencesManager;
     private MusicHelper musicHelper;
+    private String endCodeId;
 
     public BroadcastReceiver createBroadcastReceiver() {
         return new BroadcastReceiver() {
@@ -142,7 +145,7 @@ public class MyPlaylistFragment extends Fragment {
 
     private void getDataBundle() {
         if (getArguments() != null) {
-            String endCodeId = getArguments().getString("encodeId");
+             endCodeId = getArguments().getString("encodeId");
             getPlaylist(endCodeId);
         }
     }
@@ -167,6 +170,7 @@ public class MyPlaylistFragment extends Fragment {
         imageViews = new ImageView[]{imageView1, imageView2, imageView3, imageView4};
 
         progress_image = view.findViewById(R.id.progress_image);
+        img_edit_title_playlist = view.findViewById(R.id.img_edit_title_playlist);
         txt_title_playlist = view.findViewById(R.id.txt_title_playlist);
         txt_title_playlist.setSelected(true);
         txt_user_name = view.findViewById(R.id.txt_user_name);
@@ -225,6 +229,10 @@ public class MyPlaylistFragment extends Fragment {
             intent.putExtras(bundle);
 
             requireContext().startService(intent);
+        });
+        img_edit_title_playlist.setOnClickListener(view -> {
+            BottomSheetRenamePlaylistUser bottomSheetRenamePlaylistUser = new BottomSheetRenamePlaylistUser(requireContext(), requireActivity(), endCodeId);
+            bottomSheetRenamePlaylistUser.show(requireActivity().getSupportFragmentManager(), bottomSheetRenamePlaylistUser.getTag());
         });
     }
 

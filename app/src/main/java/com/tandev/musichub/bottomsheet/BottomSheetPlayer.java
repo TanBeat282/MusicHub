@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,7 +63,9 @@ public class BottomSheetPlayer extends BottomSheetDialogFragment {
     private TextView txt_artist;
     private LinearLayout linear_play_pause;
     private ImageView img_play_pause;
-    private LinearLayout linear_next;
+    private LinearLayout linear_favorite;
+    private ImageView img_favorite;
+    private boolean isSongInFavorite;
 
     private LinearLayout layout_view_pager;
     private TabLayout tabLayout;
@@ -94,6 +97,7 @@ public class BottomSheetPlayer extends BottomSheetDialogFragment {
         this.activity = activity;
         this.tab_layout = tab_layout;
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -140,6 +144,12 @@ public class BottomSheetPlayer extends BottomSheetDialogFragment {
             setData(items);
             setIsPlaying(is_playing);
         }
+        isSongInFavorite = sharedPreferencesManager.isSongInFavorite(items.getEncodeId());
+        if (isSongInFavorite) {
+            img_favorite.setImageResource(R.drawable.baseline_favorite_24);
+        } else {
+            img_favorite.setImageResource(R.drawable.baseline_favorite_border_24);
+        }
     }
 
     private void initViews(BottomSheetDialog view) {
@@ -155,7 +165,8 @@ public class BottomSheetPlayer extends BottomSheetDialogFragment {
 
         linear_play_pause = view.findViewById(R.id.linear_play_pause);
         img_play_pause = view.findViewById(R.id.img_play_pause);
-        linear_next = view.findViewById(R.id.linear_next);
+        linear_favorite = view.findViewById(R.id.linear_favorite);
+        img_favorite = view.findViewById(R.id.img_favorite);
 
         layout_view_pager = view.findViewById(R.id.layout_view_pager);
         tabLayout = view.findViewById(R.id.tabLayout);
@@ -181,9 +192,20 @@ public class BottomSheetPlayer extends BottomSheetDialogFragment {
                 sendActionToService(MyService.ACTION_RESUME);
             }
         });
-        linear_next.setOnClickListener(view -> sendActionToService(MyService.ACTION_NEXT));
+        linear_favorite.setOnClickListener(view16 -> {
+            if (isSongInFavorite) {
+                sharedPreferencesManager.deleteSongFromFavorite(items.getEncodeId());
+                img_favorite.setImageResource(R.drawable.baseline_favorite_border_24);
+                Toast.makeText(context, "Đã xóa bài hát yêu thích!", Toast.LENGTH_SHORT).show();
+                isSongInFavorite = false;
+            } else {
+                sharedPreferencesManager.saveSongArrayListFavorite(items);
+                img_favorite.setImageResource(R.drawable.baseline_favorite_24);
+                Toast.makeText(context, "Đã thêm bài hát vào danh sách yêu thích!", Toast.LENGTH_SHORT).show();
+                isSongInFavorite = true;
+            }
+        });
     }
-
     private void initViewPager() {
         PlayerViewPageAdapter playerViewPageAdapter = new PlayerViewPageAdapter(requireActivity());
         viewPager.setAdapter(playerViewPageAdapter);

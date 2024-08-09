@@ -4,11 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/select_item"
     android:gravity="center"
     android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/_10sdp"
-    android:paddingVertical="@dimen/_5sdp">
+  >
 
     <LinearLayout
         android:id="@+id/btn_more"

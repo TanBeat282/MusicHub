@@ -53,6 +53,7 @@
     <LinearLayout
         android:id="@+id/linear_no_data"
         android:layout_width="match_parent"
+        android:layout_below="@id/tool_bar"
         android:layout_height="match_parent"
         android:visibility="visible">
 

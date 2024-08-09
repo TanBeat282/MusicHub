@@ -7,23 +7,10 @@
     android:background="@drawable/background_bottomsheet_option_song"
     android:paddingBottom="@dimen/_10sdp">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/material_card_view"
-        style="@style/Widget.Material3.CardView.Filled"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_3sdp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/_10sdp"
-        app:cardBackgroundColor="@color/colorSecondaryText">
-
-    </com.google.android.material.card.MaterialCardView>
-
     <LinearLayout
         android:id="@+id/layoutPlayer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/material_card_view"
         android:layout_marginHorizontal="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:orientation="vertical">

@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/tool_bar"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -275,15 +275,13 @@
                 layout="@layout/item_hub_artist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linear_info_album"
-                android:layout_marginHorizontal="@dimen/_5sdp" />
+                android:layout_below="@+id/linear_info_album" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_playlist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/view_artist"
-                android:layout_marginHorizontal="@dimen/_5sdp" />
+                android:layout_below="@+id/view_artist"/>
 
             <View
                 android:layout_width="match_parent"

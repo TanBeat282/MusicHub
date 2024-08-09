@@ -177,7 +177,7 @@ public class VnFragment extends Fragment {
 
     private void updateUI(WeekChart weekChart) {
         ArrayList<Items> arrayList = weekChart.getData().getItems();
-        if (!arrayList.isEmpty()) {
+        if (arrayList != null && !arrayList.isEmpty()) {
             itemsArrayList = arrayList;
             bxhSongAdapter.setFilterList(arrayList);
             relative_loading.setVisibility(View.GONE);

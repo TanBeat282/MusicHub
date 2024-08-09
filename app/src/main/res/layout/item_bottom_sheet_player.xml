@@ -24,13 +24,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/material_card_view"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <LinearLayout
             android:id="@+id/layout_player"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_10sdp"
+            android:layout_marginVertical="@dimen/_10sdp"
             android:orientation="horizontal">
 
             <com.makeramen.roundedimageview.RoundedImageView
@@ -104,16 +104,17 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/linear_next"
+                    android:id="@+id/linear_favorite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:background="@null">
 
                     <ImageView
-                        android:id="@+id/img_next"
-                        android:layout_width="@dimen/_25sdp"
-                        android:layout_height="@dimen/_25sdp"
-                        android:src="@drawable/baseline_skip_next_24"
+                        android:id="@+id/img_favorite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_favorite_border_24"
                         app:tint="@color/white" />
                 </LinearLayout>
 
@@ -134,8 +135,8 @@
                 android:id="@+id/tabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/black"
                 app:tabGravity="fill"
                 app:tabIndicatorFullWidth="true"

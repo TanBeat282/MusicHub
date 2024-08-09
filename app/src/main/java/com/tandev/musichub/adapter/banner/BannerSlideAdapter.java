@@ -22,6 +22,7 @@ import com.tandev.musichub.api.ApiService;
 import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.constants.Constants;
+import com.tandev.musichub.fragment.album.AlbumFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.helper.uliti.log.LogUtil;
 import com.tandev.musichub.model.chart.home.home_new.banner.HomeDataItemBannerItem;
@@ -153,6 +154,14 @@ public class BannerSlideAdapter extends RecyclerView.Adapter<BannerSlideAdapter.
     }
 
     private void handleSongDetail(SongDetail songDetail) {
-        Toast.makeText(context, "Đang phát triển", Toast.LENGTH_SHORT).show();
+       if (songDetail.getData().getAlbum()!=null){
+           AlbumFragment albumFragment = new AlbumFragment();
+           Bundle bundle = new Bundle();
+           bundle.putString("album_endCodeId", songDetail.getData().getAlbum().getEncodeId());
+
+           if (context instanceof MainActivity) {
+               ((MainActivity) context).replaceFragmentWithBundle(albumFragment, bundle);
+           }
+       }
     }
 }
