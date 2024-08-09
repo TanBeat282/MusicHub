@@ -144,19 +144,27 @@ public class SongFragment extends Fragment implements BottomSheetSelectSortSong.
         txt_filter_song.setText(sort == 2 ? "Nghe nhiều" : "Mới nhất");
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void initAdapter() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         rv_song_of_artist.setLayoutManager(linearLayoutManager);
 
-        songLoadMoreAdapter = new SongLoadMoreAdapter(itemsArrayList, requireActivity(),requireContext());
+        songLoadMoreAdapter = new SongLoadMoreAdapter(itemsArrayList, requireActivity(), requireContext());
         rv_song_of_artist.setAdapter(songLoadMoreAdapter);
 
         rv_song_of_artist.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
             @Override
             public void loadMoreItems() {
-                isLoading = true;
-                currentPage += 1;
-                new Handler().postDelayed(() -> loadNextPage(id, currentPage, sortString, sectionId), 300);
+                if (itemsArrayList.size() >= 30) {
+                    isLoading = true;
+                    currentPage += 1;
+                    new Handler().postDelayed(() -> loadNextPage(id, currentPage, sortString, sectionId), 300);
+                } else {
+                    songLoadMoreAdapter.removeFooterLoading();
+                    songLoadMoreAdapter.notifyDataSetChanged();
+                    isLastPage = true;
+                    isLoading = false;
+                }
             }
 
             @Override
@@ -196,7 +204,7 @@ public class SongFragment extends Fragment implements BottomSheetSelectSortSong.
             }
         });
         linear_filter_song.setOnClickListener(view -> {
-            BottomSheetSelectSortSong bottomSheetSelectSortSong = new BottomSheetSelectSortSong(requireContext(),requireActivity(), sort);
+            BottomSheetSelectSortSong bottomSheetSelectSortSong = new BottomSheetSelectSortSong(requireContext(), requireActivity(), sort);
             bottomSheetSelectSortSong.show(requireActivity().getSupportFragmentManager(), bottomSheetSelectSortSong.getTag());
             bottomSheetSelectSortSong.setSortOptionListener(this);
         });
@@ -338,7 +346,7 @@ public class SongFragment extends Fragment implements BottomSheetSelectSortSong.
     @Override
     public void onSortOptionSelected(int sortOption) {
         sort = sortOption;
-        Log.d(">>>>>>>>>>>>>>>>>>>>>", "onCreateDialog2: "+sortOption);
+        Log.d(">>>>>>>>>>>>>>>>>>>>>", "onCreateDialog2: " + sortOption);
         sortString = sort == 2 ? "listen" : "new";
         txt_filter_song.setText(sort == 2 ? "Nghe nhiều" : "Mới nhất");
         getSongListOfArtist(id, currentPage, sortString, sectionId);

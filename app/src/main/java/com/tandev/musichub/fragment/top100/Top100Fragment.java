@@ -43,9 +43,13 @@ import retrofit2.Response;
 public class Top100Fragment extends Fragment {
     private Top100ViewModel top100ViewModel;
 
+    //tool bar
+    private View tool_bar;
     private RelativeLayout relative_header;
+    private TextView txt_title_toolbar;
     private ImageView img_back;
-    private TextView txt_name_playlist, txt_view;
+
+    private RelativeLayout relative_loading;
     private NestedScrollView nested_scroll;
     private RecyclerView rv_playlist_vertical;
     private ImageView img_playlist;
@@ -93,11 +97,14 @@ public class Top100Fragment extends Fragment {
     }
 
     private void initViews(View view) {
-        relative_header = view.findViewById(R.id.relative_header);
-        img_back = view.findViewById(R.id.img_back);
-        txt_name_playlist = view.findViewById(R.id.txt_name_playlist);
-        txt_view = view.findViewById(R.id.txt_view);
+        tool_bar = view.findViewById(R.id.tool_bar);
+        relative_header = tool_bar.findViewById(R.id.relative_header);
+        img_back = tool_bar.findViewById(R.id.img_back);
+        txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);
+
+
         nested_scroll = view.findViewById(R.id.nested_scroll);
+        relative_loading = view.findViewById(R.id.relative_loading);
         rv_playlist_vertical = view.findViewById(R.id.rv_playlist_vertical);
 
         img_playlist = view.findViewById(R.id.img_playlist);
@@ -123,20 +130,14 @@ public class Top100Fragment extends Fragment {
                 // Kiểm tra nếu người dùng đã cuộn đến đầu trang
                 if (scrollY <= 600) {
                     // Ẩn TextView khi người dùng cuộn trở lại đầu trang
-                    txt_name_playlist.setVisibility(View.GONE);
-                    txt_view.setVisibility(View.VISIBLE);
+                    txt_title_toolbar.setText("");
                     relative_header.setBackgroundResource(android.R.color.transparent);
-                    // Make the content appear under the status bar
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                        requireActivity().getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
-                    }
+                    // Make the content appear under the status barr
+                    Helper.changeStatusBarTransparent(requireActivity());
 
                 } else if (scrollY >= 800) {
                     // Hiển thị TextView khi người dùng cuộn xuống khỏi đầu trang
-                    txt_name_playlist.setVisibility(View.VISIBLE);
-                    txt_view.setVisibility(View.GONE);
-                    txt_name_playlist.setText("Top 100");
+                    txt_title_toolbar.setText("Top100");
                     relative_header.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg));
                     Helper.changeStatusBarColor(requireActivity(), R.color.bg);
                 }
@@ -201,6 +202,10 @@ public class Top100Fragment extends Fragment {
             top100Adapter.setFilterList(dataTop100ArrayList);
             progress_image.setVisibility(View.GONE);
             img_playlist.setVisibility(View.VISIBLE);
+
+            relative_loading.setVisibility(View.GONE);
+            nested_scroll.setVisibility(View.VISIBLE);
+
         }
     }
 }

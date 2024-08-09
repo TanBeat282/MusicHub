@@ -51,8 +51,6 @@ import retrofit2.Response;
 public class HubFragment extends Fragment {
     private HubViewModel hubViewModel;
 
-    //tool bar
-    private View tool_bar;
     private RelativeLayout relative_header;
     private TextView txt_title_toolbar;
     private ImageView img_back;
@@ -113,7 +111,8 @@ public class HubFragment extends Fragment {
     }
 
     private void initViews(View view) {
-        tool_bar = view.findViewById(R.id.tool_bar);
+        //tool bar
+        View tool_bar = view.findViewById(R.id.tool_bar);
         relative_header = tool_bar.findViewById(R.id.relative_header);
         img_back = tool_bar.findViewById(R.id.img_back);
         txt_title_toolbar = tool_bar.findViewById(R.id.txt_title_toolbar);

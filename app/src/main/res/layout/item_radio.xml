@@ -32,6 +32,7 @@
             android:layout_width="@dimen/_35sdp"
             android:layout_height="@dimen/_15sdp"
             android:layout_alignParentBottom="true"
+            android:layout_marginBottom="-2dp"
             android:layout_centerHorizontal="true"
             android:src="@drawable/ic_live" />
 
@@ -69,6 +70,6 @@
         android:scrollHorizontally="true"
         android:singleLine="true"
         android:textColor="@color/white"
-        android:textSize="@dimen/_12ssp" />
+        android:textSize="@dimen/_10ssp" />
 
 </RelativeLayout>

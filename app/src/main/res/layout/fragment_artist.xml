@@ -37,7 +37,6 @@
                     android:visibility="visible" />
             </LinearLayout>
 
-
             <RelativeLayout
                 android:id="@+id/relative_info"
                 android:layout_width="match_parent"
@@ -89,7 +88,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/linear_info"
                     android:layout_marginHorizontal="@dimen/_10sdp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -218,8 +217,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/relative_new_song"
-                android:layout_marginHorizontal="@dimen/_10sdp"
-                android:layout_marginTop="20dp" />
+                android:layout_marginTop="@dimen/_10sdp" />
 
             <RelativeLayout
                 android:id="@+id/relative_info_single"
