@@ -13,6 +13,7 @@ import com.tandev.musichub.model.chart.home.home_new.new_release_chart.HomeDataI
 import com.tandev.musichub.model.chart.home.home_new.radio.HomeDataItemRadio;
 import com.tandev.musichub.model.chart.home.home_new.rt_chart.HomeDataItemRTChart;
 import com.tandev.musichub.model.chart.home.home_new.season_theme.HomeDataItemPlaylistSeasonTheme;
+import com.tandev.musichub.model.chart.home.home_new.song_station.HomeDataItemSongStation;
 import com.tandev.musichub.model.chart.home.home_new.top100.HomeDataItemPlaylistTop100;
 import com.tandev.musichub.model.chart.home.home_new.week_chart.HomeDataItemWeekChart;
 import com.google.gson.JsonDeserializationContext;
@@ -63,6 +64,8 @@ public class HomeDataItemTypeAdapter implements JsonDeserializer<HomeDataItem> {
                 return context.deserialize(jsonObject, HomeDataItemAdBanner.class);
             case "livestream":
                 return context.deserialize(jsonObject, HomeDataItemRadio.class);
+            case "songStation":
+                return context.deserialize(jsonObject, HomeDataItemSongStation.class);
             default:
                 throw new JsonParseException("Unknown sectionType: " + sectionType);
         }
