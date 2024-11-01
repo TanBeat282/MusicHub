@@ -126,6 +126,7 @@ public class SplashActivity extends AppCompatActivity {
                     }else {
                         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
