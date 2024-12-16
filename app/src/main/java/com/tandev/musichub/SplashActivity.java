@@ -34,7 +34,6 @@ import okhttp3.Response;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
-    private ProgressBar progress_bar;
     private static final String GITHUB_API_URL = "https://api.github.com/repos/TanBeat282/MusicHub/releases/latest";
 
 
@@ -45,19 +44,16 @@ public class SplashActivity extends AppCompatActivity {
         Helper.changeStatusBarColor(this, R.color.bg);
         Helper.changeNavigationColor(this, R.color.bg, true);
 
-        progress_bar = findViewById(R.id.progress_bar);
-
         new Handler().postDelayed(() -> {
-            progress_bar.setVisibility(View.VISIBLE);
             if (isNetworkAvailable()) {
                 new android.os.Handler().postDelayed(() -> {
                     // Kiểm tra phiên bản ứng dụng
                     new CheckVersionTask().execute();
-                }, 500);
+                }, 100);
             } else {
                 showNetworkErrorDialog();
             }
-        }, 500);
+        }, 100);
     }
 
     private boolean isNetworkAvailable() {

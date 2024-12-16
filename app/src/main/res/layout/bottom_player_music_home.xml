@@ -20,8 +20,8 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/img_album_song"
-                android:layout_width="@dimen/_40sdp"
-                android:layout_height="@dimen/_40sdp"
+                android:layout_width="@dimen/_36sdp"
+                android:layout_height="@dimen/_36sdp"
                 android:layout_gravity="center"
                 android:layout_marginVertical="@dimen/_5sdp"
                 android:layout_marginStart="@dimen/_10sdp"
@@ -47,7 +47,7 @@
                     android:scrollHorizontally="true"
                     android:singleLine="true"
                     android:textColor="#FFF"
-                    android:textSize="@dimen/_12ssp"
+                    android:textSize="@dimen/_10ssp"
                     android:textStyle="bold" />
 
 
@@ -63,7 +63,7 @@
                     android:scrollHorizontally="true"
                     android:singleLine="true"
                     android:textColor="@color/colorSecondaryText1"
-                    android:textSize="@dimen/_10ssp" />
+                    android:textSize="@dimen/_8ssp" />
             </LinearLayout>
 
             <LinearLayout
@@ -82,9 +82,9 @@
 
                     <ImageView
                         android:id="@+id/img_play_pause"
-                        android:layout_width="@dimen/_25sdp"
+                        android:layout_width="@dimen/_23sdp"
 
-                        android:layout_height="@dimen/_25sdp"
+                        android:layout_height="@dimen/_23sdp"
                         android:src="@drawable/baseline_play_arrow_24"
                         app:tint="@color/white" />
                 </LinearLayout>
@@ -97,8 +97,8 @@
 
                     <ImageView
                         android:id="@+id/img_close"
-                        android:layout_width="@dimen/_25sdp"
-                        android:layout_height="@dimen/_25sdp"
+                        android:layout_width="@dimen/_23sdp"
+                        android:layout_height="@dimen/_23sdp"
                         android:src="@drawable/baseline_close_24"
                         app:tint="@color/white" />
                 </LinearLayout>

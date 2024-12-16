@@ -23,6 +23,7 @@ import com.tandev.musichub.api.categories.SongCategories;
 import com.tandev.musichub.api.service.ApiServiceFactory;
 import com.tandev.musichub.constants.Constants;
 import com.tandev.musichub.fragment.album.AlbumFragment;
+import com.tandev.musichub.fragment.hub.HubFragment;
 import com.tandev.musichub.fragment.playlist.PlaylistFragment;
 import com.tandev.musichub.helper.uliti.log.LogUtil;
 import com.tandev.musichub.model.chart.home.home_new.banner.HomeDataItemBannerItem;
@@ -80,6 +81,14 @@ public class BannerSlideAdapter extends RecyclerView.Adapter<BannerSlideAdapter.
         holder.itemView.setOnClickListener(view -> {
             if (homeDataItemBannerItem.getType() == 1) {
                 getSongDetail(homeDataItemBannerItem.getEncodeId());
+            } else if (homeDataItemBannerItem.getType() == 6) {
+                HubFragment playlistFragment = new HubFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("encodeId", homeDataItemBannerItem.getEncodeId());
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).replaceFragmentWithBundle(playlistFragment, bundle);
+                }
             } else {
                 PlaylistFragment playlistFragment = new PlaylistFragment();
                 Bundle bundle = new Bundle();
@@ -154,14 +163,14 @@ public class BannerSlideAdapter extends RecyclerView.Adapter<BannerSlideAdapter.
     }
 
     private void handleSongDetail(SongDetail songDetail) {
-       if (songDetail.getData().getAlbum()!=null){
-           AlbumFragment albumFragment = new AlbumFragment();
-           Bundle bundle = new Bundle();
-           bundle.putString("album_endCodeId", songDetail.getData().getAlbum().getEncodeId());
+        if (songDetail.getData().getAlbum() != null) {
+            AlbumFragment albumFragment = new AlbumFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("album_endCodeId", songDetail.getData().getAlbum().getEncodeId());
 
-           if (context instanceof MainActivity) {
-               ((MainActivity) context).replaceFragmentWithBundle(albumFragment, bundle);
-           }
-       }
+            if (context instanceof MainActivity) {
+                ((MainActivity) context).replaceFragmentWithBundle(albumFragment, bundle);
+            }
+        }
     }
 }

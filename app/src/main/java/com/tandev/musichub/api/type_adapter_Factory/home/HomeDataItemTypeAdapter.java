@@ -39,9 +39,11 @@ public class HomeDataItemTypeAdapter implements JsonDeserializer<HomeDataItem> {
                 return context.deserialize(jsonObject, HomeDataItemNewRelease.class);
             case "playlist":
                 switch (jsonObject.get("sectionId").getAsString()) {
-                    case "hEditorTheme1":
+                    case "hSeasonTheme":
                         return context.deserialize(jsonObject, HomeDataItemPlaylistSeasonTheme.class);
                     case "hEditorTheme":
+                        return context.deserialize(jsonObject, HomeDataItemPlaylistEditorTheme.class);
+                    case "hEditorTheme1":
                         return context.deserialize(jsonObject, HomeDataItemPlaylistEditorTheme.class);
                     case "hEditorTheme3":
                         return context.deserialize(jsonObject, HomeDataItemPlaylistEditorTheme3.class);
