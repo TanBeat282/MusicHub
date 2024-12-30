@@ -83,6 +83,10 @@ public class Base {
         return createHashAndHmac(path, "count=50ctime=" + this.ctime + "id=" + id + "version=" + this.version);
     }
 
+    protected String createSectionSongStationSig(String path) throws NoSuchAlgorithmException, Exception {
+        return createHashAndHmac(path, "count=20ctime=" + this.ctime + "version=" + this.version);
+    }
+
     protected String createAnnouncementSig(String path, String id) throws NoSuchAlgorithmException, Exception {
         return createHashAndHmac(path, "count=10ctime=" + this.ctime + "id=" + id + "version=" + this.version);
     }

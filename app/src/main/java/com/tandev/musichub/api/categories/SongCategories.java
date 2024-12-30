@@ -142,4 +142,15 @@ public class SongCategories extends Base {
             throw error;
         }
     }
+    public Map<String, String> getSectionSongStation() throws Exception {
+        try {
+            String sig = createSectionSongStationSig("/api/v2/song/get/section-song-station");
+            Map<String, String> params = createRequest();
+            params.put("count", "20");
+            params.put("sig", sig);
+            return params;
+        } catch (Exception error) {
+            throw error;
+        }
+    }
 }

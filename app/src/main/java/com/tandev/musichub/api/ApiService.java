@@ -35,48 +35,75 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
-    String pathChartHome = "/api/v2/page/get/chart-home?";
+    //Home
     String pathHome = "/api/v2/page/get/home?";
+
+    //Chart
+    String pathChartHome = "/api/v2/page/get/chart-home?";
     String pathChartNewRelease = "/api/v2/page/get/newrelease-chart?";
     String pathNewRelease = "/api/v2/chart/get/new-release?";
     String pathWeekChart = "/api/v2/page/get/week-chart?";
+
+    //Section Bottom
     String pathSectionBottom = "/api/v2/playlist/get/section-bottom?";
+
+    //Top 100
     String pathTop100 = "/api/v2/page/get/top-100?";
+
+    //Detail Song
     String pathDetailSong = "/api/v2/song/get/info?";
+
+    //Audio Song
     String pathAudioSong = "/api/v2/song/get/streaming?";
+
+    //Preview Song
     String pathPreviewPremium = "/api/v2/song/get/vip-preview-info?";
+
+    //Song Recommend
     String pathSongRecommend = "/api/v2/recommend/get/songs?";
+
+    //Genre Info
     String pathGenreInfo = "/api/v2/genre/get/info?";
+
+    //Artist
     String pathArtist = "/api/v2/page/get/artist?";
     String pathSongListOfArtist = "/api/v2/song/get/list?";
+
+    //Playlist
     String pathPlaylist = "/api/v2/page/get/playlist?";
+
+    //Album
     String pathAlbum = "/api/v2/page/get/album?";
+
+    //Lyric
     String pathLyric = "/api/v2/lyric/get/lyric?";
 
-    //video
+    //Video
     String pathSectionRelateVideo = "/api/v2/video/get/section-relate?";
     String pathVideo = "/api/v2/page/get/video?";
 
-    //search
+    //Search
     String pathSearchMulti = "/api/v2/search/multi?";
     String pathSearchType = "/api/v2/search?";
     String pathSearchSuggestion = "/v1/web/ac-suggestions?";
     String pathSearchFeatured = "/v1/web/featured?";
     String pathSearchRecommend = "/api/v2/app/get/recommend-keyword?";
 
-
-    //radio
+    //Radio
     String pathUserActiveRadio = "/api/v2/livestream/get/active-user?";
     String pathInfoRadio = "/api/v2/livestream/get/info?";
     String pathProgramDetailRadio = "/api/v2/livestream/program/get/detail?";
     String pathCommentRadio = "/api/v2/download/livestream/get/comments?";
     String pathAnnouncementRadio = "/api/v2/download/livestream/get/announcement?";
 
-    //hub
+    //Hub
     String pathHub = "/api/v2/page/get/hub-detail?";
 
-    //pathHubHome
+    //Hub Home
     String pathHubHome = "/api/v2/page/get/hub-home?";
+
+    //Section Song Station
+    String pathSectionSongStation = "/api/v2/song/get/section-song-station?";
 
 
     //HOME
@@ -200,7 +227,6 @@ public interface ApiService {
                            @Query("apiKey") String apiKey);
 
     //relate video
-    //get link lyric
     @GET(pathSectionRelateVideo)
     Call<SectionRelateVideo> SECTION_RELATE_VIDEO_CALL(@Query("id") String id,
                                                        @Query("sig") String sig,
@@ -362,6 +388,12 @@ public interface ApiService {
                                 @Query("version") String version,
                                 @Query("apiKey") String apiKey);
 
+    @GET(pathSectionSongStation)
+    Call<ResponseBody> SECTION_SONG_STATION_CALL(@Query("count") String count,
+                                                 @Query("sig") String sig,
+                                                 @Query("ctime") String ctime,
+                                                 @Query("version") String version,
+                                                 @Query("apiKey") String apiKey);
 
     // Method để thiết lập cookie
     void setCookie(String cookie);

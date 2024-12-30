@@ -188,6 +188,16 @@ public class MyService extends Service {
     }
 
     private void startMusic(Items song) {
+        isPlaying = true;
+        currentSongId = song.getEncodeId();
+        sendActionToActivity(mSong, isPlaying, ACTION_START);
+        startUpdatingSeekBar();
+
+        sharedPreferencesManager.saveSongState(song);
+        sharedPreferencesManager.saveIsPlayState(true);
+        sharedPreferencesManager.saveActionState(MyService.ACTION_START);
+        sharedPreferencesManager.saveSongArrayListHistory(song);
+
         getColor(song.getThumbnailM());
 
         if (song.getStreamingStatus() == 2) {
@@ -203,15 +213,6 @@ public class MyService extends Service {
                                 mediaPlayer.setOnPreparedListener(mp -> {
 
                                     mediaPlayer.start();
-                                    isPlaying = true;
-                                    currentSongId = song.getEncodeId();
-                                    sendActionToActivity(mSong, isPlaying, ACTION_START);
-                                    startUpdatingSeekBar();
-
-                                    sharedPreferencesManager.saveSongState(song);
-                                    sharedPreferencesManager.saveIsPlayState(true);
-                                    sharedPreferencesManager.saveActionState(MyService.ACTION_START);
-                                    sharedPreferencesManager.saveSongArrayListHistory(song);
                                 });
                             } catch (IOException e) {
                                 sendIsSongPremium();
@@ -233,15 +234,6 @@ public class MyService extends Service {
                                 mediaPlayer.setOnPreparedListener(mp -> {
 
                                     mediaPlayer.start();
-                                    isPlaying = true;
-                                    currentSongId = song.getEncodeId();
-                                    sendActionToActivity(mSong, isPlaying, ACTION_START);
-                                    startUpdatingSeekBar();
-
-                                    sharedPreferencesManager.saveSongState(song);
-                                    sharedPreferencesManager.saveIsPlayState(true);
-                                    sharedPreferencesManager.saveActionState(MyService.ACTION_START);
-                                    sharedPreferencesManager.saveSongArrayListHistory(song);
                                 });
                             } catch (IOException e) {
                                 sendIsSongPremium();
@@ -272,15 +264,6 @@ public class MyService extends Service {
                                 mediaPlayer.setOnPreparedListener(mp -> {
 
                                     mediaPlayer.start();
-                                    isPlaying = true;
-                                    currentSongId = song.getEncodeId();
-                                    sendActionToActivity(mSong, isPlaying, ACTION_START);
-                                    startUpdatingSeekBar();
-
-                                    sharedPreferencesManager.saveSongState(song);
-                                    sharedPreferencesManager.saveIsPlayState(true);
-                                    sharedPreferencesManager.saveActionState(MyService.ACTION_START);
-                                    sharedPreferencesManager.saveSongArrayListHistory(song);
                                 });
                             } catch (IOException e) {
                                 sendIsSongPremium();
@@ -302,15 +285,6 @@ public class MyService extends Service {
                                 mediaPlayer.setOnPreparedListener(mp -> {
 
                                     mediaPlayer.start();
-                                    isPlaying = true;
-                                    currentSongId = song.getEncodeId();
-                                    sendActionToActivity(mSong, isPlaying, ACTION_START);
-                                    startUpdatingSeekBar();
-
-                                    sharedPreferencesManager.saveSongState(song);
-                                    sharedPreferencesManager.saveIsPlayState(true);
-                                    sharedPreferencesManager.saveActionState(MyService.ACTION_START);
-                                    sharedPreferencesManager.saveSongArrayListHistory(song);
                                 });
                             } catch (IOException e) {
                                 sendIsSongPremium();
