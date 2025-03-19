@@ -12,7 +12,7 @@ public class Constants {
             "zmp3_rqid=MHwxNC4xOTEdUngOTmUsICdUngODN8djEdUngMTAdUngMzR8MTmUsICxODI4MTU3MzMxMw";
 
 
-    public static final String VERSION = "1.11.13";
+    public static final String VERSION = "1.13.6";
     public static final String SECRET_KEY = "acOrvUS15XRW2o9JksiK1KgQ6Vbds8ZW";
     public static final String API_KEY = "X5BM3w8N7MKozC0B85o4KMlzLZKhV00y";
 

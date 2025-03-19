@@ -1,5 +1,5 @@
 [versions]
-agp = "8.8.0"
+agp = "8.8.1"
 compiler = "4.15.1"
 compilerVersion = "4.15.1"
 easypermissions = "3.0.0"
